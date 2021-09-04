@@ -1,0 +1,175 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    [SerializeField]
+    protected float m_Speed;
+
+    protected Vector3 m_SpawnPos;
+    protected bool m_IsSafe;
+    protected bool m_CanMove;
+
+    #region 내부 컴포넌트
+    protected PlayerAnimator m_Animator;
+    protected PlayerCollider m_Collider;
+    #endregion
+    #region 내부 프로퍼티
+    #region 매니져
+    protected __GameManager M_Game => __GameManager.Instance;
+    protected __EditManager M_Edit => __EditManager.Instance;
+    protected PlayerManager M_Player => PlayerManager.Instance;
+    #endregion
+    #endregion
+    #region 외부 프로퍼티
+    public bool IsSafe => m_IsSafe;
+    public bool CanMove => !M_Edit.isEdit && m_CanMove;
+    #endregion
+    #region 내부 함수
+    void Move()
+    {
+        if (Input.anyKey)
+        {
+            float halfSize = (transform.lossyScale.x + transform.lossyScale.y) * 0.5f * 0.5f;
+            float rayAdjust = halfSize - 0.05f;
+
+            float xDir = Input.GetAxisRaw("Horizontal");
+            float yDir = Input.GetAxisRaw("Vertical");
+
+            Vector2 xVec = new Vector2(xDir, 0f);
+            Vector2 yVec = new Vector2(0f, yDir);
+
+            int layer = 1 << LayerMask.NameToLayer("Wall");
+
+            Vector2 pos = transform.position;
+
+            RaycastHit2D[] raycastHits = new RaycastHit2D[4];
+
+            float xMove = m_Speed * Time.deltaTime;
+            float yMove = m_Speed * Time.deltaTime;
+
+            raycastHits[0] = Physics2D.Raycast(pos + yVec * halfSize + (Vector2.right * rayAdjust), yVec, yMove, layer);
+            raycastHits[1] = Physics2D.Raycast(pos + yVec * halfSize + (Vector2.left * rayAdjust), yVec, yMove, layer);
+            raycastHits[2] = Physics2D.Raycast(pos + xVec * halfSize + (Vector2.up * rayAdjust), xVec, xMove, layer);
+            raycastHits[3] = Physics2D.Raycast(pos + xVec * halfSize + (Vector2.down * rayAdjust), xVec, xMove, layer);
+
+            // 상, 하
+            if (raycastHits[0].transform != null)
+            {
+                if (raycastHits[0].distance <= yMove)
+                {
+                    yMove = raycastHits[0].distance;
+                }
+            }
+            if (raycastHits[1].transform != null)
+            {
+                if (raycastHits[1].distance <= yMove)
+                {
+                    yMove = raycastHits[1].distance;
+                }
+            }
+            if (raycastHits[2].transform != null)
+            {
+                if (raycastHits[2].distance <= xMove)
+                {
+                    xMove = raycastHits[2].distance;
+                }
+            }
+            if (raycastHits[3].transform != null)
+            {
+                if (raycastHits[3].distance <= xMove)
+                {
+                    xMove = raycastHits[3].distance;
+                }
+            }
+
+            Vector2 temp = new Vector2(xDir * xMove, yDir * yMove);
+
+            transform.Translate(temp);
+        }
+    }
+    void ClampPos()
+    {
+        // 뷰포트 기준 좌측 하단의 좌표를 월드좌표로 변환 (최솟값)
+        Vector2 min = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
+        // 뷰포트 기준 우측 상단의 좌표를 월드좌표로 변환 (최댓값)
+        Vector2 max = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
+        // 플레이어 월드좌표
+        Vector2 PlayerPos = transform.position;
+
+        // 플레이어의 월드좌표를 자신의 사이즈까지 고려하여 화면에 맞게 변환 
+        PlayerPos.x = Mathf.Clamp(PlayerPos.x, min.x + 0.5f, max.x - 0.5f);
+        PlayerPos.y = Mathf.Clamp(PlayerPos.y, min.y + 0.5f, max.y - 0.5f);
+
+        // 제한한 위치로 이동
+        transform.position = PlayerPos;
+    }
+    #endregion
+    #region 외부 함수
+    public void __Initialize()
+    {
+        #region 이벤트 링크
+        M_Game.OnPlayEnter += OnPlayEnter;
+        M_Game.OnPlayExit += OnPlayExit;
+
+        M_Player.OnPlayerRespawn += Respawn;
+        #endregion
+
+        if (null == m_Animator)
+        {
+            m_Animator = GetComponentInChildren<PlayerAnimator>();
+            m_Animator.__Initialize(this);
+        }
+        if (null == m_Collider)
+        {
+            m_Collider = GetComponentInChildren<PlayerCollider>();
+            m_Collider.__Initialize(this);
+        }
+
+        gameObject.SetActive(false);
+    }
+
+    public void SetSafety(bool isSafe)
+    {
+        m_IsSafe = isSafe;
+    }
+    public void SetSpawnPos(Vector3 pos)
+    {
+        m_SpawnPos = pos;
+    }
+    public void Death()
+    {
+        m_CanMove = false;
+        m_Animator.Death();
+    }
+    public void Respawn()
+    {
+        transform.position = m_SpawnPos;
+        gameObject.SetActive(true);
+        m_CanMove = true;
+    }
+    #endregion
+    #region 이벤트 함수
+    public void OnPlayEnter()
+    {
+        transform.position = m_SpawnPos;
+
+        gameObject.SetActive(true);
+    }
+    public void OnPlayExit()
+    {
+        transform.position = m_SpawnPos;
+    }
+    #endregion
+    #region 유니티 콜백 함수
+    void Update()
+    {
+        if (CanMove)
+        {
+            Move();
+        }
+    }
+    #endregion
+}
