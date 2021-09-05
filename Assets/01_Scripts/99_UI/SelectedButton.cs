@@ -9,21 +9,20 @@ public class SelectedButton : MonoBehaviour, IPointerClickHandler
     [ReadOnly(true)]
     public E_ObjectType m_Type;
 
-    __EditManager M_Edit;
-    __GameManager M_Game;
+    #region 내부 프로퍼티
+    #region 매니져
+    protected __GameManager M_Game => __GameManager.Instance;
+    protected __EditManager M_Edit => __EditManager.Instance;
+    #endregion
+    #endregion
 
     Color m_Color;
 
-    private void Awake()
-    {
-        M_Edit = __EditManager.Instance;
-        M_Game = __GameManager.Instance;
-    }
+    #region 유니티 콜백 함수
     private void Start()
     {
         m_Color = Color.white;
     }
-
     private void Update()
     {
         if (M_Edit.isEdit &&
@@ -79,6 +78,7 @@ public class SelectedButton : MonoBehaviour, IPointerClickHandler
             }
         }
     }
+    #endregion
     public void UpdateSelected()
     {
         if (m_Type != E_ObjectType.None)
