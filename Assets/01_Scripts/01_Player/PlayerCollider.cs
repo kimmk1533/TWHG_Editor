@@ -45,49 +45,49 @@ public class PlayerCollider : MonoBehaviour, IEraserable
     {
         if (!M_Edit.isEdit)
         {
-            if (collision.CompareTag("SafetyZone"))
-            {
-                m_Player.SetSafety(true);
+            //if (collision.CompareTag("SafetyZone"))
+            //{
+            //    m_Player.SetSafety(true);
 
-                PolygonCollider2D poly = collision as PolygonCollider2D;
+            //    BoxCollider2D box = collision as BoxCollider2D;
 
-                for (int i = 0; i < M_SafetyZone.m_ColliderList.Count; ++i)
-                {
-                    if (poly == M_SafetyZone.m_ColliderList[i].m_Polygon)
-                    {
-                        if (poly != M_SafetyZone.m_EndPoint.m_Polygon)
-                        {
-                            // 스폰 위치 변경
-                            //m_SpawnPoint = M_SafetyZone.m_Colliders[i].GetCenter();
-                            //m_Animator.GetComponent<PlayerAnimator>().m_SpawnPoint = m_SpawnPoint;
-                        }
-                        else
-                        {
-                            if (!M_Coin.IsLeftedCoin)
-                            {
-                                // 승리
-                                // 임시
-                                __SceneManager.LoadMainMenuScene();
-                                Debug.Log("승리");
-                            }
-                        }
-                    }
-                }
-            }
+            //    for (int i = 0; i < M_SafetyZone.m_ColliderList.Count; ++i)
+            //    {
+            //        if (box == M_SafetyZone.m_ColliderList[i].m_Collider)
+            //        {
+            //            if (box != M_SafetyZone.m_EndPoint.Collider)
+            //            {
+            //                // 스폰 위치 변경
+            //                //m_SpawnPoint = M_SafetyZone.m_Colliders[i].GetCenter();
+            //                //m_Animator.GetComponent<PlayerAnimator>().m_SpawnPoint = m_SpawnPoint;
+            //            }
+            //            else
+            //            {
+            //                if (!M_Coin.IsLeftedCoin)
+            //                {
+            //                    // 승리
+            //                    // 임시
+            //                    __SceneManager.LoadMainMenuScene();
+            //                    Debug.Log("승리");
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
-            if (collision.CompareTag("Enemy") && !m_Player.IsSafe)
+            if (collision.CompareTag("Enemy") && !m_Player.isSafe)
             {
                 m_Player.Death();
             }
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("SafetyZone"))
-        {
-            m_Player.SetSafety(false);
-        }
-    }
+    //private void OnTriggerExit2D(Collider2D collision)
+    //{
+    //    if (collision.CompareTag("SafetyZone"))
+    //    {
+    //        m_Player.SetSafety(false);
+    //    }
+    //}
     #endregion
 }

@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
 {
+    protected int m_SafetyZoneCount;
+
     public List<SafetyZone> m_SafetyZoneList;
-    public List<SafetyZoneCollider> m_ColliderList;
-    public SafetyZoneCollider m_StartPoint;
-    public SafetyZoneCollider m_EndPoint;
+    public SafetyZone m_StartPoint;
+    public SafetyZone m_EndPoint;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -15,7 +16,9 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
     #endregion
 
     #endregion
-
+    #region 외부 프로퍼티
+    public int SafetyZoneCount => m_SafetyZoneCount;
+    #endregion
     #region 내부 함수
     #endregion
     #region 외부 함수
@@ -28,6 +31,11 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         M_Game.OnPlayExit += OnPlayExit;
         #endregion
 
+        m_SafetyZoneCount = 0;
+
+        // 풀 사이즈 설정
+        m_PoolSize = M_Game.m_width * M_Game.m_height;
+
         // 안전지역 풀 원본
         SafetyZone safetyZone = M_Resources.GetGameObject<SafetyZone>("Tile", "SafetyZone");
         // 안전지역 풀 생성
@@ -37,10 +45,6 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         if (null == m_SafetyZoneList)
         {
             m_SafetyZoneList = new List<SafetyZone>();
-        }
-        if (null == m_ColliderList)
-        {
-            m_ColliderList = new List<SafetyZoneCollider>();
         }
     }
     public override void __Finalize()
@@ -52,12 +56,19 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
     {
         SafetyZone safetyZone = GetPool("SafetyZone").Spawn();
         m_SafetyZoneList.Add(safetyZone);
+        ++m_SafetyZoneCount;
         return safetyZone;
     }
     public void DespawnSafetyZone(SafetyZone safetyZone)
     {
+        --m_SafetyZoneCount;
         m_SafetyZoneList.Remove(safetyZone);
         GetPool("SafetyZone").DeSpawn(safetyZone);
+
+        for (int i = 0; i < m_SafetyZoneList.Count; ++i)
+        {
+            m_SafetyZoneList[i].SetText(safetyZone.SafetyZoneCount);
+        }
     }
     #endregion
     #region 이벤트 함수
@@ -68,9 +79,9 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         //CreateSafetyZone();
 
         // 추후 수정
-        m_StartPoint = m_ColliderList[0];
+        //m_StartPoint = m_ColliderList[0];
 
-        m_EndPoint = m_ColliderList[m_ColliderList.Count - 1];
+        //m_EndPoint = m_ColliderList[m_ColliderList.Count - 1];
     }
     public override void OnPlayExit()
     {
@@ -79,7 +90,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
     #endregion
 
     #region 기존 함수
-    void AddSafetyZone(int width, int height)
+    /*void AddSafetyZone(int width, int height)
     {
         int w = width;
         int h = height;
@@ -187,7 +198,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
             vertexs.Add(vertex + Vector2.up);
             vertexs.Add(vertex);
 
-            collider.m_Polygon.SetPath(0, vertexs);
+            collider.m_Collider.SetPath(0, vertexs);
             return;
         }
 
@@ -369,11 +380,11 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         vertexs.Insert(0, new Vector2(width, height) - M_Game.m_StandardPos);
         vertexs.Add(new Vector2(width, height) - M_Game.m_StandardPos);
 
-        collider.m_Polygon.SetPath(0, vertexs);
+        collider.m_Collider.SetPath(0, vertexs);
 
         Debug.DrawLine(vertexs[0], collider.GetCenter(), Color.red, 5f);
-    }
-    public void CreateSafetyZone()
+    }*/
+    /*public void CreateSafetyZone()
     {
         for (int y = 0; y < M_Game.m_height; ++y)
         {
@@ -400,7 +411,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
 
         // 추후 수정... 원인을 모르겠음...
         // M_Edit.UpdateSafetyZoneOption();
-    }
+    }*/
     /*public void ClearSafetyZone()
     {
         for (int i = 0; i < m_SafetyZoneList.Count; ++i)

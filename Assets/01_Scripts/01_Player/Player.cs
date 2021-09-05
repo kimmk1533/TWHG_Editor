@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
     #endregion
     #endregion
     #region 외부 프로퍼티
-    public bool IsSafe => m_IsSafe;
+    public bool isSafe { get => m_IsSafe; set => m_IsSafe = value; }
     public bool CanMove => !M_Edit.isEdit && m_CanMove;
     #endregion
     #region 내부 함수
@@ -131,10 +131,6 @@ public class Player : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void SetSafety(bool isSafe)
-    {
-        m_IsSafe = isSafe;
-    }
     public void SetSpawnPos(Vector3 pos)
     {
         m_SpawnPos = pos;

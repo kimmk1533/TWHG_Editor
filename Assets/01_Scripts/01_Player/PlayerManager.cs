@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerManager : Singleton<PlayerManager>
 {
     protected Player m_Player;
+    protected SafetyZone m_LastSafetyZone;
 
     public event Action OnPlayerRespawn;
 
@@ -23,6 +24,7 @@ public class PlayerManager : Singleton<PlayerManager>
     }
     #endregion
     #region 외부 프로퍼티
+    public bool isSafe { get => m_Player.isSafe; set => m_Player.isSafe = value; }
     #endregion
     #region 외부 함수
     public void __Initialize()
@@ -56,7 +58,7 @@ public class PlayerManager : Singleton<PlayerManager>
     #region 이벤트 함수
     public void OnPlayEnter()
     {
-        m_Player.SetSpawnPos(M_SafetyZone.m_StartPoint.GetCenter());
+        m_Player.SetSpawnPos(M_SafetyZone.m_StartPoint.SpawnPoint);
     }
     public void OnPlayExit()
     {

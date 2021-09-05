@@ -2,30 +2,71 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SafetyZoneCollider : MonoBehaviour
+public class SafetyZoneCollider : MonoBehaviour, IEraserable
 {
-    public PolygonCollider2D m_Polygon;
-    public List<Vector2> m_Indices;
+    protected SafetyZone m_SafetyZone;
+    protected BoxCollider2D m_Collider;
 
-    public void __Initialize()
+    #region 내부 프로퍼티
+    protected __EditManager M_Edit => __EditManager.Instance;
+
+    protected PlayerManager M_Player => PlayerManager.Instance;
+    protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
+    #endregion
+    #region 외부 프로퍼티
+    public BoxCollider2D Collider => m_Collider;
+    #endregion
+    #region 외부 함수
+    public void __Initialize(SafetyZone safetyZone)
     {
-        if (null == m_Indices)
-        {
-            m_Indices = new List<Vector2>();
-        }
+        m_SafetyZone = safetyZone;
 
-        if (null == m_Polygon)
+        if (null == m_Collider)
         {
-            m_Polygon = GetComponent<PolygonCollider2D>();
+            m_Collider = GetComponent<BoxCollider2D>();
         }
     }
 
-    public Vector2 GetCenter()
+    public void Erase()
     {
-        Vector2[] vertexs = m_Polygon.points;
+        if (!m_SafetyZone.gameObject.activeSelf)
+            return;
+
+        M_SafetyZone.DespawnSafetyZone(m_SafetyZone);
+    }
+    #endregion
+    #region 유니티 콜백 함수
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!M_Edit.isEdit)
+        {
+            // 임시 태그
+            if (collision.CompareTag("Player"))
+            {
+                M_Player.isSafe = true;
+            }
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (!M_Edit.isEdit)
+        {
+            // 임시 태그
+            if (collision.CompareTag("Player"))
+            {
+                M_Player.isSafe = false;
+            }
+        }
+    }
+    #endregion
+
+    #region 기존 함수
+    /*public Vector2 GetCenter()
+    {
+        Vector2[] vertexs = m_Polygon.points; // (BoxCollider2D -> PolygonCollider)
         return GetCenter(vertexs);
-    }
-    Vector2 GetCenter(Vector2[] vertexs)
+    }*/
+    /*Vector2 GetCenter(Vector2[] vertexs)
     {
         float sum;
         float Area = 0f;
@@ -45,10 +86,6 @@ public class SafetyZoneCollider : MonoBehaviour
         sum = (1f / Area);
 
         return result * sum;
-    }
-
-    //Vector2 GetRandomPos()
-    //{
-    //    m_Polygon.
-    //}
+    }*/
+    #endregion
 }

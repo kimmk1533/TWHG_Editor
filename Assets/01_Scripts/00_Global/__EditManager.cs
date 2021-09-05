@@ -11,8 +11,8 @@ public class __EditManager : Singleton<__EditManager>
     public Canvas Canvas_UI;
     public GraphicRaycaster m_Raycaster_BG;
 
-    [Header("EditMode")]
-    public bool isEdit;
+    [SerializeField, Header("EditMode")]
+    protected bool m_IsEdit;
 
     [Header("Selected")]
     public E_ObjectType CurrentSelectedType;
@@ -83,14 +83,14 @@ public class __EditManager : Singleton<__EditManager>
     protected bool IsRightDown => Input.GetMouseButtonDown(1);
     #endregion
     #region 외부 프로퍼티
-    public bool IsEditMode => isEdit;
+    public bool isEdit => m_IsEdit;
     #endregion
     #region 내부 함수
     #endregion
     #region 유니티 콜백 함수
     protected void Awake()
     {
-        isEdit = true;
+        m_IsEdit = true;
 
         PlayButton = Canvas_UI.transform.Find("Public_UI").Find("Play").Find("Button").gameObject;
     }
@@ -259,11 +259,11 @@ public class __EditManager : Singleton<__EditManager>
         Canvas_UI.transform.Find("Game_UI").gameObject.SetActive(true);
         Canvas_UI.transform.Find("Edit_UI").gameObject.SetActive(false);
 
-        isEdit = false;
+        m_IsEdit = false;
     }
     public void OnPlayExit()
     {
-        isEdit = true;
+        m_IsEdit = true;
 
         Canvas_UI.transform.Find("Game_UI").gameObject.SetActive(false);
         Canvas_UI.transform.Find("Edit_UI").gameObject.SetActive(true);
@@ -273,8 +273,8 @@ public class __EditManager : Singleton<__EditManager>
 
     public void TestPlay()
     {
-        if (isEdit &&
-            M_SafetyZone.m_ColliderList.Count >= 2)
+        if (isEdit)/* &&
+            M_SafetyZone.m_ColliderList.Count >= 2)*/
         {
             CurrentSelectedType = E_ObjectType.None;
 
@@ -325,10 +325,10 @@ public class __EditManager : Singleton<__EditManager>
         int first = dropdown_first.value;
         int last = dropdown_last.value;
 
-        M_SafetyZone.m_StartPoint = M_SafetyZone.m_ColliderList[first];
-        M_SafetyZone.m_EndPoint = M_SafetyZone.m_ColliderList[last];
+        //M_SafetyZone.m_StartPoint = M_SafetyZone.m_ColliderList[first];
+        //M_SafetyZone.m_EndPoint = M_SafetyZone.m_ColliderList[last];
 
-        M_Player.SpawnPlayer(M_SafetyZone.m_StartPoint.GetCenter());
+        // M_Player.SpawnPlayer(M_SafetyZone.m_StartPoint.GetCenter());
     }
     public void UpdateSafetyZoneOption()
     {
