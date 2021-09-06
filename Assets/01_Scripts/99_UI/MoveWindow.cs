@@ -5,27 +5,71 @@ using UnityEngine.UI;
 
 public class MoveWindow : MonoBehaviour
 {
+    public E_Type m_Type;
+    public float m_Duration = 1f;
     public Vector3 m_MoveDistance;
 
+    bool m_IsMove;
     bool m_Flag;
 
     private void Awake()
     {
+        m_IsMove = false;
         m_Flag = false;
     }
 
     public void ButtonPressed()
     {
-        if (!m_Flag)
-        {
-            transform.localPosition = transform.localPosition + m_MoveDistance;
-        }
-        else
-        {
-            transform.localPosition = transform.localPosition - m_MoveDistance;
-        }
+        if (m_IsMove)
+            return;
+
+        StartCoroutine(Move());
 
         m_Flag = !m_Flag;
+    }
+
+    IEnumerator Move()
+    {
+        m_IsMove = true;
+
+        int dir = m_Flag ? -1 : 1;
+
+        switch (m_Type)
+        {
+            case E_Type.Direct:
+                transform.localPosition += dir * m_MoveDistance;
+                break;
+            case E_Type.Smooth:
+                float timer = 0f;
+                Vector3 distance; 
+
+                while (timer < m_Duration)
+                {
+                    distance = dir * m_MoveDistance * Time.deltaTime / m_Duration;
+
+                    transform.localPosition += distance;
+
+                    timer += Time.deltaTime;
+
+                    yield return null;
+                }
+
+                // 오차 범위 수정
+                distance = dir * m_MoveDistance * (m_Duration - timer) / m_Duration;
+
+                transform.localPosition += distance;
+                break;
+        }
+
+        m_IsMove = false;
+    }
+
+    public enum E_Type
+    {
+        None = -1,
+
+        Direct,
+        Smooth
     }
 
     //public Sprite UpButtonSprite;

@@ -9,6 +9,9 @@ public class SelectedButton : MonoBehaviour, IPointerClickHandler
     [ReadOnly(true)]
     public E_ObjectType m_Type;
 
+    #region 내부 컴포넌트
+    protected Image m_ItemImage;
+    #endregion
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
@@ -22,103 +25,19 @@ public class SelectedButton : MonoBehaviour, IPointerClickHandler
     private void Start()
     {
         m_Color = Color.white;
-    }
-    private void Update()
-    {
-        if (M_Edit.isEdit &&
-            !M_Edit.input_red.isFocused &&
-            !M_Edit.input_green.isFocused &&
-            !M_Edit.input_blue.isFocused &&
-            !M_Edit.input_EnemySpeed.isFocused)
+        if (null == m_ItemImage)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                M_Edit.CurrentSelectedType = E_ObjectType.Player;
-
-                if (m_Type == E_ObjectType.Player)
-                {
-                    UpdateSelected();
-                }
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                M_Edit.CurrentSelectedType = E_ObjectType.Enemy;
-
-                if (m_Type == E_ObjectType.Enemy)
-                {
-                    UpdateSelected();
-                }
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                M_Edit.CurrentSelectedType = E_ObjectType.Coin;
-
-                if (m_Type == E_ObjectType.Coin)
-                {
-                    UpdateSelected();
-                }
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                M_Edit.CurrentSelectedType = E_ObjectType.SafetyZone;
-
-                if (m_Type == E_ObjectType.SafetyZone)
-                {
-                    UpdateSelected();
-                }
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                M_Edit.CurrentSelectedType = E_ObjectType.Wall;
-
-                if (m_Type == E_ObjectType.Wall)
-                {
-                    UpdateSelected();
-                }
-            }
+            m_ItemImage = transform.Find("Image").GetComponent<Image>();
         }
     }
     #endregion
     public void UpdateSelected()
     {
-        if (m_Type != E_ObjectType.None)
-        {
-            Image[] images = GetComponentsInChildren<Image>();
-            foreach (var item in images)
-            {
-                if (item.name == "Image" &&
-                    item.sprite != null)
-                {
-                    m_Color = item.color;
-                    M_Edit.CurrentSelectedImage.sprite = item.sprite;
-                    M_Edit.CurrentSelectedText.text = "Selected:" + "\n" + m_Type.ToString();
-                }
-            }
-
-            M_Edit.CurrentSelectedImage.color = m_Color;
-            M_Edit.UpdateOption();
-
-            if (m_Type == E_ObjectType.SafetyZone ||
-                m_Type == E_ObjectType.Wall)
-            {
-                M_Edit.CurrentSelectedImage.GetComponent<Outline>().enabled = true;
-            }
-            else
-            {
-                M_Edit.CurrentSelectedImage.GetComponent<Outline>().enabled = false;
-            }
-        }
-        else
-        {
-            m_Color.a = 0;
-            M_Edit.CurrentSelectedImage.color = m_Color;
-        }
+        M_Edit.SetSelectedType(m_Type);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        M_Edit.CurrentSelectedType = m_Type;
-
         UpdateSelected();
     }
 }

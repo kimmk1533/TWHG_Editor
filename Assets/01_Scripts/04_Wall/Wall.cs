@@ -50,11 +50,14 @@ public class Wall : MonoBehaviour
             {
                 m_Walls[(int)i] = hits[(int)i].transform.GetComponentInParent<Wall>();
 
-                int index = (int)(i + 1 - (int)i % 2 * 2);
-                m_Walls[(int)i].m_Walls[index] = this;
+                if (null != m_Walls[(int)i])
+                {
+                    int index = (int)(i + 1 - (int)i % 2 * 2);
+                    m_Walls[(int)i].m_Walls[index] = this;
 
-                m_Lines[(int)i].gameObject.SetActive(false);
-                m_Walls[(int)i].m_Lines[index].gameObject.SetActive(false);
+                    m_Lines[(int)i].gameObject.SetActive(false);
+                    m_Walls[(int)i].m_Lines[index].gameObject.SetActive(false);
+                }
             }
         }
     }

@@ -54,18 +54,18 @@ public class TileManager : ObjectManager<TileManager, Tile>
             case E_TileType.None:
                 if (index == 0)
                 {
-                    image.color = M_Game.m_EvenBG;
+                    image.color = M_Game.m_EvenBGColor;
                 }
                 else
                 {
-                    image.color = M_Game.m_OddBG;
+                    image.color = M_Game.m_OddBGColor;
                 }
                 break;
             case E_TileType.Wall:
-                image.color = M_Game.m_Wall;
+                image.color = M_Game.m_WallColor;
                 break;
             case E_TileType.SafetyZone:
-                image.color = M_Game.m_SafetyZone;
+                image.color = M_Game.m_SafetyZoneColor;
                 break;
             default:
                 Debug.LogError("스테이지 값 오류");

@@ -18,14 +18,14 @@ public class __GameManager : Singleton<__GameManager>
     [Header("TileColors")]
     // 홀수 칸
     [ReadOnly(true)]
-    public Color m_OddBG;
+    public Color m_OddBGColor;
     // 짝수 칸
     [ReadOnly(true)]
-    public Color m_EvenBG;
+    public Color m_EvenBGColor;
     [ReadOnly(true)]
-    public Color m_SafetyZone;
+    public Color m_SafetyZoneColor;
     [ReadOnly(true)]
-    public Color m_Wall;
+    public Color m_WallColor;
 
     public Vector2 m_StandardPos;
 

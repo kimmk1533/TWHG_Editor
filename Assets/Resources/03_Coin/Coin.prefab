@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7316894820734531580}
   - component: {fileID: 7316894820734531578}
   - component: {fileID: 579650210012087257}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Collider
   m_TagString: Coin
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7316894820743003897}
   - component: {fileID: 7316894820743003894}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Renderer
   m_TagString: Coin
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7316894821431636891}
   - component: {fileID: -55390617049525023}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coin
   m_TagString: Coin
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7381238342902377944}
   - component: {fileID: 1860125243530127727}
   - component: {fileID: 1945306541293818759}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -180,7 +180,7 @@ GameObject:
   - component: {fileID: 4071095731104161594}
   - component: {fileID: 4071095731104161592}
   - component: {fileID: 8263797578164255911}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Collider
   m_TagString: SafetyZone
   m_Icon: {fileID: 0}
@@ -237,7 +237,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.25, y: 1.25}
   m_EdgeRadius: 0
 --- !u!1 &4071095731126554846
 GameObject:
@@ -249,7 +249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4071095731126554844}
   - component: {fileID: 4071095731126554847}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SafetyZone
   m_TagString: SafetyZone
   m_Icon: {fileID: 0}

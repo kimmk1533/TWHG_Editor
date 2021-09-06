@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2469109848614472505}
   - component: {fileID: 3868607375659140025}
   - component: {fileID: 2469109848614472504}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Collider
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 241034461309389291}
   - component: {fileID: -3551264572288083603}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -139,7 +139,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Speed: 3.5
-  m_SpawnPoint: {x: 0, y: 0}
 --- !u!1 &3345497635958674874
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,7 +151,7 @@ GameObject:
   - component: {fileID: 4694985224155399782}
   - component: {fileID: 3345497635958674873}
   - component: {fileID: 3345497635958674872}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Renderer
   m_TagString: Player
   m_Icon: {fileID: 0}
