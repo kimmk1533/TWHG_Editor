@@ -1,0 +1,2 @@
+ - SafetyZone 생성/삭제 시 옵션 리스트에 추가
+ - StartPoint, EndPoint 설정 가능하게
