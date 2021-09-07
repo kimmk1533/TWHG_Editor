@@ -194,6 +194,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &93017374
 Canvas:
   m_ObjectHideFlags: 0
@@ -287,6 +288,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -539,6 +541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -647,6 +650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccfed29a303ab244b9f0ed885861490e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flag: 1
 --- !u!4 &392322326
 Transform:
   m_ObjectHideFlags: 0
@@ -690,6 +694,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30c25537c2ba49b43867d322b431e3a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flag: 1
 --- !u!4 &403449565
 Transform:
   m_ObjectHideFlags: 0
@@ -756,6 +761,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
