@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class SafetyZone : MonoBehaviour
@@ -8,8 +7,8 @@ public class SafetyZone : MonoBehaviour
     protected int m_SafetyZoneCount;
 
     #region 내부 컴포넌트
+    protected SafetyZoneAnimator m_Animator;
     protected SafetyZoneCollider m_Collider;
-    protected TextMeshPro m_Text;
     #endregion
     #region 내부 프로퍼티
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
@@ -26,15 +25,15 @@ public class SafetyZone : MonoBehaviour
     {
         m_SafetyZoneCount = M_SafetyZone.SafetyZoneCount;
 
+        if (null == m_Animator)
+        {
+            m_Animator = transform.GetComponentInChildren<SafetyZoneAnimator>();
+            m_Animator.__Initialize(this);
+        }
         if (null == m_Collider)
         {
             m_Collider = transform.GetComponentInChildren<SafetyZoneCollider>();
             m_Collider.__Initialize(this);
-        }
-        if (null == m_Text)
-        {
-            m_Text = transform.GetComponentInChildren<TextMeshPro>();
-            m_Text.text = m_SafetyZoneCount.ToString();
         }
     }
 
@@ -44,7 +43,17 @@ public class SafetyZone : MonoBehaviour
             return;
 
         --m_SafetyZoneCount;
-        m_Text.text = m_SafetyZoneCount.ToString();
+        m_Animator.text.text = m_SafetyZoneCount.ToString();
+    }
+    #endregion
+    #region 이벤트 함수
+    public void OnPlayEnter()
+    {
+        
+    }
+    public void OnPlayExit()
+    {
+
     }
     #endregion
     #region 유니티 콜백 함수

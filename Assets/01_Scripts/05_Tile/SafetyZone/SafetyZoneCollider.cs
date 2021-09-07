@@ -36,28 +36,6 @@ public class SafetyZoneCollider : MonoBehaviour, IEraserable
     }
     #endregion
     #region 유니티 콜백 함수
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!M_Edit.isEdit)
-        {
-            // 임시 태그
-            if (collision.CompareTag("Player"))
-            {
-                M_Player.isSafe = true;
-            }
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (!M_Edit.isEdit)
-        {
-            // 임시 태그
-            if (collision.CompareTag("Player"))
-            {
-                M_Player.isSafe = false;
-            }
-        }
-    }
     #endregion
 
     #region 기존 함수
