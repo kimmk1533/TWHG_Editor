@@ -46,6 +46,7 @@ public class MyRigidBody : MonoBehaviour
     #region 외부 프로퍼티
     public float mass { get => m_Mass; set => m_Mass = value; }
     public bool useGravity { get => m_UseGravity; set => m_UseGravity = value; }
+    public bool isKinematic { get => m_IsKinematic; set => m_IsKinematic = value; }
     #endregion
     #region 내부 함수
     protected Vector2 CalculateDrag(Vector2 force)

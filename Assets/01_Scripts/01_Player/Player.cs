@@ -8,11 +8,17 @@ public class Player : MonoBehaviour
     [SerializeField]
     protected float m_Speed;
 
+    [SerializeField, ReadOnly]
+    protected Vector3 m_InitPos;
+    [SerializeField]
     protected Vector3 m_SpawnPos;
+    [SerializeField]
     protected bool m_IsSafe;
+    [SerializeField]
     protected bool m_CanMove;
 
     #region 내부 컴포넌트
+    protected MyRigidBody m_RigidBody;
     protected PlayerAnimator m_Animator;
     protected PlayerCollider m_Collider;
     #endregion
@@ -22,10 +28,14 @@ public class Player : MonoBehaviour
     protected __EditManager M_Edit => __EditManager.Instance;
     protected PlayerManager M_Player => PlayerManager.Instance;
     #endregion
+
+    protected bool canMove => !M_Edit.isEdit && m_CanMove;
+    protected Vector2 size => m_Collider.size;
+    protected Vector2 halfSize => size * 0.5f;
     #endregion
     #region 외부 프로퍼티
     public bool isSafe { get => m_IsSafe; set => m_IsSafe = value; }
-    public bool CanMove => !M_Edit.isEdit && m_CanMove;
+    public Vector3 spawnPos { get => m_SpawnPos; set => m_SpawnPos = value; }
     #endregion
     #region 내부 함수
     void Move()
@@ -117,6 +127,10 @@ public class Player : MonoBehaviour
         M_Player.OnPlayerRespawn += Respawn;
         #endregion
 
+        if (null == m_RigidBody)
+        {
+            m_RigidBody = GetComponent<MyRigidBody>();
+        }
         if (null == m_Animator)
         {
             m_Animator = GetComponentInChildren<PlayerAnimator>();
@@ -128,13 +142,11 @@ public class Player : MonoBehaviour
             m_Collider.__Initialize(this);
         }
 
+        m_CanMove = M_Edit.isEdit;
+
         gameObject.SetActive(false);
     }
 
-    public void SetSpawnPos(Vector3 pos)
-    {
-        m_SpawnPos = pos;
-    }
     public void Death()
     {
         m_CanMove = false;
@@ -150,22 +162,30 @@ public class Player : MonoBehaviour
     #region 이벤트 함수
     public void OnPlayEnter()
     {
-        transform.position = m_SpawnPos;
-
+        m_InitPos = transform.position;
         gameObject.SetActive(true);
     }
     public void OnPlayExit()
     {
-        transform.position = m_SpawnPos;
+        transform.position = m_InitPos;
     }
     #endregion
     #region 유니티 콜백 함수
-    void Update()
+    protected void FixedUpdate()
     {
-        if (CanMove)
+        if (canMove)
         {
-            Move();
+            Vector2 force = Vector2.zero;
+
+            force += Vector2.right * Input.GetAxisRaw("Horizontal") * m_Speed;
+            force += Vector2.up * Input.GetAxisRaw("Vertical") * m_Speed;
+
+            m_RigidBody.AddForce(force);
         }
     }
+    /*protected void LateUpdate()
+    {
+        ClampPos();
+    }*/
     #endregion
 }

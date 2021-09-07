@@ -6,9 +6,6 @@ using UnityEngine;
 public class PlayerManager : Singleton<PlayerManager>
 {
     protected Player m_Player;
-    protected SafetyZone m_LastSafetyZone;
-
-    public event Action OnPlayerRespawn;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -29,11 +26,6 @@ public class PlayerManager : Singleton<PlayerManager>
     #region 외부 함수
     public void __Initialize()
     {
-        #region 이벤트 링크
-        M_Game.OnPlayEnter += OnPlayEnter;
-        M_Game.OnPlayExit += OnPlayExit;
-        #endregion
-
         if (null == m_Player)
         {
             Player Player_Prefab = M_Resources.GetGameObject<Player>("Player", "Player");
@@ -56,14 +48,8 @@ public class PlayerManager : Singleton<PlayerManager>
     }
     #endregion
     #region 이벤트 함수
-    public void OnPlayEnter()
-    {
-        m_Player.SetSpawnPos(M_SafetyZone.m_StartPoint.SpawnPoint);
-    }
-    public void OnPlayExit()
-    {
+    public event Action OnPlayerRespawn;
 
-    }
     public void RespawnPlayer()
     {
         OnPlayerRespawn?.Invoke();
