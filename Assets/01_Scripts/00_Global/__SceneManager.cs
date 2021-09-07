@@ -3,22 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class __SceneManager : MonoBehaviour
+public class __SceneManager : Singleton<__SceneManager>
 {
-    public static void LoadScene(string Scenename)
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void LoadScene(string Scenename)
     {
         SceneManager.LoadScene(Scenename, LoadSceneMode.Single);
     }
 
-    public static void LoadGameScene()
+    public void LoadGameScene()
     {
         LoadScene("GameScene");
     }
-    public static void LoadMainMenuScene()
+    public void LoadMainMenuScene()
     {
         LoadScene("MainMenuScene");
     }
-    public static void QuitGame()
+    public void QuitGame()
     {
         Application.Quit();
     }

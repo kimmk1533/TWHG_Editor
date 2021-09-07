@@ -10,5 +10,7 @@ public class ScreenManager : Singleton<ScreenManager>
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         // 화면 해상도 (16:9) 고정
         Screen.SetResolution(Screen.width, Screen.width * 16 / 9, true);
+
+        DontDestroyOnLoad(gameObject);
     }
 }

@@ -5,15 +5,10 @@ using UnityEngine;
 
 public class __GameManager : Singleton<__GameManager>
 {
-    [ReadOnly(true)]
-    public float m_Width;
-    [ReadOnly(true)]
-    public float m_Height;
-
-    [HideInInspector]
-    public int m_width;
-    [HideInInspector]
-    public int m_height;
+    [SerializeField, ReadOnly(true)]
+    protected int m_width;
+    [SerializeField, ReadOnly(true)]
+    protected int m_height;
 
     [Header("TileColors")]
     // 홀수 칸
@@ -26,8 +21,6 @@ public class __GameManager : Singleton<__GameManager>
     public Color m_SafetyZoneColor;
     [ReadOnly(true)]
     public Color m_WallColor;
-
-    public Vector2 m_StandardPos;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -44,35 +37,11 @@ public class __GameManager : Singleton<__GameManager>
     protected TileManager M_Tile => TileManager.Instance;
     #endregion
     #endregion
-
-    protected void Awake()
-    {
-        m_width = Mathf.RoundToInt(m_Width);
-        m_height = Mathf.RoundToInt(m_Height);
-
-        m_StandardPos = new Vector2(m_Width * 0.5f, m_Height * 0.5f);
-
-        __Initialize();
-    }
-
-    private void OnApplicationQuit()
-    {
-        __Finalize();
-    }
-
-    public void EnterPlayMode()
-    {
-        OnPlayEnter?.Invoke();
-    }
-    public void ExitPlayMode()
-    {
-        OnPlayExit?.Invoke();
-    }
-
-    //public delegate void OnPlayEvent();
-    public event Action OnPlayEnter;
-    public event Action OnPlayExit;
-
+    #region 외부 프로퍼티
+    public int width => m_width;
+    public int height => m_height;
+    #endregion
+    #region 내부 함수
     void __Initialize()
     {
         M_Resources.__Initialize();
@@ -98,4 +67,28 @@ public class __GameManager : Singleton<__GameManager>
         M_Tile.__Finalize();
         M_Player.__Finalize();
     }
+    #endregion
+    #region 이벤트 함수
+    public event Action OnPlayEnter;
+    public event Action OnPlayExit;
+
+    public void EnterPlayMode()
+    {
+        OnPlayEnter?.Invoke();
+    }
+    public void ExitPlayMode()
+    {
+        OnPlayExit?.Invoke();
+    }
+    #endregion
+    #region 유니티 콜백 함수
+    protected void Awake()
+    {
+        __Initialize();
+    }
+    protected void OnApplicationQuit()
+    {
+        __Finalize();
+    }
+    #endregion
 }

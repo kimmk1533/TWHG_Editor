@@ -19,9 +19,9 @@ public class StageManager : Singleton<StageManager>
     #region 내부 함수
     void ResetStage()
     {
-        for (int i = 0; i < M_Game.m_height; ++i)
+        for (int i = 0; i < M_Game.height; ++i)
         {
-            for (int j = 0; j < M_Game.m_width; ++j)
+            for (int j = 0; j < M_Game.width; ++j)
             {
                 m_Stage[i, j] = E_TileType.None;
             }
@@ -32,7 +32,7 @@ public class StageManager : Singleton<StageManager>
     #region 외부 함수
     public void __Initialize()
     {
-        m_Stage = new E_TileType[M_Game.m_height, M_Game.m_width];
+        m_Stage = new E_TileType[M_Game.height, M_Game.width];
 
         ResetStage();
     }

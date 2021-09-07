@@ -34,7 +34,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         m_SafetyZoneCount = 0;
 
         // 풀 사이즈 설정
-        m_PoolSize = M_Game.m_width * M_Game.m_height;
+        m_PoolSize = M_Game.width * M_Game.height;
 
         // 안전지역 풀 원본
         SafetyZone safetyZone = M_Resources.GetGameObject<SafetyZone>("Tile", "SafetyZone");

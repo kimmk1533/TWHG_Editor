@@ -34,7 +34,7 @@ public class WallManager : ObjectManager<WallManager, Wall>
         #endregion
 
         // 풀 사이즈 설정
-        m_PoolSize = M_Game.m_width * M_Game.m_height;
+        m_PoolSize = M_Game.width * M_Game.height;
 
         // 벽 풀 원본
         Wall wall = M_Resources.GetGameObject<Wall>("Wall", "Wall");

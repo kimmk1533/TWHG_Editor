@@ -25,9 +25,9 @@ public class TileManager : ObjectManager<TileManager, Tile>
     // 타일(BG) 전체 생성 함수
     void CreateTiles()
     {
-        for (int i = 0; i < M_Game.m_height; ++i)
+        for (int i = 0; i < M_Game.height; ++i)
         {
-            for (int j = 0; j < M_Game.m_width; ++j)
+            for (int j = 0; j < M_Game.width; ++j)
             {
                 CreateTile(j, i);
             }
@@ -226,12 +226,12 @@ public class TileManager : ObjectManager<TileManager, Tile>
             m_GridLayoutGroup = m_TileParent.GetComponent<GridLayoutGroup>();
         }
         if (m_GridLayoutGroup.constraint == GridLayoutGroup.Constraint.FixedColumnCount)
-            m_GridLayoutGroup.constraintCount = M_Game.m_width;
+            m_GridLayoutGroup.constraintCount = M_Game.width;
         else if (m_GridLayoutGroup.constraint == GridLayoutGroup.Constraint.FixedRowCount)
-            m_GridLayoutGroup.constraintCount = M_Game.m_height;
+            m_GridLayoutGroup.constraintCount = M_Game.height;
 
         // 풀 사이즈 설정
-        m_PoolSize = M_Game.m_width * M_Game.m_height;
+        m_PoolSize = M_Game.width * M_Game.height;
 
         // 타일(BG) 풀 원본
         Tile tile = M_Resources.GetGameObject<Tile>("Tile", "Tile");
