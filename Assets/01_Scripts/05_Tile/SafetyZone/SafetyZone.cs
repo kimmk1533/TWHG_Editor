@@ -5,6 +5,7 @@ using UnityEngine;
 public class SafetyZone : MonoBehaviour
 {
     protected int m_SafetyZoneCount;
+    protected bool m_IsFinishZone;
 
     #region 내부 컴포넌트
     protected SafetyZoneAnimator m_Animator;
@@ -16,7 +17,9 @@ public class SafetyZone : MonoBehaviour
     #region 외부 프로퍼티
     public Vector3 SpawnPoint => transform.position;
     public BoxCollider2D Collider => m_Collider.Collider;
-    public int SafetyZoneCount => m_SafetyZoneCount;
+
+    public int safetyZoneCount => m_SafetyZoneCount;
+    public bool isFinishZone => m_IsFinishZone;
     #endregion
     #region 내부 함수
     #endregion

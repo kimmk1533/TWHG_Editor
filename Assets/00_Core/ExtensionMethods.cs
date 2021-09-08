@@ -18,7 +18,7 @@ public static class Methods
         return time;
     }
 
-    public static Transform[] GetChilderen(this Transform tf, string name)
+    public static Transform[] GetChildren(this Transform tf, string name)
     {
         int count = tf.childCount;
 
@@ -32,12 +32,26 @@ public static class Methods
 
         for (int i = 0; i < count; i++)
         {
-            Transform[] arr = tf.GetChild(i).GetChilderen(name);
+            Transform[] arr = tf.GetChild(i).GetChildren(name);
             if (arr != null)
                 ret_list.AddRange(arr);
         }
 
         return ret_list.ToArray();
+    }
+
+    public static List<Transform> GetChildren(this Transform tf)
+    {
+        int count = tf.childCount;
+
+        List<Transform> results = new List<Transform>();
+
+        for (int i = 0; i < count; ++i)
+        {
+            results.Add(tf.GetChild(i));
+        }
+
+        return results;
     }
 
     public static Transform GetChild(this Transform _transform, string p_name)

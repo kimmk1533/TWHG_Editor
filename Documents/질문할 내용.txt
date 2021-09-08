@@ -1,4 +1,4 @@
 [09-06]
  - 
 [09-13]
- - 
+ - CheckBoxItem 스크립트에서 OnPointerClick에 체크 반전을 만들었는데 안됨 (CheckBoxItem.cs:77)

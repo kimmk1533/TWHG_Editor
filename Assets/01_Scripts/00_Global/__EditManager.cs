@@ -47,10 +47,7 @@ public class __EditManager : Singleton<__EditManager>
 
     [Header("SafetyZone Option")]
     public GameObject m_SafetyZoneOptionPanel;
-    public Dropdown dropdown_first;
-    public Dropdown dropdown_last;
-    List<string> safetyZone_option_first;
-    List<string> safetyZone_option_last;
+    public CheckBox m_SafetyZone_FinishCheckBox;
 
     [Header("Wall Option")]
     public GameObject m_WallOptionPanel;
@@ -87,7 +84,14 @@ public class __EditManager : Singleton<__EditManager>
     protected bool IsRight => Input.GetMouseButton(1);
     protected bool IsLeftDown => Input.GetMouseButtonDown(0);
     protected bool IsRightDown => Input.GetMouseButtonDown(1);
+
+    #region Wall
     protected bool IsInputFieldFocus => input_red.isFocused || input_green.isFocused || input_blue.isFocused || input_EnemySpeed.isFocused;
+    #endregion
+
+    #region SafetyZone
+    // protected List<Transform> safetyZone_FinishZone => m_SafetyZone_FinishCheckBox.content.GetChildren();
+    #endregion
     #endregion
     #region 외부 프로퍼티
     public bool isEdit => m_IsEdit;
@@ -129,47 +133,44 @@ public class __EditManager : Singleton<__EditManager>
         }
         dropdown_EnemyType.AddOptions(enemyType_option);
 
-        // SafetyZone
-        safetyZone_option_first = new List<string>();
-        safetyZone_option_last = new List<string>();
-
         // Wall
         slider_red.value = M_Game.m_WallColor.r;
         slider_green.value = M_Game.m_WallColor.g;
         slider_blue.value = M_Game.m_WallColor.b;
         m_SelectedImage.color = Color.clear;
-
         ColorToText();
+
+        // SafetyZone
+        // m_SafetyZone_FinishCheckBox.onValueChanged.AddListener(index => { M_SafetyZone.SelectFinishZone((int)(index.y - 1)); });
     }
     public void __Finalize()
     {
 
     }
 
-    /*public void UpdateOption()
+    #region SafetyZone
+    public void AddSafetyZoneOption(int value)
     {
-        //Edit_Public.SetActive(true); // 미구현
-        Edit_Public.SetActive(false);
-        Edit_Enemy.SetActive(false);
-        Edit_SafetyZone.SetActive(false);
-        Edit_Wall.SetActive(false);
+        //int maxCount = m_SafetyZone_FinishCheckBox.content.childCount;
 
-        switch (m_SelectedType)
-        {
-            case E_ObjectType.Enemy:
-                ChangeEnemyType();
-                Edit_Enemy.SetActive(true);
-                break;
-            case E_ObjectType.SafetyZone:
-                UpdateSafetyZoneOption();
-                Edit_SafetyZone.SetActive(true);
-                break;
-            case E_ObjectType.Wall:
-                m_SelectedImage.color = M_Game.m_WallColor;
-                Edit_Wall.SetActive(true);
-                break;
-        }
-    }*/
+        //if (value < 0 || value >= maxCount)
+        //    return;
+
+        //Toggle clone = GameObject.Instantiate(m_SafetyZone_FinishZoneItem).GetComponent<Toggle>();
+        
+        //safetyZone_FinishZone.Add(clone.transform);
+    }
+    public void RemoveSafetyZoneOption(int value)
+    {
+        //Dropdown.OptionData optionData = safetyZone_FinishZone[value];
+
+        //if (!safetyZone_FinishZone.Contains(optionData))
+        //    return;
+
+        //safetyZone_FinishZone.RemoveAt(value);
+    }
+    #endregion
+    #region UI
     public void SetSelectedType(E_ObjectType type)
     {
         m_SelectedText.text = "Selected:" + "\n" + type.ToString();
@@ -257,6 +258,7 @@ public class __EditManager : Singleton<__EditManager>
         m_CurrentOptionPanel?.SetActive(true);
     }
     #endregion
+    #endregion
     #region 이벤트 함수
     public void OnPlayEnter()
     {
@@ -276,6 +278,40 @@ public class __EditManager : Singleton<__EditManager>
 
         PlayButton.image.sprite = PlayImage;
     }
+
+    #region Wall
+    public void ClampColorOption(InputField input)
+    {
+        float value = float.Parse(input.text);
+
+        if (value < 0f)
+            value = 0f;
+        if (value > 255f)
+            value = 255f;
+
+        input.text = value.ToString();
+    }
+    public void TextToColor()
+    {
+        slider_red.value = float.Parse(input_red.text) / 255f;
+        slider_green.value = float.Parse(input_green.text) / 255f;
+        slider_blue.value = float.Parse(input_blue.text) / 255f;
+    }
+    public void ColorToText()
+    {
+        input_red.text = (slider_red.value * 255).ToString();
+        input_green.text = (slider_green.value * 255f).ToString();
+        input_blue.text = (slider_blue.value * 255f).ToString();
+    }
+    public void UpdateWallOption()
+    {
+        M_Game.m_WallColor.r = slider_red.value;
+        M_Game.m_WallColor.g = slider_green.value;
+        M_Game.m_WallColor.b = slider_blue.value;
+
+        m_SelectedImage.color = M_Game.m_WallColor;
+    }
+    #endregion
 
     public void TestPlay()
     {
@@ -430,6 +466,7 @@ public class __EditManager : Singleton<__EditManager>
     }
     #endregion
 
+    #region 기존 함수
     // Enemy
     public void ChangeEnemyType()
     {
@@ -460,62 +497,5 @@ public class __EditManager : Singleton<__EditManager>
             AddPoint = false;
         }
     }
-    // SafetyZone
-    public void UpdateSafetyZone()
-    {
-        int first = dropdown_first.value;
-        int last = dropdown_last.value;
-
-        //M_SafetyZone.m_StartPoint = M_SafetyZone.m_ColliderList[first];
-        //M_SafetyZone.m_EndPoint = M_SafetyZone.m_ColliderList[last];
-
-        // M_Player.SpawnPlayer(M_SafetyZone.m_StartPoint.GetCenter());
-    }
-    public void UpdateSafetyZoneOption()
-    {
-        safetyZone_option_first.Clear();
-        safetyZone_option_last.Clear();
-
-        for (int i = 0; i < M_SafetyZone.m_SafetyZoneList.Count; ++i)
-        {
-            safetyZone_option_first.Add("index(" + (i + 1).ToString() + ")");
-            safetyZone_option_last.Add("index(" + (i + 1).ToString() + ")");
-        }
-
-        dropdown_first.AddOptions(safetyZone_option_first);
-        dropdown_last.AddOptions(safetyZone_option_last);
-    }
-
-    // Wall
-    public void ClampColorOption(InputField input)
-    {
-        float value = float.Parse(input.text);
-
-        if (value < 0f)
-            value = 0f;
-        if (value > 255f)
-            value = 255f;
-
-        input.text = value.ToString();
-    }
-    public void TextToColor()
-    {
-        slider_red.value = float.Parse(input_red.text) / 255f;
-        slider_green.value = float.Parse(input_green.text) / 255f;
-        slider_blue.value = float.Parse(input_blue.text) / 255f;
-    }
-    public void ColorToText()
-    {
-        input_red.text = (slider_red.value * 255).ToString();
-        input_green.text = (slider_green.value * 255f).ToString();
-        input_blue.text = (slider_blue.value * 255f).ToString();
-    }
-    public void UpdateWallOption()
-    {
-        M_Game.m_WallColor.r = slider_red.value;
-        M_Game.m_WallColor.g = slider_green.value;
-        M_Game.m_WallColor.b = slider_blue.value;
-
-        m_SelectedImage.color = M_Game.m_WallColor;
-    }
+    #endregion
 }

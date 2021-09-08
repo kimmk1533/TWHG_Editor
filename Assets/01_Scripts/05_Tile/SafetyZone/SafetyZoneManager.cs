@@ -6,9 +6,8 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
 {
     protected int m_SafetyZoneCount;
 
-    public List<SafetyZone> m_SafetyZoneList;
-    public SafetyZone m_StartPoint;
-    public SafetyZone m_EndPoint;
+    protected List<SafetyZone> m_SafetyZoneList;
+    protected List<SafetyZone> m_FinishZoneList;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -46,6 +45,10 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         {
             m_SafetyZoneList = new List<SafetyZone>();
         }
+        if (null == m_FinishZoneList)
+        {
+            m_FinishZoneList = new List<SafetyZone>();
+        }
     }
     public override void __Finalize()
     {
@@ -57,18 +60,28 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         SafetyZone safetyZone = GetPool("SafetyZone").Spawn();
         m_SafetyZoneList.Add(safetyZone);
         ++m_SafetyZoneCount;
+        M_Edit.AddSafetyZoneOption(m_SafetyZoneCount);
         return safetyZone;
     }
     public void DespawnSafetyZone(SafetyZone safetyZone)
     {
+        M_Edit.RemoveSafetyZoneOption(m_SafetyZoneCount);
         --m_SafetyZoneCount;
         m_SafetyZoneList.Remove(safetyZone);
         GetPool("SafetyZone").DeSpawn(safetyZone);
 
         for (int i = 0; i < m_SafetyZoneList.Count; ++i)
         {
-            m_SafetyZoneList[i].SetText(safetyZone.SafetyZoneCount);
+            m_SafetyZoneList[i].SetText(safetyZone.safetyZoneCount);
         }
+    }
+
+    public void SelectFinishZone(int index)
+    {
+        if (index < 0 || index > m_SafetyZoneList.Count)
+            return;
+
+        m_FinishZoneList.Add(m_SafetyZoneList[index - 1]);
     }
     #endregion
     #region 이벤트 함수

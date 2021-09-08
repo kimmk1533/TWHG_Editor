@@ -52,7 +52,8 @@ public class PlayerCollider : MonoBehaviour, IEraserable
     #region 유니티 콜백 함수
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("SafetyZone"))
+        if (collision.CompareTag("SafetyZone") &&
+            !collision.gameObject.GetComponent<SafetyZoneCollider>().isFinishZone)
         {
             m_Player.isSafe = true;
             m_Player.spawnPos = collision.transform.position;
@@ -99,13 +100,15 @@ public class PlayerCollider : MonoBehaviour, IEraserable
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("SafetyZone"))
+        if (collision.CompareTag("SafetyZone") &&
+            m_Player.spawnPos == collision.transform.position)
         {
-            Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, size, 0f, LayerMask.GetMask("SafetyZone"));
-            if (hits.Length <= 0)
-            {
-                m_Player.isSafe = false;
-            }
+            m_Player.isSafe = false;
+            //Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, size, 0f, LayerMask.GetMask("SafetyZone"));
+            //if (hits.Length <= 0)
+            //{
+            //    m_Player.isSafe = false;
+            //}
         }
     }
     #endregion

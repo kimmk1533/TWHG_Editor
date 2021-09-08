@@ -37,7 +37,7 @@ public class SafetyZoneAnimator : MonoBehaviour
         if (null == m_Text)
         {
             m_Text = transform.GetComponentInChildren<TextMeshPro>();
-            m_Text.text = m_SafetyZone.SafetyZoneCount.ToString();
+            m_Text.text = m_SafetyZone.safetyZoneCount.ToString();
         }
     }
     #endregion

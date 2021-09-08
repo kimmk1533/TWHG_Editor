@@ -15,6 +15,7 @@ public class SafetyZoneCollider : MonoBehaviour, IEraserable
     #endregion
     #region 외부 프로퍼티
     public BoxCollider2D Collider => m_Collider;
+    public bool isFinishZone => m_SafetyZone.isFinishZone;
     #endregion
     #region 외부 함수
     public void __Initialize(SafetyZone safetyZone)
