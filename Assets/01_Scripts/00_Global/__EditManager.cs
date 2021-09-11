@@ -151,23 +151,11 @@ public class __EditManager : Singleton<__EditManager>
     #region SafetyZone
     public void AddSafetyZoneOption(int value)
     {
-        //int maxCount = m_SafetyZone_FinishCheckBox.content.childCount;
-
-        //if (value < 0 || value >= maxCount)
-        //    return;
-
-        //Toggle clone = GameObject.Instantiate(m_SafetyZone_FinishZoneItem).GetComponent<Toggle>();
-        
-        //safetyZone_FinishZone.Add(clone.transform);
+        m_SafetyZone_FinishCheckBox.AddOption(value.ToString());
     }
     public void RemoveSafetyZoneOption(int value)
     {
-        //Dropdown.OptionData optionData = safetyZone_FinishZone[value];
-
-        //if (!safetyZone_FinishZone.Contains(optionData))
-        //    return;
-
-        //safetyZone_FinishZone.RemoveAt(value);
+        m_SafetyZone_FinishCheckBox.RemoveOption(value - 1);
     }
     #endregion
     #region UI

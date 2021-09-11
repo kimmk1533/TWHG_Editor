@@ -15,8 +15,6 @@ public class CheckBoxItem : MonoBehaviour, IPointerClickHandler, IEventSystemHan
     protected Toggle m_Toggle;
     [SerializeField]
     protected Text m_Text;
-    [SerializeField]
-    protected Image m_Image;
     #endregion
     #region 내부 프로퍼티
     #endregion
@@ -37,7 +35,6 @@ public class CheckBoxItem : MonoBehaviour, IPointerClickHandler, IEventSystemHan
         }
     }
     public Text text { get => m_Text; set => m_Text = value; }
-    public Image image { get => m_Image; set => m_Image = value; }
     public RectTransform rectTransform { get => m_RectTransform; set => m_RectTransform = value; }
     public Toggle toggle { get => m_Toggle; set => m_Toggle = value; }
     #endregion
@@ -68,17 +65,8 @@ public class CheckBoxItem : MonoBehaviour, IPointerClickHandler, IEventSystemHan
         }
     }
 
-    public virtual void OnPointerClick(PointerEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        if (null != m_Toggle)
-        {
-            // 이건 안됨
-            m_Toggle.isOn = !m_Toggle.isOn;
-
-            // 이건 됨
-            //m_Toggle.isOn = true;
-        }
-
         m_CheckBox?.onValueChanged?.Invoke(index);
     }
     #endregion
