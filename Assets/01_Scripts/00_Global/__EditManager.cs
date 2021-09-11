@@ -82,10 +82,10 @@ public class __EditManager : Singleton<__EditManager>
         }
     }
     protected bool IsMouseDown => IsLeft || IsRight;
-    protected bool IsLeft => Input.GetMouseButton(0);
-    protected bool IsRight => Input.GetMouseButton(1);
-    protected bool IsLeftDown => Input.GetMouseButtonDown(0);
-    protected bool IsRightDown => Input.GetMouseButtonDown(1);
+    protected bool IsLeft => Input.GetMouseButton((int)E_InputButton.Left);
+    protected bool IsRight => Input.GetMouseButton((int)E_InputButton.Right);
+    protected bool IsLeftDown => Input.GetMouseButtonDown((int)E_InputButton.Left);
+    protected bool IsRightDown => Input.GetMouseButtonDown((int)E_InputButton.Right);
 
     #region Wall
     protected bool IsInputFieldFocus => input_red.isFocused || input_green.isFocused || input_blue.isFocused || input_EnemySpeed.isFocused;
@@ -100,6 +100,114 @@ public class __EditManager : Singleton<__EditManager>
     #endregion
     #endregion
     #region 내부 함수
+    protected void DrawInEditMode()
+    {
+        if (IsPointerOverUIObject())
+            return;
+
+        #region Object Raycast
+        // 레이캐스트 설정
+        Ray obj_ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        // 레이캐스트
+        RaycastHit2D obj_hit = Physics2D.Raycast(obj_ray.origin, obj_ray.direction);
+        #endregion
+
+        #region UI Raycast
+        // 레이캐스트 설정
+        PointerEventData eventData = new PointerEventData(null);
+        eventData.position = Input.mousePosition;
+        List<RaycastResult> results = new List<RaycastResult>();
+
+        // 레이캐스트
+        m_Raycaster_BG.Raycast(eventData, results);
+
+        if (results.Count <= 0)
+            return;
+        #endregion
+
+        GameObject obj = obj_hit.transform?.gameObject;
+        GameObject ui_obj = results[0].gameObject;
+
+        #region Click Process
+        if (IsLeftDown)
+        {
+            if (null == obj?.GetComponent<WallCollider>())
+            {
+                switch (m_SelectedType)
+                {
+                    case E_ObjectType.Player:
+                        M_Player.SpawnPlayer(SpawnPoint);
+                        break;
+                    case E_ObjectType.Enemy:
+                        break;
+                    case E_ObjectType.Coin:
+                        // 코인 스폰
+                        Coin coin = M_Coin.SpawnCoin();
+                        // 위치 설정
+                        coin.transform.position = SpawnPoint;
+                        break;
+                }
+            }
+        }
+        else if (IsRightDown)
+        {
+            obj?.GetComponent<IEraserable>()?.Erase();
+        }
+        #endregion
+
+        #region Drag Process
+        if (IsLeft)
+        {
+            switch (m_SelectedType)
+            {
+                case E_ObjectType.Wall:
+                    obj?.GetComponent<SafetyZoneCollider>()?.Erase();
+                    M_Tile.Draw(ui_obj, E_TileType.Wall);
+                    break;
+                case E_ObjectType.SafetyZone:
+                    obj?.GetComponent<WallCollider>()?.Erase();
+                    M_Tile.Draw(ui_obj, E_TileType.SafetyZone);
+                    break;
+                case E_ObjectType.Erase:
+                    obj?.GetComponent<IEraserable>()?.Erase();
+                    M_Tile.Draw(ui_obj, E_TileType.None);
+                    break;
+            }
+        }
+        else if (IsRight)
+        {
+            obj?.GetComponent<IEraserable>()?.Erase();
+            M_Tile.Draw(ui_obj, E_TileType.None);
+        }
+        #endregion
+    }
+    protected void ChangeSelectedType()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SetSelectedType(E_ObjectType.None);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SetSelectedType(E_ObjectType.Player);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SetSelectedType(E_ObjectType.Enemy);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SetSelectedType(E_ObjectType.Coin);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            SetSelectedType(E_ObjectType.SafetyZone);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            SetSelectedType(E_ObjectType.Wall);
+        }
+    }
     #endregion
     #region 외부 함수
     public void __Initialize()
@@ -248,6 +356,16 @@ public class __EditManager : Singleton<__EditManager>
 
         m_CurrentOptionPanel?.SetActive(true);
     }
+    public bool IsPointerOverUIObject()
+    {
+        PointerEventData eventData = new PointerEventData(null);
+        eventData.position = Input.mousePosition;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        m_Raycaster_UI.Raycast(eventData, results);
+
+        return results.Count > 0;
+    }
     #endregion
     #endregion
     #region 이벤트 함수
@@ -329,128 +447,14 @@ public class __EditManager : Singleton<__EditManager>
             #region 마우스
             if (IsMouseDown)
             {
-                #region Object Raycast
-                // 레이캐스트 설정
-                Ray obj_ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                // 레이캐스트
-                RaycastHit2D obj_hit = Physics2D.Raycast(obj_ray.origin, obj_ray.direction);
-                #endregion
-
-                #region UI Raycast
-                // 레이캐스트 설정
-                PointerEventData eventData = new PointerEventData(null);
-                eventData.position = Input.mousePosition;
-                List<RaycastResult> results = new List<RaycastResult>();
-
-                // 레이캐스트
-                m_Raycaster_UI.Raycast(eventData, results);
-                if (results.Count > 0)
-                {
-                    results = null;
-                }
-                else
-                {
-                    m_Raycaster_BG.Raycast(eventData, results);
-                }
-
-                if (results?.Count <= 0)
-                {
-                    results = null;
-                }
-                #endregion
-
-                if (null != results)
-                {
-                    GameObject obj = obj_hit.transform?.gameObject;
-                    GameObject ui_obj = results[0].gameObject;
-
-                    #region Click Process
-                    if (IsLeftDown)
-                    {
-                        if (null == obj?.GetComponent<WallCollider>())
-                        {
-                            switch (m_SelectedType)
-                            {
-                                case E_ObjectType.Player:
-                                    M_Player.SpawnPlayer(SpawnPoint);
-                                    break;
-                                case E_ObjectType.Enemy:
-                                    break;
-                                case E_ObjectType.Coin:
-                                    // 코인 스폰
-                                    Coin coin = M_Coin.SpawnCoin();
-                                    // 위치 설정
-                                    coin.transform.position = SpawnPoint;
-                                    break;
-                            }
-                        }
-                    }
-                    else if (IsRightDown)
-                    {
-                        obj?.GetComponent<IEraserable>()?.Erase();
-                    }
-                    #endregion
-
-                    #region Drag Process
-                    // 레이를 맞은 오브젝트가 있으면 동작
-                    if (results.Count > 0)
-                    {
-                        if (IsLeft)
-                        {
-                            switch (m_SelectedType)
-                            {
-                                case E_ObjectType.Wall:
-                                    obj?.GetComponent<SafetyZoneCollider>()?.Erase();
-                                    M_Tile.Draw(ui_obj, E_TileType.Wall);
-                                    break;
-                                case E_ObjectType.SafetyZone:
-                                    obj?.GetComponent<WallCollider>()?.Erase();
-                                    M_Tile.Draw(ui_obj, E_TileType.SafetyZone);
-                                    break;
-                                case E_ObjectType.Erase:
-                                    obj?.GetComponent<IEraserable>()?.Erase();
-                                    M_Tile.Draw(ui_obj, E_TileType.None);
-                                    break;
-                            }
-                        }
-                        else if (IsRight)
-                        {
-                            obj?.GetComponent<IEraserable>()?.Erase();
-                            M_Tile.Draw(ui_obj, E_TileType.None);
-                        }
-                    }
-                    #endregion
-                }
+                DrawInEditMode();
             }
             #endregion
 
             #region 키보드
             if (!IsInputFieldFocus)
             {
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    SetSelectedType(E_ObjectType.None);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha1))
-                {
-                    SetSelectedType(E_ObjectType.Player);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha2))
-                {
-                    SetSelectedType(E_ObjectType.Enemy);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha3))
-                {
-                    SetSelectedType(E_ObjectType.Coin);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha4))
-                {
-                    SetSelectedType(E_ObjectType.SafetyZone);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha5))
-                {
-                    SetSelectedType(E_ObjectType.Wall);
-                }
+                ChangeSelectedType();
             }
             #endregion
         }

@@ -12,3 +12,10 @@ public enum E_ObjectType
 
     Max
 }
+
+public enum E_InputButton
+{
+    Left = 0,
+    Right,
+    Middle
+}
