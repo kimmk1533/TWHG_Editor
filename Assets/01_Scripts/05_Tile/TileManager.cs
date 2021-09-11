@@ -20,7 +20,6 @@ public class TileManager : ObjectManager<TileManager, Tile>
     protected StageManager M_Stage => StageManager.Instance;
     #endregion
     #endregion
-
     #region 내부 함수
     // 타일(BG) 전체 생성 함수
     void CreateTiles()
@@ -34,9 +33,8 @@ public class TileManager : ObjectManager<TileManager, Tile>
         }
     }
     // 타일(BG) 하나 생성 함수
-    void CreateTile(int width, int height)
+    void CreateTile(int x, int y)
     {
-        int index = (width + height) % 2;
         // 타일(BG) 스폰
         Tile tile = GetPool("Tile").Spawn();
 
@@ -44,21 +42,25 @@ public class TileManager : ObjectManager<TileManager, Tile>
         tile.transform.SetParent(m_TileParent.transform);
         tile.transform.localScale = Vector3.one;
         tile.transform.localPosition = Vector3.zero;
-        tile.__Initialize(width, height);
+        tile.__Initialize(x, y);
         tile.gameObject.SetActive(true);
 
         // 타일(BG) 이미지 설정
         Image image = tile.GetComponent<Image>();
-        switch (M_Stage.m_Stage[height, width])
+        switch (M_Stage.GetTileData(x, y))
         {
             case E_TileType.None:
-                if (index == 0)
+                switch (tile.indexType)
                 {
-                    image.color = M_Game.m_EvenBGColor;
-                }
-                else
-                {
-                    image.color = M_Game.m_OddBGColor;
+                    case E_TileIndexType.Odd:
+                        image.color = M_Game.m_OddBGColor;
+                        break;
+                    case E_TileIndexType.Even:
+                        image.color = M_Game.m_EvenBGColor;
+                        break;
+                    default:
+                        Debug.LogError("타일 홀짝 오류");
+                        break;
                 }
                 break;
             case E_TileType.Wall:
@@ -280,12 +282,16 @@ public class TileManager : ObjectManager<TileManager, Tile>
     #endregion
 }
 
-public enum E_TileType
+public enum E_TileIndexType
 {
     None = -1,
 
     Odd, // 홀수 칸
     Even, // 짝수 칸
+}
+public enum E_TileType
+{
+    None = -1,
 
     Wall, // 벽
     SafetyZone, // 안전지역

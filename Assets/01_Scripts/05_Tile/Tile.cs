@@ -1,33 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
     [SerializeField]
+    protected E_TileIndexType m_IndexType;
+    [SerializeField]
     protected E_TileType m_Type;
     protected Image m_Image;
-    protected Color m_InitColor;
 
     #region 내부 프로퍼티
     #region 매니져
-    protected __EditManager M_Edit => __EditManager.Instance;
     protected __GameManager M_Game => __GameManager.Instance;
-    protected PlayerManager M_Player => PlayerManager.Instance;
-    protected TileManager M_Tile => TileManager.Instance;
     protected WallManager M_Wall => WallManager.Instance;
-    protected EnemyRoadManager M_Road => EnemyRoadManager.Instance;
-    protected CoinManager M_Coin => CoinManager.Instance;
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
-    protected StageManager M_Stage => StageManager.Instance;
     #endregion
 
+    protected Color OddColor => M_Game.m_OddBGColor;
+    protected Color EvenColor => M_Game.m_EvenBGColor;
     protected Color WallColor => M_Game.m_WallColor;
     protected Color SafetyZoneColor => M_Game.m_SafetyZoneColor;
     #endregion
-
+    #region 외부 프로퍼티
+    public E_TileIndexType indexType => m_IndexType;
+    public E_TileType type => m_Type;
+    #endregion
     #region 외부 함수
     public void SetType(E_TileType type)
     {
@@ -42,7 +41,18 @@ public class Tile : MonoBehaviour
         switch (m_Type)
         {
             case E_TileType.None:
-                m_Image.color = m_InitColor;
+                switch (m_IndexType)
+                {
+                    case E_TileIndexType.Odd:
+                        m_Image.color = OddColor;
+                        break;
+                    case E_TileIndexType.Even:
+                        m_Image.color = EvenColor;
+                        break;
+                    default:
+                        Debug.LogError("타일 홀짝 오류");
+                        break;
+                }
                 break;
             case E_TileType.Wall:
                 m_Image.color = WallColor;
@@ -72,24 +82,19 @@ public class Tile : MonoBehaviour
     }
     #endregion
 
-    public void __Initialize(int width, int height)
+    public void __Initialize(int x, int y)
     {
         if (null == m_Image)
         {
             m_Image = GetComponent<Image>();
         }
 
+        int index = (x + y) % 2;
+
         // 짝수 칸
-        if ((width + height) % 2 == 0)
-        {
-            m_Type = E_TileType.Even;
-            m_InitColor = M_Game.m_EvenBGColor;
-        }
-        // 홀수 칸
+        if (index == 0)
+            m_IndexType = E_TileIndexType.Even;
         else
-        {
-            m_Type = E_TileType.Odd;
-            m_InitColor = M_Game.m_OddBGColor;
-        }
+            m_IndexType = E_TileIndexType.Odd;
     }
 }

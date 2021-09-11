@@ -69,6 +69,7 @@ public class __EditManager : Singleton<__EditManager>
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected CoinManager M_Coin => CoinManager.Instance;
     protected TileManager M_Tile => TileManager.Instance;
+    protected StageManager M_Stage => StageManager.Instance;
     #endregion
 
     protected Vector3 SpawnPoint
@@ -127,6 +128,13 @@ public class __EditManager : Singleton<__EditManager>
 
         GameObject obj = obj_hit.transform?.gameObject;
         GameObject ui_obj = results[0].gameObject;
+
+        #region Erase
+        if (IsRight)
+        {
+            obj?.GetComponent<IEraserable>()?.Erase();
+        }
+        #endregion
 
         #region Click Process
         if (IsLeftDown)
