@@ -291,6 +291,7 @@ public enum E_TileIndexType
 }
 public enum E_TileType
 {
+    Error = -2,
     None = -1,
 
     Wall, // 벽
