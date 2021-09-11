@@ -1,3 +1,6 @@
 [09-08]
- - CheckBox 아이템 추가/삭제 구현
- - CheckBoxItem의 IsOn과 SafetyZone의 IsFinishZone 동기화
+ - CheckBox 아이템 추가/삭제 구현 (완료)
+ - CheckBoxItem의 IsOn과 SafetyZone의 IsFinishZone 동기화 (완료)
+[09-11]
+ - Json이용한 저장
+ - 2차원배열 ToJson 함수 구현
