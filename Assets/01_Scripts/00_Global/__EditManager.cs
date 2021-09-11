@@ -15,7 +15,7 @@ public class __EditManager : Singleton<__EditManager>
     protected GraphicRaycaster m_Raycaster_UI;
 
     [Header("EditMode")]
-    [SerializeField]
+    [SerializeField, ReadOnly]
     protected bool m_IsEdit;
 
     [Header("Selected")]
@@ -46,8 +46,10 @@ public class __EditManager : Singleton<__EditManager>
     List<string> enemyType_option;
 
     [Header("SafetyZone Option")]
-    public GameObject m_SafetyZoneOptionPanel;
-    public CheckBox m_SafetyZone_FinishCheckBox;
+    [SerializeField]
+    protected GameObject m_SafetyZoneOptionPanel;
+    [SerializeField]
+    protected CheckBox m_SafetyZone_FinishCheckBox;
 
     [Header("Wall Option")]
     public GameObject m_WallOptionPanel;
@@ -88,13 +90,14 @@ public class __EditManager : Singleton<__EditManager>
     #region Wall
     protected bool IsInputFieldFocus => input_red.isFocused || input_green.isFocused || input_blue.isFocused || input_EnemySpeed.isFocused;
     #endregion
-
-    #region SafetyZone
-    // protected List<Transform> safetyZone_FinishZone => m_SafetyZone_FinishCheckBox.content.GetChildren();
-    #endregion
     #endregion
     #region 외부 프로퍼티
-    public bool isEdit => m_IsEdit;
+    public bool isEditMode => m_IsEdit;
+    public bool isPlayMode => !m_IsEdit;
+
+    #region SafetyZone
+    public List<CheckBox.OptionData> safetyZoneFinishOptionList => m_SafetyZone_FinishCheckBox.options;
+    #endregion
     #endregion
     #region 내부 함수
     #endregion
@@ -303,7 +306,7 @@ public class __EditManager : Singleton<__EditManager>
 
     public void TestPlay()
     {
-        if (isEdit)/* &&
+        if (isEditMode)/* &&
             M_SafetyZone.m_ColliderList.Count >= 2)*/
         {
             m_SelectedType = E_ObjectType.None;
@@ -312,7 +315,7 @@ public class __EditManager : Singleton<__EditManager>
 
             M_Game.EnterPlayMode();
         }
-        else if (!isEdit)
+        else if (!isEditMode)
         {
             M_Game.ExitPlayMode();
         }

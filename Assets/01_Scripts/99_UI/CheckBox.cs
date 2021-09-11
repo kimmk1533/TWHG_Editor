@@ -40,6 +40,7 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
         {
             m_Options = value;
             RefreshShownValue();
+            ResizeContent();
         }
     }
     #endregion
@@ -148,6 +149,11 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
         {
             CreateItem(m_Options[i]);
         }
+
+        m_OnValueChanged.AddListener(index =>
+        {
+            m_Options[index - 1].isOn = m_ItemList[index - 1].toggle.isOn;
+        });
     }
     #endregion
 

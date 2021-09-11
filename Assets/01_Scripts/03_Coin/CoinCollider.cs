@@ -28,7 +28,7 @@ public class CoinCollider : MonoBehaviour, IEraserable
     #region 유니티 콜백 함수
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!M_Edit.isEdit)
+        if (!M_Edit.isEditMode)
         {
             if (collision.CompareTag("Player"))
             {

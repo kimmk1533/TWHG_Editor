@@ -5,6 +5,7 @@ using UnityEngine;
 public class SafetyZone : MonoBehaviour
 {
     protected int m_SafetyZoneCount;
+    [SerializeField, ReadOnly]
     protected bool m_IsFinishZone;
 
     #region 내부 컴포넌트
@@ -19,7 +20,11 @@ public class SafetyZone : MonoBehaviour
     public BoxCollider2D Collider => m_Collider.Collider;
 
     public int safetyZoneCount => m_SafetyZoneCount;
-    public bool isFinishZone => m_IsFinishZone;
+    public bool isFinishZone
+    {
+        get => m_IsFinishZone;
+        set => m_IsFinishZone = value;
+    }
     #endregion
     #region 내부 함수
     #endregion
@@ -52,7 +57,7 @@ public class SafetyZone : MonoBehaviour
     #region 이벤트 함수
     public void OnPlayEnter()
     {
-        
+
     }
     public void OnPlayExit()
     {

@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
     protected PlayerManager M_Player => PlayerManager.Instance;
     #endregion
 
-    protected bool canMove => !M_Edit.isEdit && m_CanMove;
+    protected bool canMove => !M_Edit.isEditMode && m_CanMove;
     protected Vector2 size => m_Collider.size;
     protected Vector2 halfSize => size * 0.5f;
     #endregion
@@ -142,7 +142,7 @@ public class Player : MonoBehaviour
             m_Collider.__Initialize(this);
         }
 
-        m_CanMove = M_Edit.isEdit;
+        m_CanMove = M_Edit.isEditMode;
 
         gameObject.SetActive(false);
     }

@@ -26,7 +26,7 @@ public class LinearRoad : EnemyRoad
 
     private void Update()
     {
-        if (!M_Edit.isEdit)
+        if (!M_Edit.isEditMode)
         {
             Move();
         }

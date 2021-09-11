@@ -16,7 +16,7 @@ public class CoinManager : ObjectManager<CoinManager, Coin>
     #endregion
     #region 외부 프로퍼티
     public int CoinCount { get => m_CoinCount; set => m_CoinCount = value; }
-    public bool IsLeftedCoin => m_CoinCount > 0;
+    public bool IsLeftCoin => m_CoinCount > 0;
     #endregion
     #region 내부 함수
     void ClearCoins()

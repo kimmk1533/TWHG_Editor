@@ -52,45 +52,25 @@ public class PlayerCollider : MonoBehaviour, IEraserable
     #region 유니티 콜백 함수
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("SafetyZone") &&
-            !collision.gameObject.GetComponent<SafetyZoneCollider>().isFinishZone)
+        if (collision.CompareTag("SafetyZone"))
         {
             m_Player.isSafe = true;
             m_Player.spawnPos = collision.transform.position;
+
+            bool? isFinishZone = collision.gameObject.GetComponent<SafetyZoneCollider>()?.isFinishZone;
+
+            if (isFinishZone.HasValue)
+            {
+                if (isFinishZone.Value && !M_Coin.IsLeftCoin)
+                {
+                    // 승리
+                    Debug.Log("승리");
+                }
+            }
         }
 
-        if (!M_Edit.isEdit)
+        if (M_Edit.isPlayMode)
         {
-            /*if (collision.CompareTag("SafetyZone"))
-            {
-                m_Player.SetSafety(true);
-
-                BoxCollider2D box = collision as BoxCollider2D;
-
-                for (int i = 0; i < M_SafetyZone.m_ColliderList.Count; ++i)
-                {
-                    if (box == M_SafetyZone.m_ColliderList[i].m_Collider)
-                    {
-                        if (box != M_SafetyZone.m_EndPoint.Collider)
-                        {
-                            // 스폰 위치 변경
-                            //m_SpawnPoint = M_SafetyZone.m_Colliders[i].GetCenter();
-                            //m_Animator.GetComponent<PlayerAnimator>().m_SpawnPoint = m_SpawnPoint;
-                        }
-                        else
-                        {
-                            if (!M_Coin.IsLeftedCoin)
-                            {
-                                // 승리
-                                // 임시
-                                __SceneManager.LoadMainMenuScene();
-                                Debug.Log("승리");
-                            }
-                        }
-                    }
-                }
-            }*/
-
             if (collision.CompareTag("Enemy") && !m_Player.isSafe)
             {
                 m_Player.Death();

@@ -65,7 +65,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
     }
     public void DespawnSafetyZone(SafetyZone safetyZone)
     {
-        M_Edit.RemoveSafetyZoneOption(m_SafetyZoneCount);
+        M_Edit.RemoveSafetyZoneOption(safetyZone.safetyZoneCount);
         --m_SafetyZoneCount;
         m_SafetyZoneList.Remove(safetyZone);
         GetPool("SafetyZone").DeSpawn(safetyZone);
@@ -76,25 +76,36 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         }
     }
 
+    public void ClearSafetyZone()
+    {
+        for (int i = 0; i < m_SafetyZoneList.Count; i++)
+        {
+            GetPool("SafetyZone").DeSpawn(m_SafetyZoneList[i]);
+        }
+        m_SafetyZoneList.Clear();
+        m_SafetyZoneCount = 0;
+    }
     public void SelectFinishZone(int index)
     {
-        if (index < 0 || index > m_SafetyZoneList.Count)
+        if (index < 0 || index >= m_SafetyZoneList.Count)
             return;
 
-        m_FinishZoneList.Add(m_SafetyZoneList[index - 1]);
+        m_SafetyZoneList[index].isFinishZone = true;
+        m_FinishZoneList.Add(m_SafetyZoneList[index]);
     }
     #endregion
     #region 이벤트 함수
     public override void OnPlayEnter()
     {
-        //ClearSafetyZone();
+        List<CheckBox.OptionData> options = M_Edit.safetyZoneFinishOptionList;
 
-        //CreateSafetyZone();
-
-        // 추후 수정
-        //m_StartPoint = m_ColliderList[0];
-
-        //m_EndPoint = m_ColliderList[m_ColliderList.Count - 1];
+        for (int i = 0; i < options.Count; ++i)
+        {
+            if (options[i].isOn)
+            {
+                SelectFinishZone(i);
+            }
+        }
     }
     public override void OnPlayExit()
     {

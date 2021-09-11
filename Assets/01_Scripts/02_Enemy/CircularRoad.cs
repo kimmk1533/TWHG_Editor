@@ -16,7 +16,7 @@ public class CircularRoad : EnemyRoad
 
     private void Update()
     {
-        if (!M_Edit.isEdit)
+        if (!M_Edit.isEditMode)
         {
             Move();
         }
