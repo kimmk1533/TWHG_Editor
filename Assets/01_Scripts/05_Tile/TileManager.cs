@@ -47,7 +47,7 @@ public class TileManager : ObjectManager<TileManager, Tile>
 
         // 타일(BG) 이미지 설정
         Image image = tile.GetComponent<Image>();
-        switch (M_Stage.GetTileData(x, y))
+        switch (M_Stage.stage[y, x])
         {
             case E_TileType.None:
                 switch (tile.indexType)

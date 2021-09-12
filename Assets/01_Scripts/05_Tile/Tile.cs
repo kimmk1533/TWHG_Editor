@@ -11,11 +11,15 @@ public class Tile : MonoBehaviour
     protected E_TileType m_Type;
     protected Image m_Image;
 
+    protected int m_X;
+    protected int m_Y;
+
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
     protected WallManager M_Wall => WallManager.Instance;
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
+    protected StageManager M_Stage => StageManager.Instance;
     #endregion
 
     protected Color OddColor => M_Game.m_OddBGColor;
@@ -33,7 +37,7 @@ public class Tile : MonoBehaviour
         if (m_Type == type)
             return;
 
-        m_Type = type;
+        M_Stage.stage[m_Y, m_X] = m_Type = type;
 
         Vector3 spawnPos = transform.position;
         spawnPos.z = -5f;
@@ -89,6 +93,8 @@ public class Tile : MonoBehaviour
             m_Image = GetComponent<Image>();
         }
 
+        m_X = x;
+        m_Y = y;
         int index = (x + y) % 2;
 
         // 짝수 칸

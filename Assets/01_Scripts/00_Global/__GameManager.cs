@@ -38,8 +38,8 @@ public class __GameManager : Singleton<__GameManager>
     #endregion
     #endregion
     #region 외부 프로퍼티
-    public int width => m_width;
-    public int height => m_height;
+    public int width { get => m_width; set => m_width = value; }
+    public int height { get => m_height; set => m_height = value; }
     #endregion
     #region 내부 함수
     void __Initialize()

@@ -6772,6 +6772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
+  m_StageName: TestStage
 --- !u!4 &1152907726
 Transform:
   m_ObjectHideFlags: 0
