@@ -1,4 +1,11 @@
 
+public enum E_InputButton
+{
+    Left = 0,
+    Right,
+    Middle
+}
+
 public enum E_ObjectType
 {
     None = -1,
@@ -13,9 +20,29 @@ public enum E_ObjectType
     Max
 }
 
-public enum E_InputButton
+public enum E_EnemyType
 {
-    Left = 0,
-    Right,
-    Middle
+    None = -1,
+
+    Linear,
+    LinearRepeat,
+    Circular,
+
+    Max
+}
+
+public enum E_TileIndexType
+{
+    None = -1,
+
+    Odd, // È¦¼ö Ä­
+    Even, // Â¦¼ö Ä­
+}
+public enum E_TileType
+{
+    Error = -2,
+    None = -1,
+
+    Wall, // º®
+    SafetyZone, // ¾ÈÀüÁö¿ª
 }

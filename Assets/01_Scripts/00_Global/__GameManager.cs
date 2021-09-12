@@ -30,7 +30,6 @@ public class __GameManager : Singleton<__GameManager>
     protected StageManager M_Stage => StageManager.Instance;
     protected PlayerManager M_Player => PlayerManager.Instance;
     protected EnemyManager M_Enemy => EnemyManager.Instance;
-    protected EnemyRoadManager M_EnemyRoad => EnemyRoadManager.Instance;
     protected CoinManager M_Coin => CoinManager.Instance;
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected WallManager M_Wall => WallManager.Instance;
@@ -50,7 +49,6 @@ public class __GameManager : Singleton<__GameManager>
         M_Stage.__Initialize();
         M_Player.__Initialize();
         M_Enemy.__Initialize();
-        M_EnemyRoad.__Initialize();
         M_Coin.__Initialize();
         M_Wall.__Initialize();
         M_SafetyZone.__Initialize();
@@ -60,7 +58,6 @@ public class __GameManager : Singleton<__GameManager>
     {
         M_Edit.__Finalize();
         M_Coin.__Finalize();
-        M_EnemyRoad.__Finalize();
         M_Enemy.__Finalize();
         M_SafetyZone.__Finalize();
         M_Wall.__Finalize();

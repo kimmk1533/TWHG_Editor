@@ -41,10 +41,10 @@ public class PlayerManager : Singleton<PlayerManager>
 
     }
 
-    public void SpawnPlayer(Vector3 pos)
+    public Player SpawnPlayer()
     {
-        PlayerPos = pos;
         m_Player.gameObject.SetActive(true);
+        return m_Player;
     }
     #endregion
     #region 이벤트 함수

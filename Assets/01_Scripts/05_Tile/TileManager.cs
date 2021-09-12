@@ -281,19 +281,3 @@ public class TileManager : ObjectManager<TileManager, Tile>
     //}
     #endregion
 }
-
-public enum E_TileIndexType
-{
-    None = -1,
-
-    Odd, // 홀수 칸
-    Even, // 짝수 칸
-}
-public enum E_TileType
-{
-    Error = -2,
-    None = -1,
-
-    Wall, // 벽
-    SafetyZone, // 안전지역
-}

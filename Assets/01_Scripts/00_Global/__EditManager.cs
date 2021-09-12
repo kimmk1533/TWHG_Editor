@@ -34,7 +34,12 @@ public class __EditManager : Singleton<__EditManager>
     protected GameObject m_CurrentOptionPanel;
 
     [Header("Enemy Option")]
-    public GameObject m_EnemyOptionPanel;
+    [SerializeField]
+    protected GameObject m_EnemyOptionPanel;
+    [SerializeField]
+    protected Dropdown m_EnemyTypeDropdown;
+    [SerializeField]
+    protected GameObject m_EnemySpeedOption;
     public GameObject Edit_LinearOption;
     public GameObject Edit_CircularOption;
     public InputField input_EnemySpeed;
@@ -65,9 +70,9 @@ public class __EditManager : Singleton<__EditManager>
     protected ResourcesManager M_Resources => ResourcesManager.Instance;
     protected __GameManager M_Game => __GameManager.Instance;
     protected PlayerManager M_Player => PlayerManager.Instance;
-    protected EnemyRoadManager M_Road => EnemyRoadManager.Instance;
-    protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
+    protected EnemyManager M_Enemy => EnemyManager.Instance;
     protected CoinManager M_Coin => CoinManager.Instance;
+    protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected TileManager M_Tile => TileManager.Instance;
     protected StageManager M_Stage => StageManager.Instance;
     #endregion
@@ -144,9 +149,16 @@ public class __EditManager : Singleton<__EditManager>
                 switch (m_SelectedType)
                 {
                     case E_ObjectType.Player:
-                        M_Player.SpawnPlayer(SpawnPoint);
+                        // 플레이어 스폰
+                        Player player = M_Player.SpawnPlayer();
+                        // 위치 설정
+                        player.transform.position = SpawnPoint;
                         break;
                     case E_ObjectType.Enemy:
+                        // 적 스폰
+                        Enemy enemy = M_Enemy.SpawnEnemy();
+                        // 위치 설정
+                        enemy.transform.position = SpawnPoint;
                         break;
                     case E_ObjectType.Coin:
                         // 코인 스폰
@@ -396,6 +408,12 @@ public class __EditManager : Singleton<__EditManager>
         PlayButton.image.sprite = PlayImage;
     }
 
+    #region Enemy
+    public void OnChangeEnemyType()
+    {
+
+    }
+    #endregion
     #region Wall
     public void ClampColorOption(InputField input)
     {
@@ -471,22 +489,22 @@ public class __EditManager : Singleton<__EditManager>
 
     #region 기존 함수
     // Enemy
-    public void ChangeEnemyType()
-    {
-        M_Road.m_CurrentSelectedType = (E_EnemyType)enemyType_option.IndexOf(dropdown_EnemyType.captionText.text);
+    //public void ChangeEnemyType()
+    //{
+    //    M_Road.m_CurrentSelectedType = (E_EnemyType)enemyType_option.IndexOf(dropdown_EnemyType.captionText.text);
 
-        if (M_Road.m_CurrentSelectedType == E_EnemyType.Linear ||
-            M_Road.m_CurrentSelectedType == E_EnemyType.Linear_Repeat)
-        {
-            Edit_LinearOption.SetActive(true);
-            Edit_CircularOption.SetActive(false);
-        }
-        else if (M_Road.m_CurrentSelectedType == E_EnemyType.Circular)
-        {
-            Edit_LinearOption.SetActive(false);
-            Edit_CircularOption.SetActive(true);
-        }
-    }
+    //    if (M_Road.m_CurrentSelectedType == E_EnemyType.Linear ||
+    //        M_Road.m_CurrentSelectedType == E_EnemyType.LinearRepeat)
+    //    {
+    //        Edit_LinearOption.SetActive(true);
+    //        Edit_CircularOption.SetActive(false);
+    //    }
+    //    else if (M_Road.m_CurrentSelectedType == E_EnemyType.Circular)
+    //    {
+    //        Edit_LinearOption.SetActive(false);
+    //        Edit_CircularOption.SetActive(true);
+    //    }
+    //}
     public void PointButtonPressed()
     {
         if (!AddPoint)

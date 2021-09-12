@@ -82,7 +82,7 @@ public abstract class ObjectManager<Pool, Origin> : Singleton<Pool> where Pool :
         //#endif
         return true;
     }
-    public virtual MemoryPool<Origin> GetPool(string key)
+    protected virtual MemoryPool<Origin> GetPool(string key)
     {
         if (key == null)
             return null;
