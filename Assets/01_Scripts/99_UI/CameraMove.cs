@@ -9,6 +9,11 @@ public class CameraMove : MonoBehaviour
     [SerializeField]
     protected Canvas m_Canvas;
     protected RectTransform m_CanvasRectTransform;
+    [SerializeField]
+    protected float m_ScrollDelta;
+
+    protected float m_Width;
+    protected float m_Height;
 
     #region 이동
     protected bool m_IsMove;
@@ -21,12 +26,16 @@ public class CameraMove : MonoBehaviour
 
     #region 내부 프로퍼티
     #region 매니져
+    protected __GameManager M_Game => __GameManager.Instance;
     protected __EditManager M_Edit => __EditManager.Instance;
     #endregion
+
+    protected float unit => m_Canvas.referencePixelsPerUnit;
     #endregion
     #region 내부 함수
     protected void Move()
     {
+        #region 드래그 이동
         if (Input.GetMouseButtonDown((int)E_InputButton.Middle))
         {
             if (M_Edit.IsPointerOverUIObject())
@@ -47,27 +56,37 @@ public class CameraMove : MonoBehaviour
                 m_IsMove = false;
             }
         }
+        #endregion
+
+        if (M_Game.isPlayMode)
+        {
+            // 플레이어 찾아서 이동 시 3초 뒤에 플레이어에게 돌아가도록 구현
+        }
+
+        ClampMove();
     }
     protected void Scale()
     {
-        if (M_Edit.IsPointerOverUIObject())
+        if (M_Edit.IsPointerOverUIObject() ||
+            Input.mouseScrollDelta.magnitude == 0f)
             return;
 
-        float orhoSize = m_Camera.orthographicSize - Input.mouseScrollDelta.y;
-        if (orhoSize < 0f)
+        float orhoSize = m_Camera.orthographicSize - Input.mouseScrollDelta.y * m_ScrollDelta;
+        if (orhoSize <= m_MinSize)
         {
             m_Camera.orthographicSize = m_MinSize;
             return;
         }
 
         m_Camera.orthographicSize = orhoSize;
+        ClampScale();
     }
     protected void ClampMove()
     {
         Vector2 cameraPos = m_Camera.transform.position;
         Vector2 canvasPos = m_Canvas.transform.position;
 
-        Vector2 screenSize = new Vector2(m_Camera.pixelWidth, m_Camera.pixelHeight);
+        Vector2 screenSize = new Vector2(m_Width, m_Height);
         Vector2 cameraSize = (Vector2)m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
         Vector2 canvasSize = m_CanvasRectTransform.sizeDelta * 0.5f / m_Canvas.referencePixelsPerUnit;
 
@@ -88,7 +107,37 @@ public class CameraMove : MonoBehaviour
     }
     protected void ClampScale()
     {
+        Vector2 cameraPos = m_Camera.transform.position;
 
+        Vector2 screenSize = new Vector2(m_Width, m_Height);
+        Vector2 cameraSize = (Vector2)m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
+        Vector2 canvasSize = m_CanvasRectTransform.sizeDelta * 0.5f / unit;
+
+        if (cameraSize.x >= canvasSize.x &&
+            cameraSize.y >= canvasSize.y)
+        {
+            m_Camera.orthographicSize = Mathf.Min(canvasSize.x, canvasSize.y);
+        }
+    }
+    protected void Clamp()
+    {
+        Vector2 cameraPos = m_Camera.transform.position;
+        Vector2 canvasPos = m_Canvas.transform.position;
+
+        Vector2 screenSize = new Vector2(m_Width, m_Height);
+        Vector2 cameraSize = (Vector2)m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
+        Vector2 canvasSize = m_CanvasRectTransform.sizeDelta * 0.5f / unit;
+
+        if (cameraSize.x > canvasSize.x)
+        {
+            cameraPos.x = canvasPos.x;
+        }
+        if (cameraSize.y > canvasSize.y)
+        {
+            cameraPos.y = canvasPos.y;
+        }
+
+        m_Camera.transform.position = cameraPos;
     }
     #endregion
     #region 유니티 콜백 함수
@@ -97,25 +146,27 @@ public class CameraMove : MonoBehaviour
         if (null == m_Camera)
         {
             m_Camera = GetComponent<Camera>();
+            if (null == m_Camera)
+            {
+                m_Camera = Camera.main;
+            }
         }
         m_CanvasRectTransform = m_Canvas.GetComponent<RectTransform>();
 
         m_StartZ = transform.position.z;
-        m_MinSize = m_Camera.orthographicSize % 1f;
-        if (m_MinSize == 0f)
-        {
-            m_MinSize = 0.01f;
-        }
+        m_MinSize = m_ScrollDelta;
+
+        m_Width = m_Camera.pixelWidth;
+        m_Height = m_Camera.pixelHeight;
     }
     void Update()
     {
-        Move();
         Scale();
+        Move();
     }
     void LateUpdate()
     {
-        ClampScale();
-        ClampMove();
+        Clamp();
     }
     #endregion
 }
