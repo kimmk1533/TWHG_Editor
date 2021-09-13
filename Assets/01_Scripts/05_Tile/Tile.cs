@@ -40,7 +40,7 @@ public class Tile : MonoBehaviour
         M_Stage.stage[m_Y, m_X] = m_Type = type;
 
         Vector3 spawnPos = transform.position;
-        spawnPos.z = -5f;
+        spawnPos.z = 5f;
 
         switch (m_Type)
         {

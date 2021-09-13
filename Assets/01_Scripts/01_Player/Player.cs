@@ -162,7 +162,7 @@ public class Player : MonoBehaviour
     #region 이벤트 함수
     public void OnPlayEnter()
     {
-        m_InitPos = transform.position;
+        m_InitPos = m_SpawnPos = transform.position;
         gameObject.SetActive(true);
     }
     public void OnPlayExit()
