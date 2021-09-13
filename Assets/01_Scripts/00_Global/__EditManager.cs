@@ -8,9 +8,9 @@ public class __EditManager : Singleton<__EditManager>
 {
     [Header("Canvas")]
     [SerializeField]
-    protected Canvas Canvas_BG;
+    protected Canvas m_Canvas_BG;
     [SerializeField]
-    protected Canvas Canvas_UI;
+    protected Canvas m_Canvas_UI;
     protected GraphicRaycaster m_Raycaster_BG;
     protected GraphicRaycaster m_Raycaster_UI;
 
@@ -93,13 +93,21 @@ public class __EditManager : Singleton<__EditManager>
     protected bool IsLeftDown => Input.GetMouseButtonDown((int)E_InputButton.Left);
     protected bool IsRightDown => Input.GetMouseButtonDown((int)E_InputButton.Right);
 
-    #region Wall
-    protected bool IsInputFieldFocus => input_red.isFocused || input_green.isFocused || input_blue.isFocused || input_EnemySpeed.isFocused;
-    #endregion
+    protected bool isInputFieldFocus
+    {
+        get
+        {
+            bool? isFocus = EventSystem.current.currentSelectedGameObject?.GetComponent<InputField>()?.isFocused;
+
+            if (isFocus.HasValue)
+                return isFocus.Value;
+
+            return false;
+        }
+    }
     #endregion
     #region 외부 프로퍼티
     public bool isEditMode => m_IsEdit;
-    public bool isPlayMode => !m_IsEdit;
 
     #region SafetyZone
     public List<CheckBox.OptionData> safetyZoneFinishOptionList => m_SafetyZone_FinishCheckBox.options;
@@ -240,17 +248,21 @@ public class __EditManager : Singleton<__EditManager>
         // 레이캐스터 설정
         if (null == m_Raycaster_BG)
         {
-            m_Raycaster_BG = Canvas_BG.GetComponent<GraphicRaycaster>();
+            m_Raycaster_BG = m_Canvas_BG.GetComponent<GraphicRaycaster>();
         }
         if (null == m_Raycaster_UI)
         {
-            m_Raycaster_UI = Canvas_UI.GetComponent<GraphicRaycaster>();
+            m_Raycaster_UI = m_Canvas_UI.GetComponent<GraphicRaycaster>();
         }
 
         if (null == m_SelectedImageOutline)
         {
             m_SelectedImageOutline = m_SelectedImage.GetComponent<Outline>();
         }
+
+        float unit = m_Canvas_BG.referencePixelsPerUnit;
+        Vector2 size = new Vector2(M_Game.width, M_Game.height) * unit;
+        m_Canvas_BG.GetComponent<RectTransform>().sizeDelta = size;
 
         // Enemy
         AddPoint = false;
@@ -393,8 +405,8 @@ public class __EditManager : Singleton<__EditManager>
     {
         PlayButton.image.sprite = ResetImage;
 
-        Canvas_UI.transform.Find("Game_UI").gameObject.SetActive(true);
-        Canvas_UI.transform.Find("Edit_UI").gameObject.SetActive(false);
+        m_Canvas_UI.transform.Find("Game_UI").gameObject.SetActive(true);
+        m_Canvas_UI.transform.Find("Edit_UI").gameObject.SetActive(false);
 
         m_IsEdit = false;
     }
@@ -402,8 +414,8 @@ public class __EditManager : Singleton<__EditManager>
     {
         m_IsEdit = true;
 
-        Canvas_UI.transform.Find("Game_UI").gameObject.SetActive(false);
-        Canvas_UI.transform.Find("Edit_UI").gameObject.SetActive(true);
+        m_Canvas_UI.transform.Find("Game_UI").gameObject.SetActive(false);
+        m_Canvas_UI.transform.Find("Edit_UI").gameObject.SetActive(true);
 
         PlayButton.image.sprite = PlayImage;
     }
@@ -478,7 +490,7 @@ public class __EditManager : Singleton<__EditManager>
             #endregion
 
             #region 키보드
-            if (!IsInputFieldFocus)
+            if (!isInputFieldFocus)
             {
                 ChangeSelectedType();
             }

@@ -9,10 +9,11 @@ public class CoinCollider : MonoBehaviour, IEraserable
     protected Coin m_Coin;
 
     #region 내부 프로퍼티
+    #region 매니져
     protected __EditManager M_Edit => __EditManager.Instance;
     protected CoinManager M_Coin => CoinManager.Instance;
     #endregion
-
+    #endregion
     #region 외부 함수
     public void __Initialize(Coin coin)
     {
@@ -24,7 +25,6 @@ public class CoinCollider : MonoBehaviour, IEraserable
         M_Coin.DespawnCoin(m_Coin);
     }
     #endregion
-
     #region 유니티 콜백 함수
     private void OnTriggerEnter2D(Collider2D collision)
     {

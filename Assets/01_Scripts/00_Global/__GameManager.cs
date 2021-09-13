@@ -39,6 +39,7 @@ public class __GameManager : Singleton<__GameManager>
     #region 외부 프로퍼티
     public int width { get => m_width; set => m_width = value; }
     public int height { get => m_height; set => m_height = value; }
+    public bool isPlayMode => !M_Edit.isEditMode;
     #endregion
     #region 내부 함수
     void __Initialize()

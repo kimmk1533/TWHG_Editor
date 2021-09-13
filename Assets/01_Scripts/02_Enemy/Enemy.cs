@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour
     #endregion
     #region 내부 프로퍼티
     #region 매니져
-    protected __EditManager M_Edit => __EditManager.Instance;
+    protected __GameManager M_Game => __GameManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
@@ -162,7 +162,7 @@ public class Enemy : MonoBehaviour
     #region 유니티 콜백 함수
     void Update()
     {
-        if (M_Edit.isPlayMode)
+        if (M_Game.isPlayMode)
         {
             Move();
         }

@@ -11,9 +11,7 @@ public class PlayerCollider : MonoBehaviour, IEraserable
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
-    protected __EditManager M_Edit => __EditManager.Instance;
     protected CoinManager M_Coin => CoinManager.Instance;
-    protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
@@ -52,6 +50,18 @@ public class PlayerCollider : MonoBehaviour, IEraserable
     #region 유니티 콜백 함수
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (M_Game.isPlayMode)
+        {
+            if (collision.CompareTag("Enemy") && !m_Player.isSafe)
+            {
+                m_Player.Death();
+            }
+            if (collision.CompareTag("Coin"))
+            {
+                collision.GetComponent<IEraserable>().Erase();
+            }
+        }
+
         if (collision.CompareTag("SafetyZone"))
         {
             m_Player.isSafe = true;
@@ -66,14 +76,6 @@ public class PlayerCollider : MonoBehaviour, IEraserable
                     // 승리
                     Debug.Log("승리");
                 }
-            }
-        }
-
-        if (M_Edit.isPlayMode)
-        {
-            if (collision.CompareTag("Enemy") && !m_Player.isSafe)
-            {
-                m_Player.Death();
             }
         }
     }
