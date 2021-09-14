@@ -6,3 +6,8 @@ public interface IEraserable
 {
     void Erase();
 }
+public interface IObjectType
+{
+    GameObject GetGameObject();
+    E_ObjectType GetObjectType();
+}

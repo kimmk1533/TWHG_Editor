@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyCollider : MonoBehaviour, IEraserable
+public class EnemyCollider : MonoBehaviour, IEraserable, IObjectType
 {
     protected Enemy m_Enemy;
 
@@ -32,6 +32,14 @@ public class EnemyCollider : MonoBehaviour, IEraserable
     public void Erase()
     {
         M_Enemy.DespawnEnemy(m_Enemy);
+    }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+    public E_ObjectType GetObjectType()
+    {
+        return E_ObjectType.Enemy;
     }
     #endregion
     #region 유니티 콜백 함수

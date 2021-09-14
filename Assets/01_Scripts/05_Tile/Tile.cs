@@ -66,7 +66,6 @@ public class Tile : MonoBehaviour
                 // 위치 설정
                 wall.transform.position = spawnPos;
                 // 초기화
-                wall.__Initialize();
                 // 활성화
                 wall.gameObject.SetActive(true);
                 break;

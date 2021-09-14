@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerCollider : MonoBehaviour, IEraserable
+public class PlayerCollider : MonoBehaviour, IEraserable, IObjectType
 {
     public Player m_Player;
     protected BoxCollider2D m_Collider;
@@ -35,6 +35,14 @@ public class PlayerCollider : MonoBehaviour, IEraserable
     public void Erase()
     {
         m_Player.gameObject.SetActive(false);
+    }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+    public E_ObjectType GetObjectType()
+    {
+        return E_ObjectType.Player;
     }
     #endregion
     #region 이벤트 함수

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinCollider : MonoBehaviour, IEraserable
+public class CoinCollider : MonoBehaviour, IEraserable, IObjectType
 {
     // 관리 컴포넌트
     [SerializeField, ReadOnly]
@@ -23,6 +23,14 @@ public class CoinCollider : MonoBehaviour, IEraserable
     public void Erase()
     {
         M_Coin.DespawnCoin(m_Coin);
+    }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+    public E_ObjectType GetObjectType()
+    {
+        return E_ObjectType.Coin;
     }
     #endregion
     #region 유니티 콜백 함수

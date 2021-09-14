@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SafetyZoneCollider : MonoBehaviour, IEraserable
+public class SafetyZoneCollider : MonoBehaviour, IEraserable, IObjectType
 {
     protected SafetyZone m_SafetyZone;
     protected BoxCollider2D m_Collider;
@@ -30,10 +30,15 @@ public class SafetyZoneCollider : MonoBehaviour, IEraserable
 
     public void Erase()
     {
-        if (!m_SafetyZone.gameObject.activeSelf)
-            return;
-
         M_SafetyZone.DespawnSafetyZone(m_SafetyZone);
+    }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+    public E_ObjectType GetObjectType()
+    {
+        return E_ObjectType.SafetyZone;
     }
     #endregion
     #region 유니티 콜백 함수

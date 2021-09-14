@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static WallManager;
 
-public class WallCollider : MonoBehaviour, IEraserable
+public class WallCollider : MonoBehaviour, IEraserable, IObjectType
 {
     protected Wall m_Wall;
     protected BoxCollider2D m_Collider;
@@ -35,16 +35,20 @@ public class WallCollider : MonoBehaviour, IEraserable
         {
             int index = (int)(i + 1 - (int)i % 2 * 2);
 
-            m_Wall.Lines[(int)i].gameObject.SetActive(true);
 
-            if (null != m_Wall.Walls[(int)i])
             {
-                m_Wall.Walls[(int)i].Walls[index] = null;
-                m_Wall.Walls[(int)i].Lines[index].gameObject.SetActive(true);
             }
         }
 
         M_Wall.DespawnWall(m_Wall);
+    }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+    public E_ObjectType GetObjectType()
+    {
+        return E_ObjectType.Wall;
     }
     #endregion
     #region 유니티 콜백 함수
