@@ -19,10 +19,18 @@ public class __EditManager : Singleton<__EditManager>
     protected bool m_IsEdit;
 
     [Header("Selected")]
-    public E_ObjectType m_SelectedType;
-    public Image m_SelectedImage;
-    public Text m_SelectedText;
+    [SerializeField]
+    protected E_ObjectType m_SelectedType;
+    [SerializeField]
+    protected Image m_SelectedImage;
+    [SerializeField]
+    protected Text m_SelectedText;
+    [SerializeField]
     protected Outline m_SelectedImageOutline;
+    protected int m_ClickIndex;
+    protected IObjectType m_ClickedObjectType;
+    protected List<IObjectType> m_CurrentClickedObjectList;
+    protected List<IObjectType> m_LastClickedObjectList;
 
     [Header("PlayButton")]
     public Button PlayButton;
@@ -92,6 +100,8 @@ public class __EditManager : Singleton<__EditManager>
     protected bool IsRight => Input.GetMouseButton((int)E_InputButton.Right);
     protected bool IsLeftDown => Input.GetMouseButtonDown((int)E_InputButton.Left);
     protected bool IsRightDown => Input.GetMouseButtonDown((int)E_InputButton.Right);
+    protected bool IsLeftUp => Input.GetMouseButtonUp((int)E_InputButton.Left);
+    protected bool IsRightUp => Input.GetMouseButtonUp((int)E_InputButton.Right);
 
     protected bool isInputFieldFocus
     {
@@ -177,10 +187,6 @@ public class __EditManager : Singleton<__EditManager>
                 }
             }
         }
-        else if (IsRightDown)
-        {
-            obj?.GetComponent<IEraserable>()?.Erase();
-        }
         #endregion
 
         #region Drag Process
@@ -197,17 +203,170 @@ public class __EditManager : Singleton<__EditManager>
                     M_Tile.Draw(ui_obj, E_TileType.SafetyZone);
                     break;
                 case E_ObjectType.Erase:
-                    obj?.GetComponent<IEraserable>()?.Erase();
                     M_Tile.Draw(ui_obj, E_TileType.None);
                     break;
             }
         }
         else if (IsRight)
         {
-            obj?.GetComponent<IEraserable>()?.Erase();
             M_Tile.Draw(ui_obj, E_TileType.None);
         }
         #endregion
+    }
+    protected void SelectInEditMode()
+    {
+        if (m_SelectedType != E_ObjectType.None)
+            return;
+
+        Vector2 origin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        int layerMask = 0;
+        for (E_ObjectType i = E_ObjectType.Player; i < E_ObjectType.Erase; ++i)
+        {
+            layerMask += 1 << LayerMask.NameToLayer(i.ToString());
+        }
+
+        Collider2D[] colliders = Physics2D.OverlapPointAll(origin, layerMask);
+
+        if (colliders.Length <= 0)
+            return;
+
+        m_LastClickedObjectList.Clear();
+        m_LastClickedObjectList.AddRange(m_CurrentClickedObjectList);
+
+        m_CurrentClickedObjectList.Clear();
+        foreach (var item in colliders)
+        {
+            IObjectType objectType = item.GetComponent<IObjectType>();
+            if (null == objectType)
+                continue;
+
+            m_CurrentClickedObjectList.Add(objectType);
+        }
+
+        int currentCount = m_CurrentClickedObjectList.Count;
+        int lastCount = m_LastClickedObjectList.Count;
+
+        if (lastCount <= 0)
+        {
+            m_ClickIndex = 1;
+            m_ClickedObjectType = m_CurrentClickedObjectList[0];
+            SetSelectedUI(m_ClickedObjectType.GetObjectType());
+            return;
+        }
+
+        if (m_ClickIndex >= currentCount)
+            m_ClickIndex = 0;
+
+        for (int i = 0; i < currentCount; ++i)
+        {
+            if (m_CurrentClickedObjectList[i] == m_LastClickedObjectList[i])
+            {
+                if (m_ClickIndex <= i)
+                {
+                    m_ClickIndex = i + 1;
+                    m_ClickedObjectType = m_CurrentClickedObjectList[i];
+                    SetSelectedUI(m_ClickedObjectType.GetObjectType());
+                    break;
+                }
+            }
+            else
+            {
+                m_ClickIndex = 1;
+                m_ClickedObjectType = m_CurrentClickedObjectList[0];
+                SetSelectedUI(m_ClickedObjectType.GetObjectType());
+                break;
+            }
+        }
+    }
+
+    protected void SetSelectedUI(E_ObjectType type)
+    {
+        m_SelectedText.text = "Selected:" + "\n" + type.ToString();
+        m_CurrentOptionPanel?.SetActive(false);
+
+        switch (type)
+        {
+            case E_ObjectType.None:
+                {
+                    m_SelectedImage.sprite = null;
+                    m_SelectedImage.color = Color.clear;
+                    m_SelectedImageOutline.enabled = false;
+
+                    m_CurrentOptionPanel = null;
+                    break;
+                }
+            case E_ObjectType.Player:
+                {
+                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
+                    m_SelectedImage.sprite = M_Resources.GetSprites("Player", "Player")[0];
+                    m_SelectedImage.color = Color.white;
+                    m_SelectedImageOutline.enabled = false;
+
+                    m_CurrentOptionPanel = null;
+                    break;
+                }
+            case E_ObjectType.Enemy:
+                {
+                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
+                    m_SelectedImage.sprite = M_Resources.GetSprites("Enemy", "Enemy")[0];
+                    m_SelectedImage.color = Color.white;
+                    m_SelectedImageOutline.enabled = false;
+
+                    m_CurrentOptionPanel = m_EnemyOptionPanel;
+                    break;
+                }
+            case E_ObjectType.Coin:
+                {
+                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
+                    m_SelectedImage.sprite = M_Resources.GetSprites("Coin", "Coin")[0];
+                    m_SelectedImage.color = Color.white;
+                    m_SelectedImageOutline.enabled = false;
+
+                    m_CurrentOptionPanel = null;
+                    break;
+                }
+            case E_ObjectType.Wall:
+                {
+                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
+                    m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
+                    m_SelectedImageOutline.enabled = true;
+
+                    WallCollider wallCollider = m_ClickedObjectType?.GetGameObject().GetComponent<WallCollider>();
+                    if (null == wallCollider)
+                        m_SelectedImage.color = M_Game.m_WallColor;
+                    else
+                        m_SelectedImage.color = wallCollider.wall.tile.color;
+
+                    slider_red.value = m_SelectedImage.color.r;
+                    slider_green.value = m_SelectedImage.color.g;
+                    slider_blue.value = m_SelectedImage.color.b;
+                    ColorToText();
+
+                    m_CurrentOptionPanel = m_WallOptionPanel;
+                    break;
+                }
+            case E_ObjectType.SafetyZone:
+                {
+                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
+                    m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
+                    m_SelectedImage.color = M_Game.m_SafetyZoneColor;
+                    m_SelectedImageOutline.enabled = false;
+
+                    m_CurrentOptionPanel = m_SafetyZoneOptionPanel;
+                    break;
+                }
+            case E_ObjectType.Erase:
+                {
+                    m_SelectedImage.sprite = null;
+                    m_SelectedImage.color = Color.clear;
+                    m_SelectedImageOutline.enabled = false;
+
+                    m_CurrentOptionPanel = null;
+                    break;
+                }
+        }
+
+        m_CurrentOptionPanel?.SetActive(true);
     }
     protected void ChangeSelectedType()
     {
@@ -236,6 +395,12 @@ public class __EditManager : Singleton<__EditManager>
             SetSelectedType(E_ObjectType.Wall);
         }
     }
+
+    protected void UpdateClickedWallOption()
+    {
+        Wall wall = m_ClickedObjectType.GetGameObject().GetComponent<WallCollider>().wall;
+        wall.tile.color = M_Game.m_WallColor;
+    }
     #endregion
     #region 외부 함수
     public void __Initialize()
@@ -243,9 +408,8 @@ public class __EditManager : Singleton<__EditManager>
         M_Game.OnPlayEnter += OnPlayEnter;
         M_Game.OnPlayExit += OnPlayExit;
 
+        // 필드 초기화
         m_IsEdit = true;
-
-        // 레이캐스터 설정
         if (null == m_Raycaster_BG)
         {
             m_Raycaster_BG = m_Canvas_BG.GetComponent<GraphicRaycaster>();
@@ -258,6 +422,14 @@ public class __EditManager : Singleton<__EditManager>
         if (null == m_SelectedImageOutline)
         {
             m_SelectedImageOutline = m_SelectedImage.GetComponent<Outline>();
+        }
+        if (null == m_CurrentClickedObjectList)
+        {
+            m_CurrentClickedObjectList = new List<IObjectType>();
+        }
+        if (null == m_LastClickedObjectList)
+        {
+            m_LastClickedObjectList = new List<IObjectType>();
         }
 
         float unit = m_Canvas_BG.referencePixelsPerUnit;
@@ -304,89 +476,8 @@ public class __EditManager : Singleton<__EditManager>
     #region UI
     public void SetSelectedType(E_ObjectType type)
     {
-        m_SelectedText.text = "Selected:" + "\n" + type.ToString();
-        m_CurrentOptionPanel?.SetActive(false);
-
-        switch (type)
-        {
-            case E_ObjectType.None:
-                {
-                    m_SelectedType = E_ObjectType.None;
-                    m_SelectedImage.sprite = null;
-                    m_SelectedImage.color = Color.clear;
-                    m_SelectedImageOutline.enabled = false;
-
-                    m_CurrentOptionPanel = null;
-                    break;
-                }
-            case E_ObjectType.Player:
-                {
-                    m_SelectedType = E_ObjectType.Player;
-                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
-                    m_SelectedImage.sprite = M_Resources.GetSprites("Player", "Player")[0];
-                    m_SelectedImage.color = Color.white;
-                    m_SelectedImageOutline.enabled = false;
-
-                    m_CurrentOptionPanel = null;
-                    break;
-                }
-            case E_ObjectType.Enemy:
-                {
-                    m_SelectedType = E_ObjectType.Enemy;
-                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
-                    m_SelectedImage.sprite = M_Resources.GetSprites("Enemy", "Enemy")[0];
-                    m_SelectedImage.color = Color.white;
-                    m_SelectedImageOutline.enabled = false;
-
-                    m_CurrentOptionPanel = m_EnemyOptionPanel;
-                    break;
-                }
-            case E_ObjectType.Coin:
-                {
-                    m_SelectedType = E_ObjectType.Coin;
-                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
-                    m_SelectedImage.sprite = M_Resources.GetSprites("Coin", "Coin")[0];
-                    m_SelectedImage.color = Color.white;
-                    m_SelectedImageOutline.enabled = false;
-
-                    m_CurrentOptionPanel = null;
-                    break;
-                }
-            case E_ObjectType.Wall:
-                {
-                    m_SelectedType = E_ObjectType.Wall;
-                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
-                    m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
-                    m_SelectedImage.color = M_Game.m_WallColor;
-                    m_SelectedImageOutline.enabled = true;
-
-                    m_CurrentOptionPanel = m_WallOptionPanel;
-                    break;
-                }
-            case E_ObjectType.SafetyZone:
-                {
-                    m_SelectedType = E_ObjectType.SafetyZone;
-                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
-                    m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
-                    m_SelectedImage.color = M_Game.m_SafetyZoneColor;
-                    m_SelectedImageOutline.enabled = false;
-
-                    m_CurrentOptionPanel = m_SafetyZoneOptionPanel;
-                    break;
-                }
-            case E_ObjectType.Erase:
-                {
-                    m_SelectedType = E_ObjectType.Erase;
-                    m_SelectedImage.sprite = null;
-                    m_SelectedImage.color = Color.clear;
-                    m_SelectedImageOutline.enabled = false;
-
-                    m_CurrentOptionPanel = null;
-                    break;
-                }
-        }
-
-        m_CurrentOptionPanel?.SetActive(true);
+        m_SelectedType = type;
+        SetSelectedUI(type);
     }
     public bool IsPointerOverUIObject()
     {
@@ -420,6 +511,23 @@ public class __EditManager : Singleton<__EditManager>
         PlayButton.image.sprite = PlayImage;
     }
 
+    public void TestPlay()
+    {
+        if (isEditMode)/* &&
+            M_SafetyZone.m_ColliderList.Count >= 2)*/
+        {
+            m_SelectedType = E_ObjectType.None;
+
+            m_SelectedImage.color = Color.white * 0f;
+
+            M_Game.EnterPlayMode();
+        }
+        else if (!isEditMode)
+        {
+            M_Game.ExitPlayMode();
+        }
+    }
+
     #region Enemy
     public void OnChangeEnemyType()
     {
@@ -446,7 +554,7 @@ public class __EditManager : Singleton<__EditManager>
     }
     public void ColorToText()
     {
-        input_red.text = (slider_red.value * 255).ToString();
+        input_red.text = (slider_red.value * 255f).ToString();
         input_green.text = (slider_green.value * 255f).ToString();
         input_blue.text = (slider_blue.value * 255f).ToString();
     }
@@ -457,25 +565,13 @@ public class __EditManager : Singleton<__EditManager>
         M_Game.m_WallColor.b = slider_blue.value;
 
         m_SelectedImage.color = M_Game.m_WallColor;
+
+        if (m_ClickedObjectType?.GetObjectType() == E_ObjectType.Wall)
+        {
+            UpdateClickedWallOption();
+        }
     }
     #endregion
-
-    public void TestPlay()
-    {
-        if (isEditMode)/* &&
-            M_SafetyZone.m_ColliderList.Count >= 2)*/
-        {
-            m_SelectedType = E_ObjectType.None;
-
-            m_SelectedImage.color = Color.white * 0f;
-
-            M_Game.EnterPlayMode();
-        }
-        else if (!isEditMode)
-        {
-            M_Game.ExitPlayMode();
-        }
-    }
     #endregion
     #region 유니티 콜백 함수
     private void Update()
@@ -486,6 +582,10 @@ public class __EditManager : Singleton<__EditManager>
             if (IsMouseDown)
             {
                 DrawInEditMode();
+            }
+            if (IsLeftUp)
+            {
+                SelectInEditMode();
             }
             #endregion
 

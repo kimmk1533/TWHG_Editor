@@ -16,6 +16,7 @@ public class WallCollider : MonoBehaviour, IEraserable, IObjectType
     #endregion
     #endregion
     #region 외부 프로퍼티
+    public Wall wall => m_Wall;
     #endregion
     #region 내부 함수
     #endregion
@@ -35,8 +36,12 @@ public class WallCollider : MonoBehaviour, IEraserable, IObjectType
         {
             int index = (int)(i + 1 - (int)i % 2 * 2);
 
+            m_Wall.lines[(int)i].gameObject.SetActive(true);
 
+            if (null != m_Wall.walls[(int)i])
             {
+                m_Wall.walls[(int)i].walls[index] = null;
+                m_Wall.walls[(int)i].lines[index].gameObject.SetActive(true);
             }
         }
 

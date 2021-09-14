@@ -30,6 +30,7 @@ public class Tile : MonoBehaviour
     #region 외부 프로퍼티
     public E_TileIndexType indexType => m_IndexType;
     public E_TileType type => m_Type;
+    public Color color { get => m_Image.color; set => m_Image.color = value; }
     #endregion
     #region 외부 함수
     public void SetType(E_TileType type)
@@ -66,6 +67,7 @@ public class Tile : MonoBehaviour
                 // 위치 설정
                 wall.transform.position = spawnPos;
                 // 초기화
+                wall.__Initialize(this);
                 // 활성화
                 wall.gameObject.SetActive(true);
                 break;

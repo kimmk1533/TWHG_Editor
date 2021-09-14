@@ -7,6 +7,7 @@ public class Wall : MonoBehaviour
 {
     [SerializeField, ReadOnly]
     protected Wall[] m_Walls;
+    protected Tile m_Tile;
 
     #region 내부 컴포넌트
     protected LineRenderer[] m_Lines;
@@ -15,15 +16,18 @@ public class Wall : MonoBehaviour
     #region 내부 프로퍼티
     #endregion
     #region 외부 프로퍼티
-    public Wall[] Walls => m_Walls;
-    public LineRenderer[] Lines => m_Lines;
-    public WallCollider Collider => m_Collider;
+    public Wall[] walls => m_Walls;
+    public LineRenderer[] lines => m_Lines;
+    public new WallCollider collider => m_Collider;
+    public Tile tile => m_Tile;
     #endregion
     #region 내부 함수
     #endregion
     #region 외부 함수
-    public void __Initialize()
+    public void __Initialize(Tile tile)
     {
+        m_Tile = tile;
+
         m_Walls = new Wall[(int)E_WallDirection.Max];
         m_Lines = new LineRenderer[(int)E_WallDirection.Max];
 

@@ -17,7 +17,7 @@ public class WallManager : ObjectManager<WallManager, Wall>
     {
         for (int i = 0; i < m_WallList.Count; ++i)
         {
-            m_WallList[i].Collider.Erase();
+            m_WallList[i].collider.Erase();
         }
 
         m_WallList.Clear();
