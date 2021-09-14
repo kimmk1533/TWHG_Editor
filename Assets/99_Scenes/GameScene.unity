@@ -5121,6 +5121,7 @@ MonoBehaviour:
   m_SelectedType: -1
   m_SelectedImage: {fileID: 2045152907}
   m_SelectedText: {fileID: 1730769859}
+  m_SelectedImageOutline: {fileID: 2045152909}
   PlayButton: {fileID: 1580253760}
   PlayImage: {fileID: -2534983082481615764, guid: 46d314adf271c3d4b896eed609416398, type: 3}
   ResetImage: {fileID: 8029673296183758054, guid: 46d314adf271c3d4b896eed609416398, type: 3}
@@ -5815,10 +5816,6 @@ MonoBehaviour:
   flag: 1
   m_width: 22
   m_height: 14
-  m_OddBGColor: {r: 0.9019608, g: 0.9019608, b: 1, a: 1}
-  m_EvenBGColor: {r: 1, g: 1, b: 1, a: 1}
-  m_SafetyZoneColor: {r: 0.6901961, g: 0.9490197, b: 0.69803923, a: 1}
-  m_WallColor: {r: 0.7058824, g: 0.70980394, b: 0.9960785, a: 1}
 --- !u!4 &925128301
 Transform:
   m_ObjectHideFlags: 0

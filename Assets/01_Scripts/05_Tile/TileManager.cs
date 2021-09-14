@@ -53,10 +53,10 @@ public class TileManager : ObjectManager<TileManager, Tile>
                 switch (tile.indexType)
                 {
                     case E_TileIndexType.Odd:
-                        image.color = M_Game.m_OddBGColor;
+                        image.color = M_Game.oddColor;
                         break;
                     case E_TileIndexType.Even:
-                        image.color = M_Game.m_EvenBGColor;
+                        image.color = M_Game.evenColor;
                         break;
                     default:
                         Debug.LogError("타일 홀짝 오류");
@@ -64,10 +64,10 @@ public class TileManager : ObjectManager<TileManager, Tile>
                 }
                 break;
             case E_TileType.Wall:
-                image.color = M_Game.m_WallColor;
+                image.color = M_Game.wallColor;
                 break;
             case E_TileType.SafetyZone:
-                image.color = M_Game.m_SafetyZoneColor;
+                image.color = M_Game.safetyZoneColor;
                 break;
             default:
                 Debug.LogError("스테이지 값 오류");

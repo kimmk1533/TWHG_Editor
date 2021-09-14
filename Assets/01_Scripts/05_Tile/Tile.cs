@@ -21,11 +21,6 @@ public class Tile : MonoBehaviour
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected StageManager M_Stage => StageManager.Instance;
     #endregion
-
-    protected Color OddColor => M_Game.m_OddBGColor;
-    protected Color EvenColor => M_Game.m_EvenBGColor;
-    protected Color WallColor => M_Game.m_WallColor;
-    protected Color SafetyZoneColor => M_Game.m_SafetyZoneColor;
     #endregion
     #region 외부 프로퍼티
     public E_TileIndexType indexType => m_IndexType;
@@ -49,10 +44,10 @@ public class Tile : MonoBehaviour
                 switch (m_IndexType)
                 {
                     case E_TileIndexType.Odd:
-                        m_Image.color = OddColor;
+                        m_Image.color = M_Game.oddColor;
                         break;
                     case E_TileIndexType.Even:
-                        m_Image.color = EvenColor;
+                        m_Image.color = M_Game.evenColor;
                         break;
                     default:
                         Debug.LogError("타일 홀짝 오류");
@@ -60,7 +55,7 @@ public class Tile : MonoBehaviour
                 }
                 break;
             case E_TileType.Wall:
-                m_Image.color = WallColor;
+                m_Image.color = M_Game.wallColor;
 
                 // 스폰
                 Wall wall = M_Wall.SpawnWall();
@@ -72,7 +67,7 @@ public class Tile : MonoBehaviour
                 wall.gameObject.SetActive(true);
                 break;
             case E_TileType.SafetyZone:
-                m_Image.color = SafetyZoneColor;
+                m_Image.color = M_Game.safetyZoneColor;
 
                 // 스폰
                 SafetyZone safetyZone = M_SafetyZone.SpawnSafetyZone();

@@ -333,7 +333,7 @@ public class __EditManager : Singleton<__EditManager>
 
                     WallCollider wallCollider = m_ClickedObjectType?.GetGameObject().GetComponent<WallCollider>();
                     if (null == wallCollider)
-                        m_SelectedImage.color = M_Game.m_WallColor;
+                        m_SelectedImage.color = M_Game.wallColor;
                     else
                         m_SelectedImage.color = wallCollider.wall.tile.color;
 
@@ -349,7 +349,7 @@ public class __EditManager : Singleton<__EditManager>
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
-                    m_SelectedImage.color = M_Game.m_SafetyZoneColor;
+                    m_SelectedImage.color = M_Game.safetyZoneColor;
                     m_SelectedImageOutline.enabled = false;
 
                     m_CurrentOptionPanel = m_SafetyZoneOptionPanel;
@@ -399,7 +399,7 @@ public class __EditManager : Singleton<__EditManager>
     protected void UpdateClickedWallOption()
     {
         Wall wall = m_ClickedObjectType.GetGameObject().GetComponent<WallCollider>().wall;
-        wall.tile.color = M_Game.m_WallColor;
+        wall.tile.color = M_Game.wallColor;
     }
     #endregion
     #region 외부 함수
@@ -449,9 +449,9 @@ public class __EditManager : Singleton<__EditManager>
         dropdown_EnemyType.AddOptions(enemyType_option);
 
         // Wall
-        slider_red.value = M_Game.m_WallColor.r;
-        slider_green.value = M_Game.m_WallColor.g;
-        slider_blue.value = M_Game.m_WallColor.b;
+        slider_red.value = M_Game.wallColor.r;
+        slider_green.value = M_Game.wallColor.g;
+        slider_blue.value = M_Game.wallColor.b;
         m_SelectedImage.color = Color.clear;
         ColorToText();
 
@@ -560,11 +560,11 @@ public class __EditManager : Singleton<__EditManager>
     }
     public void UpdateWallOption()
     {
-        M_Game.m_WallColor.r = slider_red.value;
-        M_Game.m_WallColor.g = slider_green.value;
-        M_Game.m_WallColor.b = slider_blue.value;
-
-        m_SelectedImage.color = M_Game.m_WallColor;
+        Color color = new Color();
+        color.r = slider_red.value;
+        color.g = slider_green.value;
+        color.b = slider_blue.value;
+        m_SelectedImage.color = M_Game.wallColor = color;
 
         if (m_ClickedObjectType?.GetObjectType() == E_ObjectType.Wall)
         {

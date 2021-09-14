@@ -13,14 +13,14 @@ public class __GameManager : Singleton<__GameManager>
     [Header("TileColors")]
     // 홀수 칸
     [ReadOnly(true)]
-    public Color m_OddBGColor;
+    protected Color m_OddColor;
     // 짝수 칸
     [ReadOnly(true)]
-    public Color m_EvenBGColor;
+    protected Color m_EvenColor;
     [ReadOnly(true)]
-    public Color m_SafetyZoneColor;
+    protected Color m_WallColor;
     [ReadOnly(true)]
-    public Color m_WallColor;
+    protected Color m_SafetyZoneColor;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -40,6 +40,11 @@ public class __GameManager : Singleton<__GameManager>
     public int width { get => m_width; set => m_width = value; }
     public int height { get => m_height; set => m_height = value; }
     public bool isPlayMode => !M_Edit.isEditMode;
+
+    public Color oddColor { get => m_OddColor; set => m_OddColor = value; }
+    public Color evenColor { get => m_EvenColor; set => m_EvenColor = value; }
+    public Color wallColor { get => m_WallColor; set => m_WallColor = value; }
+    public Color safetyZoneColor { get => m_SafetyZoneColor; set => m_SafetyZoneColor = value; }
     #endregion
     #region 내부 함수
     void __Initialize()
