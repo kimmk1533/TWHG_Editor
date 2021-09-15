@@ -34,8 +34,8 @@ public class CheckBoxItem : MonoBehaviour, IPointerClickHandler, IEventSystemHan
             return -1;
         }
     }
+    public RectTransform rectTransform { get => m_RectTransform; }
     public Text text { get => m_Text; set => m_Text = value; }
-    public RectTransform rectTransform { get => m_RectTransform; set => m_RectTransform = value; }
     public Toggle toggle { get => m_Toggle; set => m_Toggle = value; }
     #endregion
     #region 내부 함수

@@ -5,21 +5,27 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CheckBox : MonoBehaviour, IEventSystemHandler
+public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
 {
     [Space(10)]
     [SerializeField]
     protected ScrollRect m_ScrollRect;
     [SerializeField]
-    protected CheckBoxItem m_Template;
+    protected ScrollInputFieldListItem m_Template;
+    [SerializeField]
+    protected Button m_AddButton;
+    [SerializeField]
+    protected Button m_RemoveButton;
     [Space(10)]
     [SerializeField]
     protected List<OptionData> m_Options;
     [Space(10)]
     [SerializeField]
-    protected CheckBoxEvent m_OnValueChanged;
+    protected ScrollListEvent m_OnValueChanged;
 
-    protected List<CheckBoxItem> m_ItemList;
+    [SerializeField, ReadOnly]
+    protected int m_SelectIndex;
+    protected List<ScrollInputFieldListItem> m_ItemList;
 
     #region 내부 컴포넌트
     #endregion
@@ -27,12 +33,13 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
     #region 매니져
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     #endregion
+
     protected RectTransform content => m_ScrollRect.content;
-    protected CheckBoxItem template => m_Template;
+    protected ScrollInputFieldListItem template => m_Template;
     #endregion
     #region 외부 프로퍼티
     public ScrollRect scrollRect { get => m_ScrollRect; set => m_ScrollRect = value; }
-    public CheckBoxEvent onValueChanged { get => m_OnValueChanged; set => m_OnValueChanged = value; }
+    public ScrollListEvent onValueChanged { get => m_OnValueChanged; set => m_OnValueChanged = value; }
     public List<OptionData> options
     {
         get => m_Options;
@@ -40,18 +47,18 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
         {
             m_Options = value;
             RefreshShownValue();
-            ResizeContent();
         }
     }
+    public int itemIndex => content.childCount - 1; 
+    public int selectIndex { get => m_SelectIndex; set => m_SelectIndex = value; }
     #endregion
     #region 내부 함수
-    protected CheckBoxItem CreateItem(OptionData optionData)
+    protected ScrollInputFieldListItem CreateItem(OptionData optionData)
     {
-        int index = content.childCount - 1;
-        CheckBoxItem item = CheckBoxItem.Instantiate(m_Template, content);
+        int index = itemIndex;
+        ScrollInputFieldListItem item = ScrollInputFieldListItem.Instantiate(m_Template, content);
 
-        if (null != item.toggle)
-            item.toggle.isOn = optionData.isOn;
+        item.index = index;
         if (null != item.text)
             item.text.text = optionData.text;
 
@@ -68,8 +75,7 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
     }
     protected void ResizeContent()
     {
-        int index = content.childCount - 1;
-        float size = index * template.rectTransform.rect.height;
+        float size = itemIndex * template.rectTransform.rect.height;
         content.sizeDelta = new Vector2(content.sizeDelta.x, size);
     }
     #endregion
@@ -78,13 +84,15 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
     {
         m_Options.Add(option);
         CreateItem(option);
+
         ResizeContent();
     }
     public void AddOption(string option)
     {
-        OptionData optionData = new OptionData(option);
+        OptionData optionData = new OptionData(this, option);
         m_Options.Add(optionData);
         CreateItem(optionData);
+
         ResizeContent();
     }
     public void AddOptions(List<OptionData> options)
@@ -103,15 +111,17 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
     }
     public void RemoveOption(int index)
     {
-        if (index < 0 || index >= content.childCount - 1)
+        if (index < 0 || index >= itemIndex)
             return;
 
         m_Options.RemoveAt(index);
         m_ItemList.RemoveAt(index);
-        GameObject.Destroy(content.GetChild(index + 1).gameObject);
+        GameObject.DestroyImmediate(content.GetChild(index + 1).gameObject);
 
         for (int i = index; i < m_ItemList.Count; ++i)
         {
+            m_Options[i].index = i;
+            m_ItemList[i].index = i;
             m_Options[i].text = (i + 1).ToString();
             m_ItemList[i].text.text = (i + 1).ToString();
 
@@ -124,7 +134,7 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
     }
     public void RefreshShownValue()
     {
-        for (int i = content.childCount - 1; i >= 0; i--)
+        for (int i = content.childCount - 1; i >= 0; --i)
         {
             GameObject.Destroy(content.GetChild(i));
         }
@@ -133,16 +143,30 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
         {
             CreateItem(m_Options[i]);
         }
+
+        ResizeContent();
+    }
+    #endregion
+    #region 이벤트 함수
+    public void OnAddButtonClicked()
+    {
+        m_SelectIndex = itemIndex;
+        AddOption((itemIndex + 1).ToString());
+    }
+    public void OnRemoveButtonClicked()
+    {
+        RemoveOption(m_SelectIndex);
+        m_SelectIndex = Mathf.Clamp(m_SelectIndex, 0, itemIndex - 1);
     }
     #endregion
     #region 유니티 콜백 함수
     protected void Awake()
     {
-        m_ItemList = new List<CheckBoxItem>();
+        m_ItemList = new List<ScrollInputFieldListItem>();
 
         if (null == m_Template)
         {
-            m_Template = content.GetChild(0).GetComponent<CheckBoxItem>();
+            m_Template = content.GetChild(0).GetComponent<ScrollInputFieldListItem>();
         }
         m_Template.gameObject.SetActive(false);
 
@@ -153,15 +177,26 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
 
         m_OnValueChanged.AddListener(index =>
         {
-            m_Options[index - 1].isOn = m_ItemList[index - 1].toggle.isOn;
+            m_Options[index - 1].index = m_ItemList[index - 1].index;
         });
+
+        m_AddButton.onClick.AddListener(() =>
+        {
+            OnAddButtonClicked();
+        });
+        m_RemoveButton.onClick.AddListener(() =>
+        {
+            OnRemoveButtonClicked();
+        });
+
+        m_SelectIndex = itemIndex;
     }
     #endregion
 
     [System.Serializable]
-    public class CheckBoxEvent : UnityEvent<int>
+    public class ScrollListEvent : UnityEvent<int>
     {
-        public CheckBoxEvent()
+        public ScrollListEvent()
         {
 
         }
@@ -170,22 +205,22 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
     public class OptionData
     {
         [SerializeField]
-        protected bool m_IsOn;
+        protected int m_Index;
         [SerializeField]
         protected string m_Text;
 
-        public OptionData()
+        public OptionData(ScrollInputFieldList scrollList)
         {
-            m_IsOn = false;
+            m_Index = scrollList.itemIndex;
             m_Text = "";
         }
-        public OptionData(string text)
+        public OptionData(ScrollInputFieldList scrollList, string text)
         {
-            m_IsOn = false;
+            m_Index = scrollList.itemIndex;
             m_Text = text;
         }
-        
-        public bool isOn { get => m_IsOn; set => m_IsOn = value; }
+
+        public int index { get => m_Index; set => m_Index = value; }
         public string text { get => m_Text; set => m_Text = value; }
     }
 }
