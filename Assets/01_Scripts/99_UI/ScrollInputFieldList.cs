@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
 {
+    [SerializeField, ReadOnly]
+    protected int m_SelectedIndex;
+
     [Space(10)]
     [SerializeField]
     protected ScrollRect m_ScrollRect;
@@ -16,15 +19,21 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
     protected Button m_AddButton;
     [SerializeField]
     protected Button m_RemoveButton;
+    [SerializeField]
+    protected InputField m_SelectedIndexInputField;
     [Space(10)]
     [SerializeField]
     protected List<OptionData> m_Options;
     [Space(10)]
     [SerializeField]
-    protected ScrollListEvent m_OnValueChanged;
+    protected Button.ButtonClickedEvent m_OnAddButtonClicked;
+    [SerializeField]
+    protected Button.ButtonClickedEvent m_OnRemoveButtonClicked;
+    [SerializeField]
+    protected UnityAction<string> m_OnItemValueChanged;
+    [SerializeField]
+    protected InputField.SubmitEvent m_OnSelectedIndexEndEdit;
 
-    [SerializeField, ReadOnly]
-    protected int m_SelectIndex;
     protected List<ScrollInputFieldListItem> m_ItemList;
 
     #region 내부 컴포넌트
@@ -39,7 +48,10 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
     #endregion
     #region 외부 프로퍼티
     public ScrollRect scrollRect { get => m_ScrollRect; set => m_ScrollRect = value; }
-    public ScrollListEvent onValueChanged { get => m_OnValueChanged; set => m_OnValueChanged = value; }
+    public Button.ButtonClickedEvent onAddButtonClicked { get => m_OnAddButtonClicked; set => m_OnAddButtonClicked = value; }
+    public Button.ButtonClickedEvent onRemoveButtonClicked { get => m_OnRemoveButtonClicked; set => m_OnRemoveButtonClicked = value; }
+    public UnityAction<string> onItemValueChanged { get => m_OnItemValueChanged; set => m_OnItemValueChanged = value; }
+    public InputField.SubmitEvent onSelectedIndexEndEdit { get => m_OnSelectedIndexEndEdit; set => m_OnSelectedIndexEndEdit = value; }
     public List<OptionData> options
     {
         get => m_Options;
@@ -49,16 +61,40 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
             RefreshShownValue();
         }
     }
-    public int itemIndex => content.childCount - 1; 
-    public int selectIndex { get => m_SelectIndex; set => m_SelectIndex = value; }
+    public List<ScrollInputFieldListItem> items
+    {
+        get => m_ItemList;
+        set
+        {
+            m_ItemList = value;
+            m_Options.Clear();
+            for (int i = 0; i < m_ItemList.Count; ++i)
+            {
+                m_Options.Add(new OptionData(this, m_ItemList[i].text.text));
+            }
+
+            RefreshShownValue();
+        }
+    }
+    public int Count { get => content.childCount - 1; }
+    public int selectedIndex
+    {
+        get => m_SelectedIndex;
+        set
+        {
+            m_SelectedIndex = value;
+            m_SelectedIndexInputField.text = (m_SelectedIndex + 1).ToString();
+        }
+    }
+    public InputField selectedIndexInputField { get => m_SelectedIndexInputField; set => m_SelectedIndexInputField = value; }
     #endregion
     #region 내부 함수
     protected ScrollInputFieldListItem CreateItem(OptionData optionData)
     {
-        int index = itemIndex;
+        int index = Count;
         ScrollInputFieldListItem item = ScrollInputFieldListItem.Instantiate(m_Template, content);
 
-        item.index = index;
+        item.index = optionData.index;
         if (null != item.text)
             item.text.text = optionData.text;
 
@@ -68,6 +104,7 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
 
         item.name = "Item " + index + ": " + optionData.text;
 
+        item.__Initialize(this);
         item.gameObject.SetActive(true);
         m_ItemList.Add(item);
 
@@ -75,7 +112,7 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
     }
     protected void ResizeContent()
     {
-        float size = itemIndex * template.rectTransform.rect.height;
+        float size = Count * template.rectTransform.rect.height;
         content.sizeDelta = new Vector2(content.sizeDelta.x, size);
     }
     #endregion
@@ -111,7 +148,7 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
     }
     public void RemoveOption(int index)
     {
-        if (index < 0 || index >= itemIndex)
+        if (index < 0 || index >= Count)
             return;
 
         m_Options.RemoveAt(index);
@@ -132,6 +169,20 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
 
         ResizeContent();
     }
+    public void ClearOption()
+    {
+        int count = m_ItemList.Count;
+        for (int i = 0; i < count; ++i)
+        {
+            m_Options.RemoveAt(0);
+            m_ItemList.RemoveAt(0);
+            GameObject.DestroyImmediate(content.GetChild(1).gameObject);
+        }
+        m_SelectedIndex = Count;
+        m_SelectedIndexInputField.text = (m_SelectedIndex + 1).ToString();
+
+        ResizeContent();
+    }
     public void RefreshShownValue()
     {
         for (int i = content.childCount - 1; i >= 0; --i)
@@ -146,17 +197,26 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
 
         ResizeContent();
     }
+    public ScrollInputFieldListItem GetInputFieldItem(int index)
+    {
+        if (index < 0 || index >= m_ItemList.Count)
+            return null;
+
+        return m_ItemList[index];
+    }
     #endregion
     #region 이벤트 함수
-    public void OnAddButtonClicked()
+    protected void OnAddButtonClicked()
     {
-        m_SelectIndex = itemIndex;
-        AddOption((itemIndex + 1).ToString());
+        m_SelectedIndex = Count;
+        m_SelectedIndexInputField.text = (m_SelectedIndex + 1).ToString();
+        AddOption((Count + 1).ToString());
     }
-    public void OnRemoveButtonClicked()
+    protected void OnRemoveButtonClicked()
     {
-        RemoveOption(m_SelectIndex);
-        m_SelectIndex = Mathf.Clamp(m_SelectIndex, 0, itemIndex - 1);
+        RemoveOption(m_SelectedIndex);
+        m_SelectedIndex = Mathf.Clamp(m_SelectedIndex, Mathf.Min(0, Count - 1), Mathf.Max(0, Count - 1));
+        m_SelectedIndexInputField.text = (m_SelectedIndex + 1).ToString();
     }
     #endregion
     #region 유니티 콜백 함수
@@ -175,32 +235,23 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
             CreateItem(m_Options[i]);
         }
 
-        m_OnValueChanged.AddListener(index =>
-        {
-            m_Options[index - 1].index = m_ItemList[index - 1].index;
-        });
-
+        m_OnAddButtonClicked = m_AddButton.onClick;
         m_AddButton.onClick.AddListener(() =>
         {
             OnAddButtonClicked();
         });
+        m_OnRemoveButtonClicked = m_RemoveButton.onClick;
         m_RemoveButton.onClick.AddListener(() =>
         {
             OnRemoveButtonClicked();
         });
 
-        m_SelectIndex = itemIndex;
+        m_SelectedIndex = Count;
+        m_SelectedIndexInputField.text = (m_SelectedIndex + 1).ToString();
+        m_OnSelectedIndexEndEdit = m_SelectedIndexInputField.onEndEdit;
     }
     #endregion
 
-    [System.Serializable]
-    public class ScrollListEvent : UnityEvent<int>
-    {
-        public ScrollListEvent()
-        {
-
-        }
-    }
     [System.Serializable]
     public class OptionData
     {
@@ -211,12 +262,12 @@ public class ScrollInputFieldList : MonoBehaviour, IEventSystemHandler
 
         public OptionData(ScrollInputFieldList scrollList)
         {
-            m_Index = scrollList.itemIndex;
+            m_Index = scrollList.Count;
             m_Text = "";
         }
         public OptionData(ScrollInputFieldList scrollList, string text)
         {
-            m_Index = scrollList.itemIndex;
+            m_Index = scrollList.Count;
             m_Text = text;
         }
 

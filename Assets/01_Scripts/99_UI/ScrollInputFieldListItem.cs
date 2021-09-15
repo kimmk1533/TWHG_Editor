@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -27,21 +28,9 @@ public class ScrollInputFieldListItem : MonoBehaviour, IEventSystemHandler, IPoi
     #region 내부 함수
     #endregion
     #region 외부 함수
-    public InputField.OnChangeEvent GetInputFieldValueChangedEvent(int index)
+    public void __Initialize(ScrollInputFieldList scrollList)
     {
-        if (index < 0 || index >= m_InputFieldList.Count)
-            return null;
-
-        return m_InputFieldList[index].onValueChanged;
-    }
-    #endregion
-    #region 유니티 콜백 함수
-    protected void Awake()
-    {
-        if (null == m_ScrollList)
-        {
-            m_ScrollList = GetComponentInParent<ScrollInputFieldList>();
-        }
+        m_ScrollList = scrollList;
 
         if (null == m_Text)
         {
@@ -51,12 +40,41 @@ public class ScrollInputFieldListItem : MonoBehaviour, IEventSystemHandler, IPoi
         {
             m_InputFieldList = new List<InputField>();
             m_InputFieldList.AddRange(GetComponentsInChildren<InputField>());
+
+            foreach (var item in m_InputFieldList)
+            {
+                item.onValueChanged.AddListener(str => m_ScrollList.selectedIndex = m_Index);
+                item.onValueChanged.AddListener(m_ScrollList.onItemValueChanged);
+                item.onEndEdit.AddListener(str =>
+                {
+                    if (str == "")
+                    {
+                        item.text = "0";
+                    }
+                });
+            }
         }
     }
 
-    public virtual void OnPointerClick(PointerEventData eventData)
+    public string GetInputFieldValue(int index)
     {
-        m_ScrollList.selectIndex = m_Index;
+        if (index < 0 || index >= m_InputFieldList.Count)
+            return "";
+
+        return m_InputFieldList[index].text;
+    }
+    public void SetInputFieldValue(int index, string value)
+    {
+        if (index < 0 || index >= m_InputFieldList.Count)
+            return;
+
+        m_InputFieldList[index].text = value;
+    }
+    #endregion
+    #region 유니티 콜백 함수
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        m_ScrollList.selectedIndex = m_Index;
     }
     #endregion
 }
