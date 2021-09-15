@@ -12,6 +12,7 @@ public class EnemyCollider : MonoBehaviour, IEraserable, IObjectType
     #region 내부 프로퍼티
     #region 매니져
     protected EnemyManager M_Enemy => EnemyManager.Instance;
+    protected EnemyGizmoManager M_EnemyGizmo => EnemyGizmoManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
@@ -32,6 +33,11 @@ public class EnemyCollider : MonoBehaviour, IEraserable, IObjectType
 
     public void Erase()
     {
+        for (int i = 0; i < m_Enemy.wayPointList.Count; ++i)
+        {
+            M_EnemyGizmo.DespawnGizmo(m_Enemy.wayPointList[i]);
+        }
+
         M_Enemy.DespawnEnemy(m_Enemy);
     }
     public GameObject GetGameObject()

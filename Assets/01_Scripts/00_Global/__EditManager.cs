@@ -186,6 +186,14 @@ public class __EditManager : Singleton<__EditManager>
         #region Erase
         if (IsRight)
         {
+            if (null != m_ClickedObjectType&&
+                obj?.GetComponent<IObjectType>() == m_ClickedObjectType)
+            {
+                SetSelectedUI(E_ObjectType.None);
+
+                m_ClickedObjectType = null;
+            }
+
             obj?.GetComponent<IEraserable>()?.Erase();
         }
         #endregion
