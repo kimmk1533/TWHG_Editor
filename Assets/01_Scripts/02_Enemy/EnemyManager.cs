@@ -14,7 +14,6 @@ public class EnemyManager : ObjectManager<EnemyManager, Enemy>
         M_Game.OnPlayEnter += OnPlayEnter;
         M_Game.OnPlayExit += OnPlayExit;
 
-
         // 적 풀 원본
         Enemy enemy = M_Resources.GetGameObject<Enemy>("Enemy", "Enemy");
         // 적 풀 생성

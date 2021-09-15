@@ -15,6 +15,7 @@ public class EnemyCollider : MonoBehaviour, IEraserable, IObjectType
     #endregion
     #endregion
     #region 외부 프로퍼티
+    public Enemy enemy => m_Enemy;
     #endregion
     #region 내부 함수
     #endregion
@@ -40,16 +41,6 @@ public class EnemyCollider : MonoBehaviour, IEraserable, IObjectType
     public E_ObjectType GetObjectType()
     {
         return E_ObjectType.Enemy;
-    }
-    #endregion
-    #region 유니티 콜백 함수
-    void Awake()
-    {
-        
-    }
-    void Update()
-    {
-        
     }
     #endregion
 }

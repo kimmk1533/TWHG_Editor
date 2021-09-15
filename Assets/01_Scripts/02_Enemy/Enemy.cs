@@ -12,12 +12,14 @@ public class Enemy : MonoBehaviour
     protected Vector2 m_InitPos;
 
     #region Linear
-    protected List<Vector2> m_WayPointList;
+    [SerializeField, ReadOnly]
+    protected List<EnemyGizmo> m_WayPointList;
 
     protected int m_WayPointCount;
     protected bool m_Revert;
     #endregion
     #region Circular
+    [SerializeField, ReadOnly]
     protected Vector2 m_Center;
 
     protected float m_Degree;
@@ -30,9 +32,14 @@ public class Enemy : MonoBehaviour
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
+
+    protected EnemyGizmoManager M_EnemyGizmo => EnemyGizmoManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
+    public E_EnemyType type { get => m_Type; set => m_Type = value; }
+    public float speed { get => m_Speed; set => m_Speed = value; }
+    public List<EnemyGizmo> wayPointList { get => m_WayPointList; set => m_WayPointList = value; }
     #endregion
     #region 내부 함수
     protected void Move()
@@ -52,7 +59,10 @@ public class Enemy : MonoBehaviour
     }
     protected void LinearMove()
     {
-        transform.position = Vector3.MoveTowards(transform.position, m_WayPointList[m_WayPointCount], m_Speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            m_WayPointList[m_WayPointCount].transform.position,
+            m_Speed * Time.deltaTime);
 
         if (CloseTarget(m_WayPointList[m_WayPointCount], 0.05f))
         {
@@ -83,7 +93,10 @@ public class Enemy : MonoBehaviour
     }
     protected void LinearRepeatMove()
     {
-        transform.position = Vector3.MoveTowards(transform.position, m_WayPointList[m_WayPointCount], m_Speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            m_WayPointList[m_WayPointCount].transform.position,
+            m_Speed * Time.deltaTime);
 
         if (CloseTarget(m_WayPointList[m_WayPointCount], 0.05f))
         {
@@ -111,6 +124,10 @@ public class Enemy : MonoBehaviour
     {
         return Vector3.Distance(targetPos, transform.position) <= distance;
     }
+    protected bool CloseTarget(EnemyGizmo waypoint, float distance)
+    {
+        return CloseTarget(waypoint.transform.position, distance);
+    }
     #endregion
     #region 외부 함수
     public void __Initialize()
@@ -127,13 +144,33 @@ public class Enemy : MonoBehaviour
 
         if (null == m_WayPointList)
         {
-            m_WayPointList = new List<Vector2>();
+            m_WayPointList = new List<EnemyGizmo>();
         }
     }
 
-    public void AddWayPoint(Vector2 wayPoint)
+    public void AddWayPoint()
     {
+        EnemyGizmo wayPoint = M_EnemyGizmo.SpawnGizmo();
+        wayPoint.transform.position = new Vector3(0f, 0f, 5f);
+
+        wayPoint.index = m_WayPointList.Count;
+        wayPoint.text.text = (wayPoint.index + 1).ToString();
         m_WayPointList.Add(wayPoint);
+    }
+    public void RemoveWayPoint(int index)
+    {
+        if (index < 0 || index >= m_WayPointList.Count)
+            return;
+
+        EnemyGizmo wayPoint = m_WayPointList[index];
+        M_EnemyGizmo.DespawnGizmo(wayPoint);
+        m_WayPointList.RemoveAt(index);
+
+        for (int i = index; i < m_WayPointList.Count; ++i)
+        {
+            m_WayPointList[i].index = i;
+            m_WayPointList[i].text.text = (i + 1).ToString();
+        }
     }
     #endregion
     #region 이벤트 함수
