@@ -360,12 +360,16 @@ public class __EditManager : Singleton<__EditManager>
         m_Current_Panel_Option?.SetActive(false);
         M_EnemyGizmo.SetActiveAllGizmo(false);
 
-        if (m_SelectedType != E_ObjectType.None)
+        if (null != m_ClickedObjectType)
         {
-            if (m_ClickedObjectType?.GetObjectType() == type)
-            {
-                m_ClickedObjectType = null;
-            }
+            Vector2 pos = m_ClickedObjectType.GetGameObject().transform.position;
+            m_SelectedObject_InputField_XPos.text = pos.x.ToString();
+            m_SelectedObject_InputField_YPos.text = pos.y.ToString();
+            m_SelectedObject_Panel_Option.SetActive(true);
+        }
+        else
+        {
+            m_SelectedObject_Panel_Option.SetActive(false);
         }
 
         switch (type)
