@@ -60,6 +60,9 @@ TagManager:
   - name: Wall
     uniqueID: 2776542031
     locked: 0
+  - name: Selected
+    uniqueID: 3892184361
+    locked: 0
   - name: UI
     uniqueID: 1752320671
     locked: 0
