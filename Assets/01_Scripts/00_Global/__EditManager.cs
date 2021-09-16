@@ -6,9 +6,31 @@ using UnityEngine.UI;
 
 public class __EditManager : Singleton<__EditManager>
 {
+    [Header("Cursor")]
+    [SerializeField, ReadOnly]
+    protected E_ObjectType m_Cursor_Type;
+    [SerializeField]
+    protected Texture2D m_Cursor_Default;
+    [SerializeField]
+    protected Texture2D m_Cursor_Player;
+    [SerializeField]
+    protected Texture2D m_Cursor_Enemy;
+    [SerializeField]
+    protected Texture2D m_Cursor_Coin;
+    [SerializeField]
+    protected Texture2D m_Cursor_Wall;
+    [SerializeField]
+    protected Texture2D m_Cursor_SafetyZone;
+    [SerializeField]
+    protected Texture2D m_Cursor_Erase;
+
     [Header("EditMode")]
     [SerializeField, ReadOnly]
     protected bool m_IsEdit;
+    [SerializeField]
+    protected GameObject m_Edit_Panel;
+    [SerializeField]
+    protected GameObject m_Game_Panel;
 
     [Header("Canvas")]
     [SerializeField]
@@ -210,10 +232,11 @@ public class __EditManager : Singleton<__EditManager>
             {
                 m_ClickedObjectType = null;
 
-                SetSelectedUI(E_ObjectType.None);
+                SetSelectedUI(E_ObjectType.Erase);
             }
 
             obj?.GetComponent<IEraserable>()?.Erase();
+            M_Tile.Draw(ui_obj, E_TileType.None);
         }
         #endregion
 
@@ -266,13 +289,18 @@ public class __EditManager : Singleton<__EditManager>
                     M_Tile.Draw(ui_obj, E_TileType.SafetyZone);
                     break;
                 case E_ObjectType.Erase:
+                    if (null != m_ClickedObjectType &&
+                        obj?.GetComponent<IObjectType>() == m_ClickedObjectType)
+                    {
+                        m_ClickedObjectType = null;
+
+                        SetSelectedUI(E_ObjectType.Erase);
+                    }
+
+                    obj?.GetComponent<IEraserable>()?.Erase();
                     M_Tile.Draw(ui_obj, E_TileType.None);
                     break;
             }
-        }
-        else if (IsRight)
-        {
-            M_Tile.Draw(ui_obj, E_TileType.None);
         }
         #endregion
     }
@@ -352,6 +380,61 @@ public class __EditManager : Singleton<__EditManager>
                 SetSelectedUI(m_ClickedObjectType.GetObjectType());
                 break;
             }
+        }
+    }
+    protected void ChangeCursor()
+    {
+        if (IsPointerOverUIObject())
+        {
+            SetCursorImage(E_ObjectType.None);
+            return;
+        }
+
+        if (IsRight)
+        {
+            SetCursorImage(E_ObjectType.Erase);
+            return;
+        }
+
+        if (m_Cursor_Type != m_SelectedType)
+        {
+            SetCursorImage(m_SelectedType);
+        }
+    }
+    protected void SetCursorImage(E_ObjectType type)
+    {
+        m_Cursor_Type = type;
+
+        switch (type)
+        {
+            case E_ObjectType.None:
+                Cursor.SetCursor(m_Cursor_Default, Vector2.up, CursorMode.ForceSoftware);
+                //m_Cursor_Current = m_Cursor_Default;
+                break;
+            case E_ObjectType.Player:
+                Cursor.SetCursor(m_Cursor_Player, new Vector2(m_Cursor_Player.width, m_Cursor_Player.height) * 0.5f, CursorMode.ForceSoftware);
+                //m_Cursor_Current = m_Cursor_Player;
+                break;
+            case E_ObjectType.Enemy:
+                Cursor.SetCursor(m_Cursor_Enemy, new Vector2(m_Cursor_Enemy.width, m_Cursor_Enemy.height) * 0.5f, CursorMode.ForceSoftware);
+                //m_Cursor_Current = m_Cursor_Enemy;
+                break;
+            case E_ObjectType.Coin:
+                Cursor.SetCursor(m_Cursor_Coin, new Vector2(m_Cursor_Coin.width, m_Cursor_Coin.height) * 0.5f, CursorMode.ForceSoftware);
+                //m_Cursor_Current = m_Cursor_Coin;
+                break;
+            case E_ObjectType.Wall:
+                Cursor.SetCursor(m_Cursor_Wall, new Vector2(m_Cursor_Wall.width, m_Cursor_Wall.height) * 0.5f, CursorMode.ForceSoftware);
+                //m_Cursor_Current = m_Cursor_Wall;
+                break;
+            case E_ObjectType.SafetyZone:
+                Cursor.SetCursor(m_Cursor_SafetyZone, new Vector2(m_Cursor_SafetyZone.width, m_Cursor_SafetyZone.height) * 0.5f, CursorMode.ForceSoftware);
+                //m_Cursor_Current = m_Cursor_SafetyZone;
+                break;
+            case E_ObjectType.Erase:
+                Cursor.SetCursor(m_Cursor_Erase, new Vector2(m_Cursor_Erase.width, m_Cursor_Erase.height) * 0.5f, CursorMode.ForceSoftware);
+                //m_Cursor_Current = m_Cursor_Erase;
+                break;
         }
     }
 
@@ -524,28 +607,32 @@ public class __EditManager : Singleton<__EditManager>
         {
             case E_EnemyType.Linear:
             case E_EnemyType.LinearRepeat:
-                m_Enemy_Scroll_WayPointList.ClearOption();
-
-                for (int i = 0; i < enemy.wayPointList.Count; ++i)
                 {
-                    enemy.wayPointList[i].gameObject.SetActive(true);
+                    m_Enemy_Scroll_WayPointList.ClearOption();
 
-                    m_Enemy_Scroll_WayPointList.AddOption((enemy.wayPointList[i].index + 1).ToString());
+                    for (int i = 0; i < enemy.wayPointList.Count; ++i)
+                    {
+                        enemy.wayPointList[i].gameObject.SetActive(true);
 
-                    Vector2 pos = enemy.wayPointList[i].transform.position;
-                    m_Enemy_Scroll_WayPointList.items[i].SetInputFieldValue(0, pos.x.ToString());
-                    m_Enemy_Scroll_WayPointList.items[i].SetInputFieldValue(1, pos.y.ToString());
+                        m_Enemy_Scroll_WayPointList.AddOption((enemy.wayPointList[i].index + 1).ToString());
+
+                        Vector2 pos = enemy.wayPointList[i].transform.position;
+                        m_Enemy_Scroll_WayPointList.items[i].SetInputFieldValue(0, pos.x.ToString());
+                        m_Enemy_Scroll_WayPointList.items[i].SetInputFieldValue(1, pos.y.ToString());
+                    }
+
+                    OnEnemyClampWayPointIndex();
+                    m_Enemy_Panel_WayPoint.SetActive(true);
                 }
-
-                OnEnemyClampWayPointIndex();
-                m_Enemy_Panel_WayPoint.SetActive(true);
                 break;
             case E_EnemyType.Circular:
-                enemy.center.gameObject.SetActive(true);
-                m_Enemy_Panel_Center.SetActive(true);
+                {
+                    enemy.center.gameObject.SetActive(true);
+                    m_Enemy_Panel_Center.SetActive(true);
 
-                m_Enemy_InputField_CenterX.text = enemy.center.transform.position.x.ToString();
-                m_Enemy_InputField_CenterY.text = enemy.center.transform.position.y.ToString();
+                    m_Enemy_InputField_CenterX.text = enemy.center.transform.position.x.ToString();
+                    m_Enemy_InputField_CenterY.text = enemy.center.transform.position.y.ToString();
+                }
                 break;
         }
     }
@@ -640,6 +727,8 @@ public class __EditManager : Singleton<__EditManager>
         m_Enemy_Panel_Center.SetActive(false);
         m_Wall_Panel_Option.SetActive(false);
         m_SafetyZone_Panel_Option.SetActive(false);
+
+        SetCursorImage(E_ObjectType.None);
     }
     public void __Finalize()
     {
@@ -662,6 +751,7 @@ public class __EditManager : Singleton<__EditManager>
         m_SelectedType = type;
         m_ClickedObjectType = null;
         SetSelectedUI(type);
+        SetCursorImage(type);
     }
     public bool IsPointerOverUIObject()
     {
@@ -680,17 +770,17 @@ public class __EditManager : Singleton<__EditManager>
     {
         PlayButton.image.sprite = ResetImage;
 
-        m_Canvas_UI.transform.Find("Game_UI").gameObject.SetActive(true);
-        m_Canvas_UI.transform.Find("Edit_UI").gameObject.SetActive(false);
+        m_Edit_Panel.SetActive(false);
 
         m_IsEdit = false;
+
+        SetCursorImage(E_ObjectType.None);
     }
     public void OnPlayExit()
     {
         m_IsEdit = true;
 
-        m_Canvas_UI.transform.Find("Game_UI").gameObject.SetActive(false);
-        m_Canvas_UI.transform.Find("Edit_UI").gameObject.SetActive(true);
+        m_Edit_Panel.SetActive(true);
 
         PlayButton.image.sprite = PlayImage;
     }
@@ -943,6 +1033,8 @@ public class __EditManager : Singleton<__EditManager>
                 ChangeSelectedType();
             }
             #endregion
+
+            ChangeCursor();
         }
     }
     #endregion
