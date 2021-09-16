@@ -42,10 +42,17 @@ public class __EditManager : Singleton<__EditManager>
     #region 옵션
     protected GameObject m_Current_Panel_Option;
 
-    #region 공용 옵션
-    [Header("Public Option")]
+    #region 선택한 오브젝트 옵션
+    [Header("Selected Object Option")]
     [SerializeField]
-    protected GameObject m_Public_Panel_Option;
+    protected GameObject m_SelectedObject_Panel_Option;
+    [SerializeField]
+    protected InputField m_SelectedObject_InputField_XPos;
+    [SerializeField]
+    protected InputField m_SelectedObject_InputField_YPos;
+
+    [SerializeField, ReadOnly]
+    protected bool m_IsClickUI;
     #endregion
     #region 적 옵션
     [Header("Enemy Option")]
@@ -159,7 +166,13 @@ public class __EditManager : Singleton<__EditManager>
     protected void DrawInEditMode()
     {
         if (IsPointerOverUIObject())
+        {
+            if (IsLeftDown)
+            {
+                m_IsClickUI = true;
+            }
             return;
+        }
 
         #region Object Raycast
         // 레이캐스트 설정
@@ -186,12 +199,12 @@ public class __EditManager : Singleton<__EditManager>
         #region Erase
         if (IsRight)
         {
-            if (null != m_ClickedObjectType&&
+            if (null != m_ClickedObjectType &&
                 obj?.GetComponent<IObjectType>() == m_ClickedObjectType)
             {
-                SetSelectedUI(E_ObjectType.None);
-
                 m_ClickedObjectType = null;
+
+                SetSelectedUI(E_ObjectType.None);
             }
 
             obj?.GetComponent<IEraserable>()?.Erase();
@@ -201,6 +214,8 @@ public class __EditManager : Singleton<__EditManager>
         #region Click Process
         if (IsLeftDown)
         {
+            m_IsClickUI = false;
+
             if (null == obj?.GetComponent<WallCollider>())
             {
                 switch (m_SelectedType)
@@ -257,6 +272,12 @@ public class __EditManager : Singleton<__EditManager>
     }
     protected void SelectInEditMode()
     {
+        if (m_IsClickUI)
+        {
+            m_IsClickUI = false;
+            return;
+        }
+
         if (IsPointerOverUIObject())
             return;
 
@@ -275,6 +296,7 @@ public class __EditManager : Singleton<__EditManager>
         if (colliders.Length <= 0)
         {
             m_ClickedObjectType = null;
+            SetSelectedUI(m_SelectedType);
             return;
         }
 
@@ -545,6 +567,8 @@ public class __EditManager : Singleton<__EditManager>
         Vector2 size = new Vector2(M_Game.width, M_Game.height) * unit;
         m_Canvas_BG.GetComponent<RectTransform>().sizeDelta = size;
 
+        m_IsClickUI = false;
+
         #region Enemy
         #region Type
         m_Enemy_Dropdown_Type.ClearOptions();
@@ -589,8 +613,9 @@ public class __EditManager : Singleton<__EditManager>
         ColorToText();
 
         // SafetyZone
-        // m_SafetyZone_FinishCheckBox.onValueChanged.AddListener(index => { M_SafetyZone.SelectFinishZone((int)(index.y - 1)); });
+        // m_SafetyZone_CheckBox_FinishZone.onValueChanged.AddListener(index => { M_SafetyZone.SelectFinishZone((int)(index - 1)); });
 
+        m_SelectedObject_Panel_Option.SetActive(false);
         m_Enemy_Panel_Option.SetActive(false);
         m_Enemy_Panel_Speed.SetActive(false);
         m_Enemy_Panel_WayPoint.SetActive(false);
@@ -616,6 +641,7 @@ public class __EditManager : Singleton<__EditManager>
     public void SetSelectedType(E_ObjectType type)
     {
         m_SelectedType = type;
+        m_ClickedObjectType = null;
         SetSelectedUI(type);
     }
     public bool IsPointerOverUIObject()
@@ -667,6 +693,32 @@ public class __EditManager : Singleton<__EditManager>
         }
     }
 
+    #region SelectedObject
+    public void OnSelectedObjectChangePosition()
+    {
+        if (null == m_ClickedObjectType)
+            return;
+
+        Transform clickedTransform = m_ClickedObjectType.GetGameObject().transform.parent;
+
+        string strX = m_SelectedObject_InputField_XPos.text;
+        string strY = m_SelectedObject_InputField_YPos.text;
+
+        float x, y, z;
+
+        if (!float.TryParse(strX, out x))
+        {
+            x = 0f;
+        }
+        if (!float.TryParse(strY, out y))
+        {
+            y = 0f;
+        }
+        z = clickedTransform.position.z;
+
+        clickedTransform.position = new Vector3(x, y, z);
+    }
+    #endregion
     #region Enemy
     public void OnEnemyChangeType()
     {

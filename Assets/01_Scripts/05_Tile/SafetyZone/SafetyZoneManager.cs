@@ -7,6 +7,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
     protected int m_SafetyZoneCount;
 
     protected List<SafetyZone> m_SafetyZoneList;
+    [SerializeField, ReadOnly]
     protected List<SafetyZone> m_FinishZoneList;
 
     #region 내부 프로퍼티
@@ -91,7 +92,20 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
             return;
 
         m_SafetyZoneList[index].isFinishZone = true;
+
         m_FinishZoneList.Add(m_SafetyZoneList[index]);
+
+        // 추후 이렇게 수정
+        //m_SafetyZoneList[index].isFinishZone = !m_SafetyZoneList[index].isFinishZone;
+
+        //if (m_SafetyZoneList[index].isFinishZone)
+        //{
+        //    m_FinishZoneList.Add(m_SafetyZoneList[index]);
+        //}
+        //else
+        //{
+        //    m_FinishZoneList.Remove(m_SafetyZoneList[index]);
+        //}
     }
     #endregion
     #region 이벤트 함수
