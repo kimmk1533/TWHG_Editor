@@ -6,11 +6,15 @@ using UnityEngine;
 public class CameraMove : MonoBehaviour
 {
     protected Camera m_Camera;
+
     [SerializeField]
     protected Canvas m_Canvas;
     protected RectTransform m_CanvasRectTransform;
+
     [SerializeField]
     protected float m_ScrollDelta;
+    [SerializeField]
+    protected float m_MoveSpeed;
 
     protected float m_Width;
     protected float m_Height;
@@ -35,7 +39,7 @@ public class CameraMove : MonoBehaviour
     #region 내부 함수
     protected void Move()
     {
-        #region 드래그 이동
+        #region 마우스로 이동
         if (Input.GetMouseButtonDown((int)E_InputButton.Middle))
         {
             if (M_Edit.IsPointerOverUIObject())
@@ -55,6 +59,16 @@ public class CameraMove : MonoBehaviour
             {
                 m_IsMove = false;
             }
+        }
+        #endregion
+        #region 키보드로 이동
+        if (M_Edit.isEditMode)
+        {
+            Vector3 dir = new Vector2();
+            dir.x = Input.GetAxisRaw("Horizontal");
+            dir.y = Input.GetAxisRaw("Vertical");
+
+            transform.position += dir * m_MoveSpeed * Time.deltaTime;
         }
         #endregion
 

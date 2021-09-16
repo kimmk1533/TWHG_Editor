@@ -4421,6 +4421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Canvas: {fileID: 2066010173}
   m_ScrollDelta: 0.2
+  m_MoveSpeed: 5
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
