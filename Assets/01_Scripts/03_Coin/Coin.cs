@@ -27,15 +27,4 @@ public class Coin : MonoBehaviour
 
     }
     #endregion
-    #region 유니티 콜백 함수
-    void Awake()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-    #endregion
 }

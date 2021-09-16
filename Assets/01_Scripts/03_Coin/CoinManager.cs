@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CoinManager : ObjectManager<CoinManager, Coin>
 {
+    [SerializeField, ReadOnly]
     // 현재 게임에 남아있는 코인 갯수
     protected int m_CoinCount = 0;
     List<Coin> m_CoinList;
@@ -94,7 +95,6 @@ public class CoinManager : ObjectManager<CoinManager, Coin>
     public override void OnPlayExit()
     {
         RespawnCoin();
-        m_CoinCount = m_CoinList.Count;
     }
     public void RespawnCoin()
     {
@@ -105,6 +105,8 @@ public class CoinManager : ObjectManager<CoinManager, Coin>
                 item.gameObject.SetActive(true);
             }
         }
+
+        m_CoinCount = m_CoinList.Count;
     }
     #endregion
     #region 유니티 콜백 함수

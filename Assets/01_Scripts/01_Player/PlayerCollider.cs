@@ -64,9 +64,10 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IObjectType
             {
                 m_Player.Death();
             }
+
             if (collision.CompareTag("Coin"))
             {
-                collision.GetComponent<IEraserable>().Erase();
+                collision.GetComponent<CoinCollider>().coin.gameObject.SetActive(false);
             }
         }
 
@@ -94,11 +95,6 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IObjectType
             m_Player.spawnPos == collision.transform.position)
         {
             m_Player.isSafe = false;
-            //Collider2D[] hits = Physics2D.OverlapBoxAll(transform.position, size, 0f, LayerMask.GetMask("SafetyZone"));
-            //if (hits.Length <= 0)
-            //{
-            //    m_Player.isSafe = false;
-            //}
         }
     }
     #endregion

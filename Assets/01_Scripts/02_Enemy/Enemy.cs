@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     protected float m_Speed;
 
-    protected Vector2 m_InitPos;
+    protected Vector3 m_InitPos;
 
     #region Linear
     [SerializeField, ReadOnly]

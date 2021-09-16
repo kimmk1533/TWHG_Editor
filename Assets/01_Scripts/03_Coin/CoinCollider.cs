@@ -14,6 +14,9 @@ public class CoinCollider : MonoBehaviour, IEraserable, IObjectType
     protected CoinManager M_Coin => CoinManager.Instance;
     #endregion
     #endregion
+    #region 외부 프로퍼티
+    public Coin coin { get => m_Coin; }
+    #endregion
     #region 외부 함수
     public void __Initialize(Coin coin)
     {
@@ -41,7 +44,6 @@ public class CoinCollider : MonoBehaviour, IEraserable, IObjectType
             if (collision.CompareTag("Player"))
             {
                 --M_Coin.CoinCount;
-                gameObject.SetActive(false);
             }
         }
     }
