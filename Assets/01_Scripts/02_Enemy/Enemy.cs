@@ -27,6 +27,7 @@ public class Enemy : MonoBehaviour
 
     #region 내부 컴포넌트
     protected MyRigidBody m_Rigidbody;
+    protected SpriteRenderer m_Renderer;
     protected EnemyCollider m_Collider;
     #endregion
     #region 내부 프로퍼티
@@ -37,6 +38,7 @@ public class Enemy : MonoBehaviour
     #endregion
     #endregion
     #region 외부 프로퍼티
+    public new SpriteRenderer renderer { get => m_Renderer; }
     public E_EnemyType type { get => m_Type; set => m_Type = value; }
     public float speed { get => m_Speed; set => m_Speed = value; }
     public List<EnemyGizmo> wayPointList { get => m_WayPointList; set => m_WayPointList = value; }
@@ -136,6 +138,10 @@ public class Enemy : MonoBehaviour
         if (null == m_Rigidbody)
         {
             m_Rigidbody = GetComponent<MyRigidBody>();
+        }
+        if (null == m_Renderer)
+        {
+            m_Renderer = GetComponentInChildren<SpriteRenderer>();
         }
         if (null == m_Collider)
         {

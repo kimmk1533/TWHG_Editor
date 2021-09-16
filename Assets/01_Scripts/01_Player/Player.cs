@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
 
     #region 내부 컴포넌트
     protected MyRigidBody m_RigidBody;
+    protected SpriteRenderer m_Renderer;
     protected PlayerAnimator m_Animator;
     protected PlayerCollider m_Collider;
     #endregion
@@ -34,6 +35,7 @@ public class Player : MonoBehaviour
     protected Vector2 halfSize => size * 0.5f;
     #endregion
     #region 외부 프로퍼티
+    public new SpriteRenderer renderer { get => m_Renderer; }
     public bool isSafe { get => m_IsSafe; set => m_IsSafe = value; }
     public Vector3 spawnPos { get => m_SpawnPos; set => m_SpawnPos = value; }
     #endregion
@@ -130,6 +132,10 @@ public class Player : MonoBehaviour
         if (null == m_RigidBody)
         {
             m_RigidBody = GetComponent<MyRigidBody>();
+        }
+        if (null == m_Renderer)
+        {
+            m_Renderer = GetComponentInChildren<SpriteRenderer>();
         }
         if (null == m_Animator)
         {

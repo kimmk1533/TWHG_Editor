@@ -27,6 +27,10 @@ public class CoinCollider : MonoBehaviour, IEraserable, IObjectType
     {
         M_Coin.DespawnCoin(m_Coin);
     }
+    public SpriteRenderer GetRenderer()
+    {
+        return coin.renderer;
+    }
     public GameObject GetGameObject()
     {
         return gameObject;

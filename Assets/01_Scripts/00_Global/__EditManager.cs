@@ -50,6 +50,7 @@ public class __EditManager : Singleton<__EditManager>
     [SerializeField]
     protected Outline m_SelectedImageOutline;
     protected int m_ClickIndex;
+    protected int m_ClickedObjectSortingLayerID;
     protected IObjectType m_ClickedObjectType;
     protected List<IObjectType> m_CurrentClickedObjectList;
     protected List<IObjectType> m_LastClickedObjectList;
@@ -329,7 +330,14 @@ public class __EditManager : Singleton<__EditManager>
 
         if (colliders.Length <= 0)
         {
+            SpriteRenderer renderer = GetClickedObjectRenderer();
+            if (null != renderer)
+            {
+                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+            }
+
             m_ClickedObjectType = null;
+
             SetSelectedUI(m_SelectedType);
             return;
         }
@@ -352,8 +360,22 @@ public class __EditManager : Singleton<__EditManager>
 
         if (lastCount <= 0)
         {
+            SpriteRenderer renderer = GetClickedObjectRenderer();
+            if (null != renderer)
+            {
+                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+            }
+
             m_ClickIndex = 1;
             m_ClickedObjectType = m_CurrentClickedObjectList[0];
+
+            renderer = GetClickedObjectRenderer();
+            if (null != renderer)
+            {
+                m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
+                renderer.sortingLayerID = SortingLayer.NameToID("Selected");
+            }
+
             SetSelectedUI(m_ClickedObjectType.GetObjectType());
             return;
         }
@@ -367,20 +389,68 @@ public class __EditManager : Singleton<__EditManager>
             {
                 if (m_ClickIndex <= i)
                 {
+                    SpriteRenderer renderer = GetClickedObjectRenderer();
+                    if (null != renderer)
+                    {
+                        renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+                    }
+
                     m_ClickIndex = i + 1;
                     m_ClickedObjectType = m_CurrentClickedObjectList[i];
+
+                    renderer = GetClickedObjectRenderer();
+                    if (null != renderer)
+                    {
+                        m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
+                        renderer.sortingLayerID = SortingLayer.NameToID("Selected");
+                    }
+
                     SetSelectedUI(m_ClickedObjectType.GetObjectType());
                     break;
                 }
             }
             else
             {
+                SpriteRenderer renderer = GetClickedObjectRenderer();
+                if (null != renderer)
+                {
+                    renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+                }
+
                 m_ClickIndex = 1;
                 m_ClickedObjectType = m_CurrentClickedObjectList[0];
+
+                renderer = GetClickedObjectRenderer();
+                if (null != renderer)
+                {
+                    m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
+                    renderer.sortingLayerID = SortingLayer.NameToID("Selected");
+                }
+
                 SetSelectedUI(m_ClickedObjectType.GetObjectType());
                 break;
             }
         }
+    }
+    protected SpriteRenderer GetClickedObjectRenderer()
+    {
+        SpriteRenderer renderer = null;
+        if (null != m_ClickedObjectType)
+        {
+            switch (m_ClickedObjectType.GetObjectType())
+            {
+                case E_ObjectType.Player:
+                    renderer = m_ClickedObjectType.GetGameObject().GetComponent<PlayerCollider>().player.renderer;
+                    break;
+                case E_ObjectType.Enemy:
+                    renderer = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy.renderer;
+                    break;
+                case E_ObjectType.Coin:
+                    renderer = m_ClickedObjectType.GetGameObject().GetComponent<CoinCollider>().coin.renderer;
+                    break;
+            }
+        }
+        return renderer;
     }
     protected void ChangeCursor()
     {

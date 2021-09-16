@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class PlayerCollider : MonoBehaviour, IEraserable, IObjectType
 {
-    public Player m_Player;
+    protected Player m_Player;
     protected BoxCollider2D m_Collider;
 
     #region 내부 프로퍼티
@@ -15,6 +15,7 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IObjectType
     #endregion
     #endregion
     #region 외부 프로퍼티
+    public Player player { get => m_Player; }
     public Vector2 size => m_Collider.size;
     #endregion
     #region 외부 함수
@@ -35,6 +36,10 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IObjectType
     public void Erase()
     {
         m_Player.gameObject.SetActive(false);
+    }
+    public SpriteRenderer GetRenderer()
+    {
+        return m_Player.renderer;
     }
     public GameObject GetGameObject()
     {
