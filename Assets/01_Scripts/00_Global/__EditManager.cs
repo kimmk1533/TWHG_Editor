@@ -68,6 +68,12 @@ public class __EditManager : Singleton<__EditManager>
     protected GameObject m_Enemy_Panel_WayPoint;
     [SerializeField]
     protected ScrollInputFieldList m_Enemy_Scroll_WayPointList;
+    [SerializeField]
+    protected GameObject m_Enemy_Panel_Center;
+    [SerializeField]
+    protected InputField m_Enemy_InputField_CenterX;
+    [SerializeField]
+    protected InputField m_Enemy_InputField_CenterY;
     #endregion
     #region 벽 옵션
     [Header("Wall Option")]
@@ -437,11 +443,12 @@ public class __EditManager : Singleton<__EditManager>
                             m_Enemy_InputField_Speed.text = enemy.speed.ToString();
                         }
 
-                        ShowEnemyWayPointList(enemy);
+                        ShowEnemyGizmo(enemy);
                     }
                     else
                     {
                         m_Enemy_Panel_WayPoint.SetActive(false);
+                        m_Enemy_Panel_Center.SetActive(false);
                     }
                     break;
                 }
@@ -506,29 +513,40 @@ public class __EditManager : Singleton<__EditManager>
     }
 
     #region Enemy
-    protected void ShowEnemyWayPointList(Enemy enemy)
+    protected void ShowEnemyGizmo(Enemy enemy)
     {
         M_EnemyGizmo.SetActiveAllGizmo(false);
         m_Enemy_Panel_WayPoint.SetActive(false);
+        m_Enemy_Panel_Center.SetActive(false);
+        enemy.center.gameObject.SetActive(false);
 
-        if (enemy.type == E_EnemyType.Linear ||
-            enemy.type == E_EnemyType.LinearRepeat)
+        switch (enemy.type)
         {
-            m_Enemy_Scroll_WayPointList.ClearOption();
+            case E_EnemyType.Linear:
+            case E_EnemyType.LinearRepeat:
+                m_Enemy_Scroll_WayPointList.ClearOption();
 
-            for (int i = 0; i < enemy.wayPointList.Count; ++i)
-            {
-                enemy.wayPointList[i].gameObject.SetActive(true);
+                for (int i = 0; i < enemy.wayPointList.Count; ++i)
+                {
+                    enemy.wayPointList[i].gameObject.SetActive(true);
 
-                m_Enemy_Scroll_WayPointList.AddOption((enemy.wayPointList[i].index + 1).ToString());
+                    m_Enemy_Scroll_WayPointList.AddOption((enemy.wayPointList[i].index + 1).ToString());
 
-                Vector2 pos = enemy.wayPointList[i].transform.position;
-                m_Enemy_Scroll_WayPointList.items[i].SetInputFieldValue(0, pos.x.ToString());
-                m_Enemy_Scroll_WayPointList.items[i].SetInputFieldValue(1, pos.y.ToString());
-            }
+                    Vector2 pos = enemy.wayPointList[i].transform.position;
+                    m_Enemy_Scroll_WayPointList.items[i].SetInputFieldValue(0, pos.x.ToString());
+                    m_Enemy_Scroll_WayPointList.items[i].SetInputFieldValue(1, pos.y.ToString());
+                }
 
-            OnEnemyClampWayPointIndex();
-            m_Enemy_Panel_WayPoint.SetActive(true);
+                OnEnemyClampWayPointIndex();
+                m_Enemy_Panel_WayPoint.SetActive(true);
+                break;
+            case E_EnemyType.Circular:
+                enemy.center.gameObject.SetActive(true);
+                m_Enemy_Panel_Center.SetActive(true);
+
+                m_Enemy_InputField_CenterX.text = enemy.center.transform.position.x.ToString();
+                m_Enemy_InputField_CenterY.text = enemy.center.transform.position.y.ToString();
+                break;
         }
     }
     #endregion
@@ -619,6 +637,7 @@ public class __EditManager : Singleton<__EditManager>
         m_Enemy_Panel_Option.SetActive(false);
         m_Enemy_Panel_Speed.SetActive(false);
         m_Enemy_Panel_WayPoint.SetActive(false);
+        m_Enemy_Panel_Center.SetActive(false);
         m_Wall_Panel_Option.SetActive(false);
         m_SafetyZone_Panel_Option.SetActive(false);
     }
@@ -735,7 +754,7 @@ public class __EditManager : Singleton<__EditManager>
         Enemy enemy = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy;
         enemy.type = enemyType;
 
-        ShowEnemyWayPointList(enemy);
+        ShowEnemyGizmo(enemy);
     }
     public void OnEnemyClampSpeed()
     {
@@ -838,6 +857,29 @@ public class __EditManager : Singleton<__EditManager>
 
         Vector3 wayPointPos = new Vector3(x, y, z);
         enemy.wayPointList[index].transform.position = wayPointPos;
+    }
+    public void OnEnemyChangeCenterPosition()
+    {
+        if (m_ClickedObjectType?.GetObjectType() != E_ObjectType.Enemy)
+            return;
+
+        EnemyGizmo center = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy.center;
+
+        string strX = m_Enemy_InputField_CenterX.text;
+        string strY = m_Enemy_InputField_CenterY.text;
+
+        float x, y;
+        if (!float.TryParse(strX, out x))
+        {
+            x = 0;
+        }
+        if (!float.TryParse(strY, out y))
+        {
+            y = 0;
+        }
+        float z = center.transform.position.z;
+
+        center.transform.position = new Vector3(x, y, z);
     }
     #endregion
     #region Wall

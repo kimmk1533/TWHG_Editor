@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
     #endregion
     #region Circular
     [SerializeField, ReadOnly]
-    protected Vector2 m_Center;
+    protected EnemyGizmo m_Center;
 
     protected float m_Degree;
     #endregion
@@ -40,6 +40,7 @@ public class Enemy : MonoBehaviour
     public E_EnemyType type { get => m_Type; set => m_Type = value; }
     public float speed { get => m_Speed; set => m_Speed = value; }
     public List<EnemyGizmo> wayPointList { get => m_WayPointList; set => m_WayPointList = value; }
+    public EnemyGizmo center { get => m_Center; set => m_Center = value; }
     #endregion
     #region 내부 함수
     protected void Move()
@@ -111,13 +112,13 @@ public class Enemy : MonoBehaviour
     {
         m_Degree += m_Speed;
 
-        float radius = Vector2.Distance(transform.position, m_Center);
+        float radius = Vector2.Distance(transform.position, m_Center.transform.position);
         float radian = m_Degree * Mathf.Deg2Rad;
 
-        Vector2 newPos = new Vector2();
+        Vector3 newPos = new Vector3();
         newPos.x = radius * Mathf.Cos(radian);
         newPos.y = radius * Mathf.Sin(radian);
-        transform.position = m_Center + newPos;
+        transform.position = m_Center.transform.position + newPos;
     }
 
     protected bool CloseTarget(Vector3 targetPos, float distance)
@@ -145,6 +146,13 @@ public class Enemy : MonoBehaviour
         if (null == m_WayPointList)
         {
             m_WayPointList = new List<EnemyGizmo>();
+        }
+
+        if (null == m_Center)
+        {
+            m_Center = M_EnemyGizmo.SpawnGizmo();
+            m_Center.transform.position = new Vector3(0f, 0f, 5f);
+            m_Center.gameObject.SetActive(false);
         }
     }
 
@@ -186,7 +194,7 @@ public class Enemy : MonoBehaviour
                 m_Revert = false;
                 break;
             case E_EnemyType.Circular:
-                Vector2 v = (Vector2)transform.position - m_Center;
+                Vector3 v = transform.position - m_Center.transform.position;
                 m_Degree = Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
                 break;
         }
