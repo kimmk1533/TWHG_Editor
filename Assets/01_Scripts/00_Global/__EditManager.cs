@@ -1108,24 +1108,4 @@ public class __EditManager : Singleton<__EditManager>
         }
     }
     #endregion
-
-    #region 기존 함수
-    // Enemy
-    //public void ChangeEnemyType()
-    //{
-    //    M_Road.m_CurrentSelectedType = (E_EnemyType)enemyType_option.IndexOf(dropdown_EnemyType.captionText.text);
-
-    //    if (M_Road.m_CurrentSelectedType == E_EnemyType.Linear ||
-    //        M_Road.m_CurrentSelectedType == E_EnemyType.LinearRepeat)
-    //    {
-    //        Edit_LinearOption.SetActive(true);
-    //        Edit_CircularOption.SetActive(false);
-    //    }
-    //    else if (M_Road.m_CurrentSelectedType == E_EnemyType.Circular)
-    //    {
-    //        Edit_LinearOption.SetActive(false);
-    //        Edit_CircularOption.SetActive(true);
-    //    }
-    //}
-    #endregion
 }

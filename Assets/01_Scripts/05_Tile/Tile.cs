@@ -28,6 +28,24 @@ public class Tile : MonoBehaviour
     public Color color { get => m_Image.color; set => m_Image.color = value; }
     #endregion
     #region 외부 함수
+    public void __Initialize(int x, int y)
+    {
+        if (null == m_Image)
+        {
+            m_Image = GetComponent<Image>();
+        }
+
+        m_X = x;
+        m_Y = y;
+        int index = (x + y) % 2;
+
+        // 짝수 칸
+        if (index == 0)
+            m_IndexType = E_TileIndexType.Even;
+        else
+            m_IndexType = E_TileIndexType.Odd;
+    }
+
     public void SetType(E_TileType type)
     {
         if (m_Type == type)
@@ -81,22 +99,4 @@ public class Tile : MonoBehaviour
         }
     }
     #endregion
-
-    public void __Initialize(int x, int y)
-    {
-        if (null == m_Image)
-        {
-            m_Image = GetComponent<Image>();
-        }
-
-        m_X = x;
-        m_Y = y;
-        int index = (x + y) % 2;
-
-        // 짝수 칸
-        if (index == 0)
-            m_IndexType = E_TileIndexType.Even;
-        else
-            m_IndexType = E_TileIndexType.Odd;
-    }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -63,49 +64,66 @@ public static class CSVUtility
     public static void Write(string file, FileFormat format, in List<Dictionary<string, object>> data)
     {
         string path = Path.Combine(Application.dataPath, file) + "." + format.ToString();
-        StreamWriter writer = new StreamWriter(path);
 
-        string key;
-        object item;
-
-        var enumerator = data[0].Keys.GetEnumerator();
-
-        #region 키 저장
-        for (int i = 0; i < data[0].Count - 1; ++i)
+        StreamWriter writer = null;
+        try
         {
+            writer = new StreamWriter(path);
+
+            string key;
+            object item;
+
+            var enumerator = data[0].Keys.GetEnumerator();
+
+            #region 키 저장
+            for (int i = 0; i < data[0].Count - 1; ++i)
+            {
+                enumerator.MoveNext();
+                key = enumerator.Current;
+
+                writer.Write(key);
+                writer.Write(',');
+            }
             enumerator.MoveNext();
             key = enumerator.Current;
+            writer.WriteLine(key);
+            #endregion
 
-            writer.Write(key);
-            writer.Write(',');
-        }
-        enumerator.MoveNext();
-        key = enumerator.Current;
-        writer.WriteLine(key);
-        #endregion
-
-        for (int i = 0; i < data.Count; ++i)
-        {
-            enumerator = data[i].Keys.GetEnumerator();
-
-            for (int j = 0; j < data[i].Count - 1; ++j)
+            for (int i = 0; i < data.Count; ++i)
             {
+                enumerator = data[i].Keys.GetEnumerator();
+
+                for (int j = 0; j < data[i].Count - 1; ++j)
+                {
+                    enumerator.MoveNext();
+                    key = enumerator.Current;
+                    item = data[i][key];
+
+                    writer.Write(item);
+                    writer.Write(',');
+                }
+
                 enumerator.MoveNext();
                 key = enumerator.Current;
                 item = data[i][key];
 
-                writer.Write(item);
-                writer.Write(',');
+                writer.WriteLine(item);
             }
 
-            enumerator.MoveNext();
-            key = enumerator.Current;
-            item = data[i][key];
-
-            writer.WriteLine(item);
+            writer.Close();
+            writer.Dispose();
         }
-
-        writer.Close();
+        catch(Exception e)
+        {
+            Debug.Log(e);
+        }
+        finally
+        {
+            if (null != writer)
+            {
+                writer.Close();
+            }
+        }
     }
 
     public enum FileFormat

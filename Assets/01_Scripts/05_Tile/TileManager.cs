@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class TileManager : ObjectManager<TileManager, Tile>
 {
     // 생성한 타일(BG) 리스트
-    protected List<Tile> m_Tiles;
+    protected List<Tile> m_TileList;
 
     // 타일(BG) 부모
     [SerializeField, ReadOnly(true)]
@@ -19,6 +19,9 @@ public class TileManager : ObjectManager<TileManager, Tile>
     #region 매니져
     protected StageManager M_Stage => StageManager.Instance;
     #endregion
+    #endregion
+    #region 외부 프로퍼티
+    public List<Tile> tileList { get => m_TileList; }
     #endregion
     #region 내부 함수
     // 타일(BG) 전체 생성 함수
@@ -75,137 +78,18 @@ public class TileManager : ObjectManager<TileManager, Tile>
         }
 
         // 관리 리스트에 추가
-        m_Tiles.Add(tile);
+        m_TileList.Add(tile);
     }
     // 타일(BG) 전체 삭제 함수
     void ClearTiles()
     {
-        for (int i = m_Tiles.Count - 1; i >= 0; --i)
+        for (int i = m_TileList.Count - 1; i >= 0; --i)
         {
-            GetPool("Tile").DeSpawn(m_Tiles[i]);
+            GetPool("Tile").DeSpawn(m_TileList[i]);
         }
 
-        m_Tiles.Clear();
+        m_TileList.Clear();
     }
-
-    //    void PlayerProcess()
-    //    {
-    //        if (null == M_SafetyZone.m_StartPoint)
-    //        {
-    //            M_Player.m_Player.transform.position = m_Pos;
-    //            M_Player.m_InitPos = m_Pos;
-    //        }
-    //        else
-    //        {
-    //            M_Player.m_Player.transform.position = M_SafetyZone.m_StartPoint.GetCenter();
-    //            M_Player.m_InitPos = M_SafetyZone.m_StartPoint.GetCenter();
-    //        }
-
-    //        M_Player.m_Player.gameObject.SetActive(true);
-
-    //        M_Edit.CurrentSelectedType = E_ObjectType.None;
-    //        M_Edit.CurrentSelectedText.text = "Selected:" + "\n" + "None";
-    //        M_Edit.CurrentSelectedImage.color = Color.white * 0f;
-    //    }
-    //    void EnemyProcess()
-    //    {
-    //        if (!M_Edit.AddPoint)
-    //        {
-    //            if (M_Road.m_CurrentSelectedType == E_EnemyType.Linear ||
-    //                M_Road.m_CurrentSelectedType == E_EnemyType.Linear_Repeat)
-    //            {
-    //                if (M_Road.m_WayPoints.Count < 1)
-    //                    return;
-    //            }
-    //            else if (M_Road.m_CurrentSelectedType == E_EnemyType.Circular)
-    //            {
-    //                if (M_Road.m_WayPoints.Count < 1)
-    //                    return;
-    //            }
-
-    //            M_Road.m_WayPoints.Insert(0, m_Pos);
-
-    //            if (M_Road.m_CurrentSelectedType == E_EnemyType.Linear)
-    //            {
-    //                M_Road.CreateLinearRoad(M_Road.m_WayPoints.ToArray(), float.Parse(M_Edit.input_EnemySpeed.text), false);
-    //            }
-    //            else if (M_Road.m_CurrentSelectedType == E_EnemyType.Linear_Repeat)
-    //            {
-    //                M_Road.CreateLinearRoad(M_Road.m_WayPoints.ToArray(), float.Parse(M_Edit.input_EnemySpeed.text), true);
-    //            }
-    //            else if (M_Road.m_CurrentSelectedType == E_EnemyType.Circular)
-    //            {
-    //                M_Road.CreateCircularRoad(M_Road.m_WayPoints[0], M_Road.m_WayPoints[1], float.Parse(M_Edit.input_EnemySpeed.text));
-    //            }
-
-    //            M_Road.m_WayPoints.Clear();
-    //        }
-    //        else
-    //        {
-    //            if (M_Road.m_CurrentSelectedType == E_EnemyType.Circular)
-    //            {
-    //                M_Road.m_WayPoints.Insert(0, m_Pos);
-    //                M_Edit.PointButtonPressed();
-    //            }
-    //            else
-    //            {
-    //                M_Road.m_WayPoints.Add(m_Pos);
-    //            }
-    //        }
-    //    }
-    //    void CoinProcess()
-    //    {
-    //        M_Coin.SpawnCoin(m_Pos);
-    //    }
-    //    void SafetyZoneProcess()
-    //    {
-    //        M_SafetyZone.ClearSafetyZone();
-
-    //        CalcIndexandPos(m_CurrentEventData, out m_Index, out m_Pos);
-    //        m_Image = M_Tile.m_Tiles[M_Game.m_width * (int)m_Index.y + (int)m_Index.x].GetComponent<Image>();
-
-    //        m_Image.color = M_Game.m_SafetyZone;
-    //        M_Stage.m_Stage[(int)m_Index.y, (int)m_Index.x] = E_TileType.SafetyZone;
-
-    //        M_SafetyZone.CreateSafetyZone();
-
-    //        if (M_SafetyZone.m_StartPoint != null)
-    //        {
-    //            M_Player.m_Player.transform.position = M_SafetyZone.m_StartPoint.GetCenter();
-    //        }
-
-    //        M_Wall.ClearWall();
-    //        M_Wall.CreateWall();
-    //    }
-    //    void WallProcess()
-    //    {
-    //        M_Wall.ClearWall();
-
-    //        CalcIndexandPos(m_CurrentEventData, out m_Index, out m_Pos);
-    //        m_Image = M_Tile.m_Tiles[M_Game.m_width * (int)m_Index.y + (int)m_Index.x].GetComponent<Image>();
-
-    //        m_Image.color = M_Game.m_Wall;
-    //        if (m_Index.x < 0 || m_Index.x >= M_Stage.m_Stage.GetLength(0))
-    //            Debug.Log("인덱스 x : " + m_Index.x);
-    //        if (m_Index.y < 0 || m_Index.y >= M_Stage.m_Stage.GetLength(1))
-    //            Debug.Log("인덱스 y : " + m_Index.y);
-    //        M_Stage.m_Stage[(int)m_Index.y, (int)m_Index.x] = E_TileType.Wall;
-
-    //        M_Wall.CreateWall();
-
-    //        M_SafetyZone.ClearSafetyZone();
-    //        M_SafetyZone.CreateSafetyZone();
-
-    //        if (M_SafetyZone.m_StartPoint == null)
-    //        {
-    //            M_Player.m_Player.transform.position = M_Player.m_InitPos;
-    //        }
-    //        else
-    //        {
-    //            M_Player.m_Player.transform.position = M_SafetyZone.m_StartPoint.GetCenter();
-    //        }
-    //    }
-
     #endregion
     #region 외부 함수
     public override void __Initialize()
@@ -217,9 +101,9 @@ public class TileManager : ObjectManager<TileManager, Tile>
         M_Game.OnPlayExit += OnPlayExit;
 
         // 관리 리스트 초기화
-        if (null == m_Tiles)
+        if (null == m_TileList)
         {
-            m_Tiles = new List<Tile>();
+            m_TileList = new List<Tile>();
         }
 
         // 정렬 설정
@@ -251,6 +135,10 @@ public class TileManager : ObjectManager<TileManager, Tile>
         base.__Finalize();
     }
 
+    public void Draw(int index, E_TileType type)
+    {
+        m_TileList[index].SetType(type);
+    }
     public void Draw(GameObject obj, E_TileType type)
     {
         obj.GetComponent<Tile>()?.SetType(type);

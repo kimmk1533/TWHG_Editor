@@ -5,9 +5,9 @@ using static WallManager;
 
 public class Wall : MonoBehaviour
 {
+    protected Tile m_Tile;
     [SerializeField, ReadOnly]
     protected Wall[] m_Walls;
-    protected Tile m_Tile;
 
     #region 내부 컴포넌트
     protected LineRenderer[] m_Lines;
@@ -16,10 +16,10 @@ public class Wall : MonoBehaviour
     #region 내부 프로퍼티
     #endregion
     #region 외부 프로퍼티
+    public Tile tile => m_Tile;
     public Wall[] walls => m_Walls;
     public LineRenderer[] lines => m_Lines;
     public new WallCollider collider => m_Collider;
-    public Tile tile => m_Tile;
     #endregion
     #region 내부 함수
     #endregion
