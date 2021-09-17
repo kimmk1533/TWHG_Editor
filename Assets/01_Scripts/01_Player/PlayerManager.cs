@@ -14,15 +14,18 @@ public class PlayerManager : Singleton<PlayerManager>
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     #endregion
 
-    protected Vector3 PlayerPos
+    #endregion
+    #region 외부 프로퍼티
+    public Vector3 playerPos
     {
         get => m_Player.transform.position;
         set => m_Player.transform.position = value;
     }
-    #endregion
-    #region 외부 프로퍼티
-    public Vector3 playerPos { get => m_Player.transform.position; }
-    public bool playerActive { get => m_Player.gameObject.activeSelf; }
+    public bool playerActive
+    {
+        get => m_Player.gameObject.activeSelf;
+        set => m_Player.gameObject.SetActive(value);
+    }
     #endregion
     #region 외부 함수
     public void __Initialize()

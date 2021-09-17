@@ -23,6 +23,7 @@ public class Tile : MonoBehaviour
     #endregion
     #endregion
     #region 외부 프로퍼티
+    public int index { get => m_X + (M_Game.width * m_Y); }
     public E_TileIndexType indexType => m_IndexType;
     public E_TileType type => m_Type;
     public Color color { get => m_Image.color; set => m_Image.color = value; }
@@ -92,7 +93,7 @@ public class Tile : MonoBehaviour
                 // 위치 설정
                 safetyZone.transform.position = spawnPos;
                 // 초기화
-                safetyZone.__Initialize();
+                safetyZone.__Initialize(this);
                 // 활성화
                 safetyZone.gameObject.SetActive(true);
                 break;

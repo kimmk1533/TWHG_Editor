@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SafetyZone : MonoBehaviour
 {
+    protected Tile m_Tile;
     protected int m_SafetyZoneCount;
     [SerializeField, ReadOnly]
     protected bool m_IsFinishZone;
@@ -16,6 +17,7 @@ public class SafetyZone : MonoBehaviour
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     #endregion
     #region 외부 프로퍼티
+    public Tile tile { get => m_Tile; }
     public Vector3 SpawnPoint => transform.position;
     public BoxCollider2D Collider => m_Collider.Collider;
 
@@ -29,8 +31,10 @@ public class SafetyZone : MonoBehaviour
     #region 내부 함수
     #endregion
     #region 외부 함수
-    public void __Initialize()
+    public void __Initialize(Tile tile)
     {
+        m_Tile = tile;
+
         m_SafetyZoneCount = M_SafetyZone.safetyZoneIndex;
 
         if (null == m_Animator)
