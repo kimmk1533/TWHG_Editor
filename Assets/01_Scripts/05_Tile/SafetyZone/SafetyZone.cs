@@ -31,7 +31,7 @@ public class SafetyZone : MonoBehaviour
     #region 외부 함수
     public void __Initialize()
     {
-        m_SafetyZoneCount = M_SafetyZone.SafetyZoneCount;
+        m_SafetyZoneCount = M_SafetyZone.safetyZoneIndex;
 
         if (null == m_Animator)
         {

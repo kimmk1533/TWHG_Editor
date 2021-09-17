@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class CoinManager : ObjectManager<CoinManager, Coin>
 {
-    [SerializeField, ReadOnly]
+    // 관리 리스트
+    protected List<Coin> m_CoinList;
     // 현재 게임에 남아있는 코인 갯수
+    [SerializeField, ReadOnly]
     protected int m_CoinCount = 0;
-    List<Coin> m_CoinList;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -16,6 +17,7 @@ public class CoinManager : ObjectManager<CoinManager, Coin>
     #endregion
     #endregion
     #region 외부 프로퍼티
+    public List<Coin> coinList { get => m_CoinList; }
     public int CoinCount { get => m_CoinCount; set => m_CoinCount = value; }
     public bool IsLeftCoin => m_CoinCount > 0;
     #endregion

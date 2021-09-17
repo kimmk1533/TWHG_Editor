@@ -5,9 +5,9 @@ using UnityEngine;
 public abstract class ObjectManager<Pool, Origin> : Singleton<Pool> where Pool : MonoBehaviour where Origin : MonoBehaviour
 {
     [ReadOnly(true)]
-    public int m_PoolSize = 100;
+    protected int m_PoolSize = 100;
 
-    public Dictionary<string, Origin> m_Origins = null;
+    protected Dictionary<string, Origin> m_Origins = null;
     protected Dictionary<string, MemoryPool<Origin>> m_Pools = null;
 
     protected __GameManager M_Game => __GameManager.Instance;

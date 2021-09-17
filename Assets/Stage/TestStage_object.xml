@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--플레이어-->
+  <Player>
+    <Position>
+      <x>-8.468885</x>
+      <y>1.5904485</y>
+      <z>5</z>
+    </Position>
+    <Active>true</Active>
+  </Player>
+  <!--적-->
+  <EnemyList Count="1">
+    <Enemy>
+      <Position>
+        <x>-7.577424</x>
+        <y>1.52966774</y>
+        <z>5</z>
+      </Position>
+      <Type>-1</Type>
+      <Speed>0.01</Speed>
+      <WayPointList Count="0" />
+      <Center>
+        <Position>
+          <x>0</x>
+          <y>0</y>
+          <z>5</z>
+        </Position>
+      </Center>
+    </Enemy>
+  </EnemyList>
+  <!--코인-->
+  <CoinList Count="1">
+    <Coin>
+      <Position>
+        <x>-6.523878</x>
+        <y>1.52966774</y>
+        <z>5</z>
+      </Position>
+    </Coin>
+  </CoinList>
+  <!--벽-->
+  <WallList Count="1">
+    <Coin>
+      <Position>
+        <x>-5.5</x>
+        <y>1.5</y>
+        <z>5</z>
+      </Position>
+      <Position>
+        <r>0.7058824</r>
+        <g>0.709803939</g>
+        <b>0.9960785</b>
+      </Position>
+    </Coin>
+  </WallList>
+  <!--안전지역-->
+  <SafetyZoneList Count="1">
+    <SafetyZone>
+      <Position>
+        <x>-4.5</x>
+        <y>1.5</y>
+        <z>5</z>
+      </Position>
+      <IsFinishZone>false</IsFinishZone>
+    </SafetyZone>
+  </SafetyZoneList>
+</root>

@@ -6,6 +6,9 @@ public class EnemyManager : ObjectManager<EnemyManager, Enemy>
 {
     protected List<Enemy> m_EnemyList;
 
+    #region 외부 프로퍼티
+    public List<Enemy> enemyList { get => m_EnemyList; }
+    #endregion
     #region 외부 함수
     public override void __Initialize()
     {

@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
 {
-    protected int m_SafetyZoneCount;
+    protected int m_SafetyZoneIndex;
 
+    [SerializeField, ReadOnly]
     protected List<SafetyZone> m_SafetyZoneList;
     [SerializeField, ReadOnly]
     protected List<SafetyZone> m_FinishZoneList;
@@ -17,7 +18,8 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
 
     #endregion
     #region 외부 프로퍼티
-    public int SafetyZoneCount => m_SafetyZoneCount;
+    public int safetyZoneIndex { get => m_SafetyZoneIndex; }
+    public List<SafetyZone> safetyZoneList { get => m_SafetyZoneList; }
     #endregion
     #region 내부 함수
     #endregion
@@ -31,7 +33,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         M_Game.OnPlayExit += OnPlayExit;
         #endregion
 
-        m_SafetyZoneCount = 0;
+        m_SafetyZoneIndex = 0;
 
         // 풀 사이즈 설정
         m_PoolSize = M_Game.width * M_Game.height;
@@ -60,14 +62,14 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
     {
         SafetyZone safetyZone = GetPool("SafetyZone").Spawn();
         m_SafetyZoneList.Add(safetyZone);
-        ++m_SafetyZoneCount;
-        M_Edit.AddSafetyZoneOption(m_SafetyZoneCount);
+        ++m_SafetyZoneIndex;
+        M_Edit.AddSafetyZoneOption(m_SafetyZoneIndex);
         return safetyZone;
     }
     public void DespawnSafetyZone(SafetyZone safetyZone)
     {
         M_Edit.RemoveSafetyZoneOption(safetyZone.safetyZoneCount);
-        --m_SafetyZoneCount;
+        --m_SafetyZoneIndex;
         m_SafetyZoneList.Remove(safetyZone);
         GetPool("SafetyZone").DeSpawn(safetyZone);
 
@@ -84,7 +86,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
             GetPool("SafetyZone").DeSpawn(m_SafetyZoneList[i]);
         }
         m_SafetyZoneList.Clear();
-        m_SafetyZoneCount = 0;
+        m_SafetyZoneIndex = 0;
     }
     public void SelectFinishZone(int index)
     {
@@ -428,7 +430,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         {
             for (int x = 0; x < M_Game.m_width; ++x)
             {
-                // 현재 칸이 안전 구역일 때
+                // 현재 칸이 안전 지역일 때
                 if (M_Stage.m_Stage[y, x] == E_TileType.SafetyZone)
                 {
                     bool flag = false;

@@ -21,7 +21,8 @@ public class PlayerManager : Singleton<PlayerManager>
     }
     #endregion
     #region 외부 프로퍼티
-    public bool isSafe { get => m_Player.isSafe; set => m_Player.isSafe = value; }
+    public Vector3 playerPos { get => m_Player.transform.position; }
+    public bool playerActive { get => m_Player.gameObject.activeSelf; }
     #endregion
     #region 외부 함수
     public void __Initialize()

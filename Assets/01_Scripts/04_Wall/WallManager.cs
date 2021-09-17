@@ -5,12 +5,15 @@ using UnityEngine;
 public class WallManager : ObjectManager<WallManager, Wall>
 {
     // 관리 리스트
-    List<Wall> m_WallList;
+    protected List<Wall> m_WallList;
 
     #region 내부 프로퍼티
     #region 매니져
     protected StageManager M_Stage => StageManager.Instance;
     #endregion
+    #endregion
+    #region 외부 프로퍼티
+    public List<Wall> wallList { get => m_WallList; }
     #endregion
     #region 내부 함수
     protected void ClearWall()
