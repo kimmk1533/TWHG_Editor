@@ -19,6 +19,10 @@ public class CameraMove : MonoBehaviour
     protected float m_Width;
     protected float m_Height;
 
+    [SerializeField]
+    protected float m_MaxTimer = 1f;
+    protected float m_Timer;
+
     #region 이동
     protected bool m_IsMove;
     protected float m_StartZ;
@@ -32,6 +36,8 @@ public class CameraMove : MonoBehaviour
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
     protected __EditManager M_Edit => __EditManager.Instance;
+
+    protected PlayerManager M_Player => PlayerManager.Instance;
     #endregion
 
     protected float unit => m_Canvas.referencePixelsPerUnit;
@@ -59,6 +65,11 @@ public class CameraMove : MonoBehaviour
             {
                 m_IsMove = false;
             }
+
+            if (M_Game.isPlayMode)
+            {
+                m_Timer = m_MaxTimer;
+            }
         }
         #endregion
         #region 키보드로 이동
@@ -71,11 +82,24 @@ public class CameraMove : MonoBehaviour
             transform.position += dir * m_MoveSpeed * Time.deltaTime;
         }
         #endregion
-
+        #region 플레이어에게 이동
         if (M_Game.isPlayMode)
         {
             // 플레이어 찾아서 이동 시 3초 뒤에 플레이어에게 돌아가도록 구현
+            if (m_Timer > 0f)
+            {
+                m_Timer -= Time.deltaTime;
+            }
+            else
+            {
+                transform.position = Vector3.Lerp(transform.position, M_Player.playerPos, m_MoveSpeed * Time.deltaTime);
+                if (Vector3.Distance(transform.position, M_Player.playerPos) < 0.05f)
+                {
+                    m_Timer = m_MaxTimer;
+                }
+            }
         }
+        #endregion
 
         ClampMove();
     }
@@ -172,6 +196,8 @@ public class CameraMove : MonoBehaviour
 
         m_Width = m_Camera.pixelWidth;
         m_Height = m_Camera.pixelHeight;
+
+        m_Timer = 0f;
     }
     void Update()
     {
