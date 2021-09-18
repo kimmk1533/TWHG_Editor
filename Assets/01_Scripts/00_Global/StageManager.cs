@@ -16,6 +16,7 @@ public class StageManager : Singleton<StageManager>
     #region 내부 프로퍼티
     #region 매니저
     protected __GameManager M_Game => __GameManager.Instance;
+    protected __EditManager M_Edit => __EditManager.Instance;
 
     protected PlayerManager M_Player => PlayerManager.Instance;
     protected EnemyManager M_Enemy => EnemyManager.Instance;
@@ -24,7 +25,6 @@ public class StageManager : Singleton<StageManager>
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected TileManager M_Tile => TileManager.Instance;
     #endregion
-
     #endregion
     #region 외부 프로퍼티
     public E_TileType[,] stage { get => m_Stage; set => m_Stage = value; }
@@ -815,6 +815,9 @@ public class StageManager : Singleton<StageManager>
                     {
                         isFinishZone = false;
                     }
+
+                    M_Edit.safetyZoneFinishZone.items[i].toggle.isOn = 
+                    M_Edit.safetyZoneFinishZone.options[i].isOn =
                     safetyZone.isFinishZone = isFinishZone;
                 }
             }

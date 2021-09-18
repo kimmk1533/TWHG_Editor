@@ -43,6 +43,10 @@ public class CheckBox : MonoBehaviour, IEventSystemHandler
             ResizeContent();
         }
     }
+    public List<CheckBoxItem> items
+    {
+        get => m_ItemList;
+    }
     #endregion
     #region 내부 함수
     protected CheckBoxItem CreateItem(OptionData optionData)

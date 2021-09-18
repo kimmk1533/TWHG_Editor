@@ -88,40 +88,27 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
         m_SafetyZoneList.Clear();
         m_SafetyZoneIndex = 0;
     }
-    public void SelectFinishZone(int index)
+    public void ToggleFinishZone(int index)
     {
         if (index < 0 || index >= m_SafetyZoneList.Count)
             return;
 
-        m_SafetyZoneList[index].isFinishZone = true;
+        m_SafetyZoneList[index].isFinishZone = !m_SafetyZoneList[index].isFinishZone;
 
-        m_FinishZoneList.Add(m_SafetyZoneList[index]);
-
-        // 추후 이렇게 수정
-        //m_SafetyZoneList[index].isFinishZone = !m_SafetyZoneList[index].isFinishZone;
-
-        //if (m_SafetyZoneList[index].isFinishZone)
-        //{
-        //    m_FinishZoneList.Add(m_SafetyZoneList[index]);
-        //}
-        //else
-        //{
-        //    m_FinishZoneList.Remove(m_SafetyZoneList[index]);
-        //}
+        if (m_SafetyZoneList[index].isFinishZone)
+        {
+            m_FinishZoneList.Add(m_SafetyZoneList[index]);
+        }
+        else
+        {
+            m_FinishZoneList.Remove(m_SafetyZoneList[index]);
+        }
     }
     #endregion
     #region 이벤트 함수
     public override void OnPlayEnter()
     {
-        List<CheckBox.OptionData> options = M_Edit.safetyZoneFinishOptionList;
 
-        for (int i = 0; i < options.Count; ++i)
-        {
-            if (options[i].isOn)
-            {
-                SelectFinishZone(i);
-            }
-        }
     }
     public override void OnPlayExit()
     {

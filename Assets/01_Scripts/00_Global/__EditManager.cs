@@ -187,9 +187,7 @@ public class __EditManager : Singleton<__EditManager>
     #region 외부 프로퍼티
     public bool isEditMode => m_IsEdit;
 
-    #region SafetyZone
-    public List<CheckBox.OptionData> safetyZoneFinishOptionList => m_SafetyZone_CheckBox_FinishZone.options;
-    #endregion
+    public CheckBox safetyZoneFinishZone { get => m_SafetyZone_CheckBox_FinishZone; }
     #endregion
     #region 내부 함수
     protected void DrawInEditMode()
@@ -540,17 +538,18 @@ public class __EditManager : Singleton<__EditManager>
         m_SelectedText.text = "Selected:" + "\n" + type.ToString();
         m_Current_Panel_Option?.SetActive(false);
         M_EnemyGizmo.SetActiveAllGizmo(false);
+        m_SelectedObject_Panel_Option.SetActive(false);
 
         if (null != m_ClickedObjectType)
         {
-            Vector2 pos = m_ClickedObjectType.GetGameObject().transform.position;
-            m_SelectedObject_InputField_XPos.text = pos.x.ToString();
-            m_SelectedObject_InputField_YPos.text = pos.y.ToString();
-            m_SelectedObject_Panel_Option.SetActive(true);
-        }
-        else
-        {
-            m_SelectedObject_Panel_Option.SetActive(false);
+            if (m_ClickedObjectType.GetObjectType() != E_ObjectType.Wall &&
+                m_ClickedObjectType.GetObjectType() != E_ObjectType.SafetyZone)
+            {
+                Vector2 pos = m_ClickedObjectType.GetGameObject().transform.position;
+                m_SelectedObject_InputField_XPos.text = pos.x.ToString();
+                m_SelectedObject_InputField_YPos.text = pos.y.ToString();
+                m_SelectedObject_Panel_Option.SetActive(true);
+            }
         }
 
         switch (type)
@@ -664,7 +663,6 @@ public class __EditManager : Singleton<__EditManager>
         Wall wall = m_ClickedObjectType.GetGameObject().GetComponent<WallCollider>().wall;
         wall.tile.color = M_Game.wallColor;
     }
-
     #region Enemy
     protected void ShowEnemyGizmo(Enemy enemy)
     {
@@ -780,15 +778,20 @@ public class __EditManager : Singleton<__EditManager>
         #endregion
         #endregion
 
-        // Wall
+        #region Wall
         m_WallColor_Slider_Red.value = M_Game.wallColor.r;
         m_WallColor_Slider_Green.value = M_Game.wallColor.g;
         m_WallColor_Slider_Blue.value = M_Game.wallColor.b;
         m_SelectedImage.color = Color.clear;
         ColorToText();
+        #endregion
 
-        // SafetyZone
-        // m_SafetyZone_CheckBox_FinishZone.onValueChanged.AddListener(index => { M_SafetyZone.SelectFinishZone((int)(index - 1)); });
+        #region SafetyZone
+        m_SafetyZone_CheckBox_FinishZone.onValueChanged.AddListener(index =>
+        {
+            M_SafetyZone.ToggleFinishZone((int)(index - 1));
+        });
+        #endregion
 
         m_SelectedObject_Panel_Option.SetActive(false);
         m_Enemy_Panel_Option.SetActive(false);
