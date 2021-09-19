@@ -229,6 +229,12 @@ public class __EditManager : Singleton<__EditManager>
             if (null != m_ClickedObject &&
                 obj?.GetComponent<IClickedObject>() == m_ClickedObject)
             {
+                SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+                if (null != renderer)
+                {
+                    renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+                }
+
                 m_ClickedObject = null;
 
                 SetSelectedUI(E_ObjectType.Erase);
@@ -291,6 +297,12 @@ public class __EditManager : Singleton<__EditManager>
                     if (null != m_ClickedObject &&
                         obj?.GetComponent<IClickedObject>() == m_ClickedObject)
                     {
+                        SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+                        if (null != renderer)
+                        {
+                            renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+                        }
+
                         m_ClickedObject = null;
 
                         SetSelectedUI(E_ObjectType.Erase);
@@ -430,26 +442,6 @@ public class __EditManager : Singleton<__EditManager>
             }
         }
     }
-    //protected SpriteRenderer GetClickedObjectRenderer()
-    //{
-    //    SpriteRenderer renderer = null;
-    //    if (null != m_ClickedObject)
-    //    {
-    //        switch (m_ClickedObject.GetObjectType())
-    //        {
-    //            case E_ObjectType.Player:
-    //                renderer = m_ClickedObject.GetGameObject().GetComponent<PlayerCollider>().player.renderer;
-    //                break;
-    //            case E_ObjectType.Enemy:
-    //                renderer = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy.renderer;
-    //                break;
-    //            case E_ObjectType.Coin:
-    //                renderer = m_ClickedObject.GetGameObject().GetComponent<CoinCollider>().coin.renderer;
-    //                break;
-    //        }
-    //    }
-    //    return renderer;
-    //}
     protected void ChangeCursor()
     {
         if (IsPointerOverUIObject())
