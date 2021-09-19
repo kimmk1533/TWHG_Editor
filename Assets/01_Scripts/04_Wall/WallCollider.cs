@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static WallManager;
 
-public class WallCollider : MonoBehaviour, IEraserable, IObjectType
+public class WallCollider : MonoBehaviour, IEraserable, IClickedObject
 {
     protected Wall m_Wall;
     protected BoxCollider2D m_Collider;
@@ -46,6 +46,10 @@ public class WallCollider : MonoBehaviour, IEraserable, IObjectType
         }
 
         M_Wall.DespawnWall(m_Wall);
+    }
+    public SpriteRenderer GetSpriteRenderer()
+    {
+        return null;
     }
     public GameObject GetGameObject()
     {

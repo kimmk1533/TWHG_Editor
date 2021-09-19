@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerCollider : MonoBehaviour, IEraserable, IObjectType
+public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
 {
     protected Player m_Player;
     protected BoxCollider2D m_Collider;
@@ -37,7 +37,7 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IObjectType
     {
         m_Player.gameObject.SetActive(false);
     }
-    public SpriteRenderer GetRenderer()
+    public SpriteRenderer GetSpriteRenderer()
     {
         return m_Player.renderer;
     }

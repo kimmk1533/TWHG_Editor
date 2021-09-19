@@ -51,9 +51,9 @@ public class __EditManager : Singleton<__EditManager>
     protected Outline m_SelectedImageOutline;
     protected int m_ClickIndex;
     protected int m_ClickedObjectSortingLayerID;
-    protected IObjectType m_ClickedObjectType;
-    protected List<IObjectType> m_CurrentClickedObjectList;
-    protected List<IObjectType> m_LastClickedObjectList;
+    protected IClickedObject m_ClickedObject;
+    protected List<IClickedObject> m_CurrentClickedObjectList;
+    protected List<IClickedObject> m_LastClickedObjectList;
 
     [Header("PlayButton")]
     public Button PlayButton;
@@ -226,10 +226,10 @@ public class __EditManager : Singleton<__EditManager>
         #region Erase
         if (IsRight)
         {
-            if (null != m_ClickedObjectType &&
-                obj?.GetComponent<IObjectType>() == m_ClickedObjectType)
+            if (null != m_ClickedObject &&
+                obj?.GetComponent<IClickedObject>() == m_ClickedObject)
             {
-                m_ClickedObjectType = null;
+                m_ClickedObject = null;
 
                 SetSelectedUI(E_ObjectType.Erase);
             }
@@ -288,10 +288,10 @@ public class __EditManager : Singleton<__EditManager>
                     M_Tile.Draw(ui_obj, E_TileType.SafetyZone);
                     break;
                 case E_ObjectType.Erase:
-                    if (null != m_ClickedObjectType &&
-                        obj?.GetComponent<IObjectType>() == m_ClickedObjectType)
+                    if (null != m_ClickedObject &&
+                        obj?.GetComponent<IClickedObject>() == m_ClickedObject)
                     {
-                        m_ClickedObjectType = null;
+                        m_ClickedObject = null;
 
                         SetSelectedUI(E_ObjectType.Erase);
                     }
@@ -328,13 +328,13 @@ public class __EditManager : Singleton<__EditManager>
 
         if (colliders.Length <= 0)
         {
-            SpriteRenderer renderer = GetClickedObjectRenderer();
+            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
             if (null != renderer)
             {
                 renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
             }
 
-            m_ClickedObjectType = null;
+            m_ClickedObject = null;
 
             SetSelectedUI(m_SelectedType);
             return;
@@ -346,11 +346,11 @@ public class __EditManager : Singleton<__EditManager>
         m_CurrentClickedObjectList.Clear();
         foreach (var item in colliders)
         {
-            IObjectType objectType = item.GetComponent<IObjectType>();
-            if (null == objectType)
+            IClickedObject clickedObject = item.GetComponent<IClickedObject>();
+            if (null == clickedObject)
                 continue;
 
-            m_CurrentClickedObjectList.Add(objectType);
+            m_CurrentClickedObjectList.Add(clickedObject);
         }
 
         int currentCount = m_CurrentClickedObjectList.Count;
@@ -358,23 +358,23 @@ public class __EditManager : Singleton<__EditManager>
 
         if (lastCount <= 0)
         {
-            SpriteRenderer renderer = GetClickedObjectRenderer();
+            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
             if (null != renderer)
             {
                 renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
             }
 
             m_ClickIndex = 1;
-            m_ClickedObjectType = m_CurrentClickedObjectList[0];
+            m_ClickedObject = m_CurrentClickedObjectList[0];
 
-            renderer = GetClickedObjectRenderer();
+            renderer = m_ClickedObject?.GetSpriteRenderer();
             if (null != renderer)
             {
                 m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
                 renderer.sortingLayerID = SortingLayer.NameToID("Selected");
             }
 
-            SetSelectedUI(m_ClickedObjectType.GetObjectType());
+            SetSelectedUI(m_ClickedObject.GetObjectType());
             return;
         }
 
@@ -387,69 +387,69 @@ public class __EditManager : Singleton<__EditManager>
             {
                 if (m_ClickIndex <= i)
                 {
-                    SpriteRenderer renderer = GetClickedObjectRenderer();
+                    SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
                     if (null != renderer)
                     {
                         renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
                     }
 
                     m_ClickIndex = i + 1;
-                    m_ClickedObjectType = m_CurrentClickedObjectList[i];
+                    m_ClickedObject = m_CurrentClickedObjectList[i];
 
-                    renderer = GetClickedObjectRenderer();
+                    renderer = m_ClickedObject?.GetSpriteRenderer();
                     if (null != renderer)
                     {
                         m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
                         renderer.sortingLayerID = SortingLayer.NameToID("Selected");
                     }
 
-                    SetSelectedUI(m_ClickedObjectType.GetObjectType());
+                    SetSelectedUI(m_ClickedObject.GetObjectType());
                     break;
                 }
             }
             else
             {
-                SpriteRenderer renderer = GetClickedObjectRenderer();
+                SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
                 if (null != renderer)
                 {
                     renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
                 }
 
                 m_ClickIndex = 1;
-                m_ClickedObjectType = m_CurrentClickedObjectList[0];
+                m_ClickedObject = m_CurrentClickedObjectList[0];
 
-                renderer = GetClickedObjectRenderer();
+                renderer = m_ClickedObject?.GetSpriteRenderer();
                 if (null != renderer)
                 {
                     m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
                     renderer.sortingLayerID = SortingLayer.NameToID("Selected");
                 }
 
-                SetSelectedUI(m_ClickedObjectType.GetObjectType());
+                SetSelectedUI(m_ClickedObject.GetObjectType());
                 break;
             }
         }
     }
-    protected SpriteRenderer GetClickedObjectRenderer()
-    {
-        SpriteRenderer renderer = null;
-        if (null != m_ClickedObjectType)
-        {
-            switch (m_ClickedObjectType.GetObjectType())
-            {
-                case E_ObjectType.Player:
-                    renderer = m_ClickedObjectType.GetGameObject().GetComponent<PlayerCollider>().player.renderer;
-                    break;
-                case E_ObjectType.Enemy:
-                    renderer = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy.renderer;
-                    break;
-                case E_ObjectType.Coin:
-                    renderer = m_ClickedObjectType.GetGameObject().GetComponent<CoinCollider>().coin.renderer;
-                    break;
-            }
-        }
-        return renderer;
-    }
+    //protected SpriteRenderer GetClickedObjectRenderer()
+    //{
+    //    SpriteRenderer renderer = null;
+    //    if (null != m_ClickedObject)
+    //    {
+    //        switch (m_ClickedObject.GetObjectType())
+    //        {
+    //            case E_ObjectType.Player:
+    //                renderer = m_ClickedObject.GetGameObject().GetComponent<PlayerCollider>().player.renderer;
+    //                break;
+    //            case E_ObjectType.Enemy:
+    //                renderer = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy.renderer;
+    //                break;
+    //            case E_ObjectType.Coin:
+    //                renderer = m_ClickedObject.GetGameObject().GetComponent<CoinCollider>().coin.renderer;
+    //                break;
+    //        }
+    //    }
+    //    return renderer;
+    //}
     protected void ChangeCursor()
     {
         if (IsPointerOverUIObject())
@@ -540,12 +540,12 @@ public class __EditManager : Singleton<__EditManager>
         M_EnemyGizmo.SetActiveAllGizmo(false);
         m_SelectedObject_Panel_Option.SetActive(false);
 
-        if (null != m_ClickedObjectType)
+        if (null != m_ClickedObject)
         {
-            if (m_ClickedObjectType.GetObjectType() != E_ObjectType.Wall &&
-                m_ClickedObjectType.GetObjectType() != E_ObjectType.SafetyZone)
+            if (m_ClickedObject.GetObjectType() != E_ObjectType.Wall &&
+                m_ClickedObject.GetObjectType() != E_ObjectType.SafetyZone)
             {
-                Vector2 pos = m_ClickedObjectType.GetGameObject().transform.position;
+                Vector2 pos = m_ClickedObject.GetGameObject().transform.position;
                 m_SelectedObject_InputField_XPos.text = pos.x.ToString();
                 m_SelectedObject_InputField_YPos.text = pos.y.ToString();
                 m_SelectedObject_Panel_Option.SetActive(true);
@@ -582,9 +582,9 @@ public class __EditManager : Singleton<__EditManager>
 
                     m_Current_Panel_Option = m_Enemy_Panel_Option;
 
-                    if (m_ClickedObjectType?.GetObjectType() == E_ObjectType.Enemy)
+                    if (m_ClickedObject?.GetObjectType() == E_ObjectType.Enemy)
                     {
-                        Enemy enemy = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy;
+                        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
 
                         m_Enemy_Dropdown_Type.value = (int)enemy.type + 1;
 
@@ -620,7 +620,7 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
                     m_SelectedImageOutline.enabled = true;
 
-                    WallCollider wallCollider = m_ClickedObjectType?.GetGameObject().GetComponent<WallCollider>();
+                    WallCollider wallCollider = m_ClickedObject?.GetGameObject().GetComponent<WallCollider>();
                     if (null == wallCollider)
                         m_SelectedImage.color = M_Game.wallColor;
                     else
@@ -660,7 +660,7 @@ public class __EditManager : Singleton<__EditManager>
 
     protected void UpdateClickedWallColor()
     {
-        Wall wall = m_ClickedObjectType.GetGameObject().GetComponent<WallCollider>().wall;
+        Wall wall = m_ClickedObject.GetGameObject().GetComponent<WallCollider>().wall;
         wall.tile.color = M_Game.wallColor;
     }
     #region Enemy
@@ -729,11 +729,11 @@ public class __EditManager : Singleton<__EditManager>
         }
         if (null == m_CurrentClickedObjectList)
         {
-            m_CurrentClickedObjectList = new List<IObjectType>();
+            m_CurrentClickedObjectList = new List<IClickedObject>();
         }
         if (null == m_LastClickedObjectList)
         {
-            m_LastClickedObjectList = new List<IObjectType>();
+            m_LastClickedObjectList = new List<IClickedObject>();
         }
 
         float unit = m_Canvas_BG.referencePixelsPerUnit;
@@ -822,7 +822,7 @@ public class __EditManager : Singleton<__EditManager>
     public void SetSelectedType(E_ObjectType type)
     {
         m_SelectedType = type;
-        m_ClickedObjectType = null;
+        m_ClickedObject = null;
         SetSelectedUI(type);
         SetCursorImage(type);
     }
@@ -878,10 +878,10 @@ public class __EditManager : Singleton<__EditManager>
     #region SelectedObject
     public void OnSelectedObjectChangePosition()
     {
-        if (null == m_ClickedObjectType)
+        if (null == m_ClickedObject)
             return;
 
-        Transform clickedTransform = m_ClickedObjectType.GetGameObject().transform.parent;
+        Transform clickedTransform = m_ClickedObject.GetGameObject().transform.parent;
 
         string strX = m_SelectedObject_InputField_XPos.text;
         string strY = m_SelectedObject_InputField_YPos.text;
@@ -911,10 +911,10 @@ public class __EditManager : Singleton<__EditManager>
             OnEnemyClampSpeed();
         }
 
-        if (m_ClickedObjectType?.GetObjectType() != E_ObjectType.Enemy)
+        if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
         enemy.type = enemyType;
 
         ShowEnemyGizmo(enemy);
@@ -930,28 +930,28 @@ public class __EditManager : Singleton<__EditManager>
         float value = float.Parse(m_Enemy_InputField_Speed.text);
         value = Mathf.Clamp(value, 0.01f, 100f);
 
-        if (m_ClickedObjectType?.GetObjectType() != E_ObjectType.Enemy)
+        if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
         enemy.speed = value;
 
         m_Enemy_InputField_Speed.text = enemy.speed.ToString();
     }
     public void OnEnemyAddPointButtonPressed()
     {
-        if (m_ClickedObjectType?.GetObjectType() != E_ObjectType.Enemy)
+        if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
         enemy.AddWayPoint();
     }
     public void OnEnemyRemovePointButtonPressed()
     {
-        if (m_ClickedObjectType?.GetObjectType() != E_ObjectType.Enemy)
+        if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
         enemy.RemoveWayPoint(m_Enemy_Scroll_WayPointList.selectedIndex);
     }
     public void OnEnemyClampWayPointIndex()
@@ -989,10 +989,10 @@ public class __EditManager : Singleton<__EditManager>
     }
     public void OnEnemyChangeWayPoint()
     {
-        if (m_ClickedObjectType?.GetObjectType() != E_ObjectType.Enemy)
+        if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
 
         int index = m_Enemy_Scroll_WayPointList.selectedIndex;
         ScrollInputFieldListItem scrollInputFieldItem = m_Enemy_Scroll_WayPointList.GetInputFieldItem(index);
@@ -1023,10 +1023,10 @@ public class __EditManager : Singleton<__EditManager>
     }
     public void OnEnemyChangeCenterPosition()
     {
-        if (m_ClickedObjectType?.GetObjectType() != E_ObjectType.Enemy)
+        if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        EnemyGizmo center = m_ClickedObjectType.GetGameObject().GetComponent<EnemyCollider>().enemy.center;
+        EnemyGizmo center = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy.center;
 
         string strX = m_Enemy_InputField_CenterX.text;
         string strY = m_Enemy_InputField_CenterY.text;
@@ -1077,7 +1077,7 @@ public class __EditManager : Singleton<__EditManager>
         color.b = m_WallColor_Slider_Blue.value;
         m_SelectedImage.color = M_Game.wallColor = color;
 
-        if (m_ClickedObjectType?.GetObjectType() == E_ObjectType.Wall)
+        if (m_ClickedObject?.GetObjectType() == E_ObjectType.Wall)
         {
             UpdateClickedWallColor();
         }

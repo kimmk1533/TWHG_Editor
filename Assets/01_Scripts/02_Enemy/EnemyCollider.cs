@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyCollider : MonoBehaviour, IEraserable, IObjectType
+public class EnemyCollider : MonoBehaviour, IEraserable, IClickedObject
 {
     protected Enemy m_Enemy;
 
@@ -39,6 +39,10 @@ public class EnemyCollider : MonoBehaviour, IEraserable, IObjectType
         }
 
         M_Enemy.DespawnEnemy(m_Enemy);
+    }
+    public SpriteRenderer GetSpriteRenderer()
+    {
+        return m_Enemy.renderer;
     }
     public GameObject GetGameObject()
     {

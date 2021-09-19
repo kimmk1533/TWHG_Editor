@@ -6,8 +6,9 @@ public interface IEraserable
 {
     void Erase();
 }
-public interface IObjectType
+public interface IClickedObject
 {
     GameObject GetGameObject();
+    SpriteRenderer GetSpriteRenderer();
     E_ObjectType GetObjectType();
 }

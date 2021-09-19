@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinCollider : MonoBehaviour, IEraserable, IObjectType
+public class CoinCollider : MonoBehaviour, IEraserable, IClickedObject
 {
     // 관리 컴포넌트
     [SerializeField, ReadOnly]
@@ -27,7 +27,7 @@ public class CoinCollider : MonoBehaviour, IEraserable, IObjectType
     {
         M_Coin.DespawnCoin(m_Coin);
     }
-    public SpriteRenderer GetRenderer()
+    public SpriteRenderer GetSpriteRenderer()
     {
         return coin.renderer;
     }
