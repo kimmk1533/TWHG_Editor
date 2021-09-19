@@ -814,6 +814,12 @@ public class __EditManager : Singleton<__EditManager>
     public void SetSelectedType(E_ObjectType type)
     {
         m_SelectedType = type;
+
+        SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+        if (null != renderer)
+        {
+            renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+        }
         m_ClickedObject = null;
         SetSelectedUI(type);
         SetCursorImage(type);
