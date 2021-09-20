@@ -81,14 +81,17 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
             m_Player.isSafe = true;
             m_Player.spawnPos = collision.transform.position;
 
-            bool? isFinishZone = collision.gameObject.GetComponent<SafetyZoneCollider>()?.isFinishZone;
-
-            if (isFinishZone.HasValue)
+            if (M_Game.isPlayMode)
             {
-                if (isFinishZone.Value && !M_Coin.IsLeftCoin)
+                bool? isFinishZone = collision.gameObject.GetComponent<SafetyZoneCollider>()?.isFinishZone;
+
+                if (isFinishZone.HasValue)
                 {
-                    // 승리
-                    Debug.Log("승리");
+                    if (isFinishZone.Value && !M_Coin.IsLeftCoin)
+                    {
+                        // 승리
+                        Debug.Log("승리");
+                    }
                 }
             }
         }

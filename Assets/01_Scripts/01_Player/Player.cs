@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
     protected bool m_IsSafe;
     [SerializeField]
     protected bool m_CanMove;
+    [SerializeField]
+    protected bool m_IsDie;
 
     #region 내부 컴포넌트
     protected MyRigidBody m_RigidBody;
@@ -155,13 +157,18 @@ public class Player : MonoBehaviour
 
     public void Death()
     {
+        if (m_IsDie)
+            return;
+
         m_CanMove = false;
+        m_IsDie = true;
         m_Animator.Death();
     }
     public void Respawn()
     {
         transform.position = m_SpawnPos;
         gameObject.SetActive(true);
+        m_IsDie = false;
         m_CanMove = true;
     }
     #endregion
