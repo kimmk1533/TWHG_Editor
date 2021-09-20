@@ -317,6 +317,7 @@ public class __EditManager : Singleton<__EditManager>
     }
     protected void SelectInEditMode()
     {
+        #region 예외 처리
         if (m_IsClickUI)
         {
             m_IsClickUI = false;
@@ -328,6 +329,7 @@ public class __EditManager : Singleton<__EditManager>
 
         if (m_SelectedType != E_ObjectType.None)
             return;
+        #endregion
 
         Vector2 origin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         int layerMask = 0;
@@ -338,6 +340,8 @@ public class __EditManager : Singleton<__EditManager>
 
         Collider2D[] colliders = Physics2D.OverlapPointAll(origin, layerMask);
 
+        /*
+        #region 빈 곳 클릭
         if (colliders.Length <= 0)
         {
             SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
@@ -351,7 +355,73 @@ public class __EditManager : Singleton<__EditManager>
             SetSelectedUI(m_SelectedType);
             return;
         }
+        #endregion
 
+        #region 리스트 세팅
+        if (m_LastClickedObjectList.Count > 0)
+        {
+            m_LastClickedObjectList.Clear();
+        }
+        m_LastClickedObjectList.AddRange(m_CurrentClickedObjectList);
+
+        if (m_CurrentClickedObjectList.Count > 0)
+        {
+            m_CurrentClickedObjectList.Clear();
+        }
+        foreach (var item in colliders)
+        {
+            IClickedObject clickedObject = item.GetComponent<IClickedObject>();
+            if (null == clickedObject)
+                continue;
+
+            m_CurrentClickedObjectList.Add(clickedObject);
+        }
+        #endregion
+
+        int currentCount = m_CurrentClickedObjectList.Count;
+        int lastCount = m_LastClickedObjectList.Count;
+
+        if (lastCount <= 0)
+        {
+            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+            if (null != renderer)
+            {
+                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+            }
+
+            m_ClickIndex = 1;
+            m_ClickedObject = m_CurrentClickedObjectList[0];
+
+            renderer = m_ClickedObject?.GetSpriteRenderer();
+            if (null != renderer)
+            {
+                m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
+                renderer.sortingLayerID = SortingLayer.NameToID("Selected");
+            }
+
+            SetSelectedUI(m_ClickedObject.GetObjectType());
+            return;
+        }
+        */
+
+        #region 기존 코드
+        #region 빈 곳 클릭
+        if (colliders.Length <= 0)
+        {
+            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+            if (null != renderer)
+            {
+                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+            }
+
+            m_ClickedObject = null;
+
+            SetSelectedUI(m_SelectedType);
+            return;
+        }
+        #endregion
+
+        #region 리스트 세팅
         m_LastClickedObjectList.Clear();
         m_LastClickedObjectList.AddRange(m_CurrentClickedObjectList);
 
@@ -364,6 +434,7 @@ public class __EditManager : Singleton<__EditManager>
 
             m_CurrentClickedObjectList.Add(clickedObject);
         }
+        #endregion
 
         int currentCount = m_CurrentClickedObjectList.Count;
         int lastCount = m_LastClickedObjectList.Count;
@@ -441,6 +512,7 @@ public class __EditManager : Singleton<__EditManager>
                 break;
             }
         }
+        #endregion
     }
     protected void ChangeCursor()
     {

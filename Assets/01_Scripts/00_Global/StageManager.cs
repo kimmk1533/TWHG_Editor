@@ -946,20 +946,17 @@ public class StageManager : Singleton<StageManager>
     }
     #endregion
     #region 유니티 콜백 함수
-    bool temp = false;
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.J))
         {
-            if (!temp)
-            {
-                SaveStage("TestStage");
-            }
-            else
-            {
-                LoadStage("TestStage");
-            }
-            temp = !temp;
+            SaveStage("TestStage");
+            Debug.Log("Save Complete");
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            LoadStage("TestStage");
+            Debug.Log("Load Complete");
         }
     }
     #endregion
