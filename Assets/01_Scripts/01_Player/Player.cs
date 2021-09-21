@@ -167,7 +167,15 @@ public class Player : MonoBehaviour
     }
     public void Respawn()
     {
-        transform.position = m_SpawnPos;
+        if (M_Edit.isEditMode)
+        {
+            transform.position = m_InitPos;
+        }
+        else
+        {
+            transform.position = m_SpawnPos;
+        }
+
         gameObject.SetActive(true);
         m_IsDie = false;
         m_CanMove = true;
