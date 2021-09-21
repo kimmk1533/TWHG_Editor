@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     protected bool m_IsDie;
 
     #region 내부 컴포넌트
-    protected MyRigidBody m_RigidBody;
+    protected MyRigidBody2D m_RigidBody;
     protected SpriteRenderer m_Renderer;
     protected PlayerAnimator m_Animator;
     protected PlayerCollider m_Collider;
@@ -133,7 +133,8 @@ public class Player : MonoBehaviour
 
         if (null == m_RigidBody)
         {
-            m_RigidBody = GetComponent<MyRigidBody>();
+            m_RigidBody = GetComponent<MyRigidBody2D>();
+            m_RigidBody.layerMask = LayerMask.GetMask("Wall");
         }
         if (null == m_Renderer)
         {
