@@ -930,7 +930,7 @@ public class __EditManager : Singleton<__EditManager>
         PlayButton.image.sprite = PlayImage;
     }
 
-    public void OnTestPlay()
+    public void OnPlayButtonClicked()
     {
         if (isEditMode)
         {
