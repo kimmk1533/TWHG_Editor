@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc28388dd814d3549a76a533646b64aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Player: {fileID: 0}
 --- !u!61 &2469109848614472505
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -70,7 +69,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.65, y: 0.65}
+  m_Size: {x: 0.6, y: 0.6}
   m_EdgeRadius: 0
 --- !u!50 &8783370026220177440
 Rigidbody2D:
@@ -144,6 +143,7 @@ MonoBehaviour:
   m_SpawnPos: {x: 0, y: 0, z: 0}
   m_IsSafe: 0
   m_CanMove: 0
+  m_IsDie: 0
 --- !u!114 &-7888459087031115826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,6 +161,7 @@ MonoBehaviour:
   m_UseGravity: 0
   m_Gravity: -9.8
   m_IsKinematic: 1
+  m_UseChildCollider: 1
   m_Speed: 0
   m_DragSpeed: 0
   m_Velocity: {x: 0, y: 0}
