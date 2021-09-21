@@ -153,36 +153,16 @@ public class MyRigidBody2D : MonoBehaviour
 
                     if (i % 2 == 0)
                     {
-                        if (dir.x < 0f)
+                        if (Mathf.Abs(hit_distance.x) < Mathf.Abs(m_Velocity.x))
                         {
-                            if (hit_distance.x > m_Velocity.x)
-                            {
-                                m_Velocity.x = hit_distance.x;
-                            }
-                        }
-                        else if (dir.x > 0f)
-                        {
-                            if (hit_distance.x < m_Velocity.x)
-                            {
-                                m_Velocity.x = hit_distance.x;
-                            }
+                            m_Velocity.x = hit_distance.x;
                         }
                     }
                     else
                     {
-                        if (dir.y < 0f)
+                        if (Mathf.Abs(hit_distance.y) < Mathf.Abs(m_Velocity.y))
                         {
-                            if (hit_distance.y > m_Velocity.y)
-                            {
-                                m_Velocity.y = hit_distance.y;
-                            }
-                        }
-                        else if (dir.y > 0f)
-                        {
-                            if (hit_distance.y < m_Velocity.y)
-                            {
-                                m_Velocity.y = hit_distance.y;
-                            }
+                            m_Velocity.y = hit_distance.y;
                         }
                     }
                 }
@@ -199,36 +179,16 @@ public class MyRigidBody2D : MonoBehaviour
 
                     if (i % 2 == 0)
                     {
-                        if (dir.x < 0f)
+                        if (Mathf.Abs(hit_distance.x) < Mathf.Abs(m_Force.x))
                         {
-                            if (hit_distance.x > m_Force.x)
-                            {
-                                m_Force.x = hit_distance.x;
-                            }
-                        }
-                        else if (dir.x > 0f)
-                        {
-                            if (hit_distance.x < m_Force.x)
-                            {
-                                m_Force.x = hit_distance.x;
-                            }
+                            m_Force.x = hit_distance.x;
                         }
                     }
                     else
                     {
-                        if (dir.y < 0f)
+                        if (Mathf.Abs(hit_distance.y) < Mathf.Abs(m_Force.y))
                         {
-                            if (hit_distance.y > m_Force.y)
-                            {
-                                m_Force.y = hit_distance.y;
-                            }
-                        }
-                        else if (dir.y > 0f)
-                        {
-                            if (hit_distance.y < m_Force.y)
-                            {
-                                m_Force.y = hit_distance.y;
-                            }
+                            m_Force.y = hit_distance.y;
                         }
                     }
                 }
