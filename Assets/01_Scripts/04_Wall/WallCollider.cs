@@ -12,6 +12,8 @@ public class WallCollider : MonoBehaviour, IEraserable, IClickedObject
     #endregion
     #region 내부 프로퍼티
     #region 매니져
+    protected __EditManager M_Edit => __EditManager.Instance;
+
     protected WallManager M_Wall => WallManager.Instance;
     #endregion
     #endregion
@@ -61,14 +63,12 @@ public class WallCollider : MonoBehaviour, IEraserable, IClickedObject
     }
     #endregion
     #region 유니티 콜백 함수
-    void Awake()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-
-    }
-
-    void Update()
-    {
-
+        if (M_Edit.isEditMode)
+        {
+            collision.GetComponent<IEraserable>()?.Erase();
+        }
     }
     #endregion
 }

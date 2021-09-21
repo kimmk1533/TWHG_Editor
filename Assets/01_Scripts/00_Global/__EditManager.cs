@@ -684,15 +684,17 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
                     m_SelectedImageOutline.enabled = true;
 
-                    WallCollider wallCollider = m_ClickedObject?.GetGameObject().GetComponent<WallCollider>();
-                    if (null == wallCollider)
-                        m_SelectedImage.color = M_Game.wallColor;
-                    else
-                        m_SelectedImage.color = wallCollider.wall.tile.color;
+                    Wall wall = m_ClickedObject?.GetGameObject().GetComponent<WallCollider>().wall;
+                    Color color;
 
-                    m_WallColor_Slider_Red.value = m_SelectedImage.color.r;
-                    m_WallColor_Slider_Green.value = m_SelectedImage.color.g;
-                    m_WallColor_Slider_Blue.value = m_SelectedImage.color.b;
+                    if (null == wall)
+                        color = m_SelectedImage.color = M_Game.wallColor;
+                    else
+                        color = m_SelectedImage.color = wall.tile.color;
+
+                    m_WallColor_Slider_Red.value = color.r;
+                    m_WallColor_Slider_Green.value = color.g;
+                    m_WallColor_Slider_Blue.value = color.b;
                     ColorToText();
 
                     m_Current_Panel_Option = m_Wall_Panel_Option;
@@ -930,9 +932,20 @@ public class __EditManager : Singleton<__EditManager>
 
     public void OnTestPlay()
     {
-        if (isEditMode)/* &&
-            M_SafetyZone.m_ColliderList.Count >= 2)*/
+        if (isEditMode)
         {
+            // 나중에 Debug.Log를 플로팅 메세지로 변경
+            if (M_SafetyZone.finishZoneCount <= 0)
+            {
+                Debug.Log("완료 지역이 최소 1개 이상 있어야 합니다.");
+                return;
+            }
+            if (!M_Player.playerActive)
+            {
+                Debug.Log("플레이어는 배치된 상태여야 합니다.");
+                return;
+            }
+
             m_SelectedType = E_ObjectType.None;
 
             m_SelectedImage.color = Color.white * 0f;

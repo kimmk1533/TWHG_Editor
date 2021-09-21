@@ -258,7 +258,10 @@ public class MyRigidBody2D : MonoBehaviour
         }
         #endregion
         #region 충돌
-        CheckCollision();
+        if (null != m_Collider)
+        {
+            CheckCollision();
+        }
         #endregion
         #region 선 예외처리
         if (!m_IsKinematic)

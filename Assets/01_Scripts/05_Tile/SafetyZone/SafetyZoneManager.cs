@@ -19,6 +19,7 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>
     #endregion
     #region 외부 프로퍼티
     public int safetyZoneIndex { get => m_SafetyZoneIndex; }
+    public int finishZoneCount { get => m_FinishZoneList.Count; }
     public List<SafetyZone> safetyZoneList { get => m_SafetyZoneList; }
     #endregion
     #region 내부 함수

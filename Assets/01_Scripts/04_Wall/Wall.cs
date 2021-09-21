@@ -37,11 +37,12 @@ public class Wall : MonoBehaviour
             m_Collider.__Initialize(this);
         }
 
+        int layerMask = LayerMask.GetMask("Wall");
         RaycastHit2D[] hits = new RaycastHit2D[(int)E_WallDirection.Max];
-        hits[0] = Physics2D.Raycast(transform.position, Vector2.left, 1f);
-        hits[1] = Physics2D.Raycast(transform.position, Vector2.right, 1f);
-        hits[2] = Physics2D.Raycast(transform.position, Vector2.up, 1f);
-        hits[3] = Physics2D.Raycast(transform.position, Vector2.down, 1f);
+        hits[0] = Physics2D.Raycast(transform.position, Vector2.left, 1f, layerMask);
+        hits[1] = Physics2D.Raycast(transform.position, Vector2.right, 1f, layerMask);
+        hits[2] = Physics2D.Raycast(transform.position, Vector2.up, 1f, layerMask);
+        hits[3] = Physics2D.Raycast(transform.position, Vector2.down, 1f, layerMask);
 
         for (E_WallDirection i = 0; i < E_WallDirection.Max; ++i)
         {
