@@ -149,30 +149,22 @@ public class MyRigidBody2D : MonoBehaviour
                 if (null != hits[i].transform &&
                     hits[i].transform != m_Collider.transform)
                 {
-                    Vector2 hit_dir = hits[i].point - vertices[i / 2];
+                    Vector2 hit_distance = hits[i].point - vertices[i / 2];
 
                     if (i % 2 == 0)
                     {
                         if (dir.x < 0f)
                         {
-                            if (hit_dir.x < -0.015f)
+                            if (hit_distance.x > m_Velocity.x)
                             {
-                                m_Velocity.x = 0f;
-                            }
-                            else
-                            {
-                                m_Velocity.x = hit_dir.x;
+                                m_Velocity.x = hit_distance.x;
                             }
                         }
                         else if (dir.x > 0f)
                         {
-                            if (hit_dir.x > 0.015f)
+                            if (hit_distance.x < m_Velocity.x)
                             {
-                                m_Velocity.x = 0f;
-                            }
-                            else
-                            {
-                                m_Velocity.x = hit_dir.x;
+                                m_Velocity.x = hit_distance.x;
                             }
                         }
                     }
@@ -180,24 +172,16 @@ public class MyRigidBody2D : MonoBehaviour
                     {
                         if (dir.y < 0f)
                         {
-                            if (hit_dir.y < -0.015f)
+                            if (hit_distance.y > m_Velocity.y)
                             {
-                                m_Velocity.y = 0f;
-                            }
-                            else
-                            {
-                                m_Velocity.y = hit_dir.y;
+                                m_Velocity.y = hit_distance.y;
                             }
                         }
                         else if (dir.y > 0f)
                         {
-                            if (hit_dir.y > 0.015f)
+                            if (hit_distance.y < m_Velocity.y)
                             {
-                                m_Velocity.y = 0f;
-                            }
-                            else
-                            {
-                                m_Velocity.y = hit_dir.y;
+                                m_Velocity.y = hit_distance.y;
                             }
                         }
                     }
@@ -211,30 +195,22 @@ public class MyRigidBody2D : MonoBehaviour
                 if (null != hits[i].transform &&
                     hits[i].transform != m_Collider.transform)
                 {
-                    Vector2 hit_dir = hits[i].point - vertices[i / 2];
+                    Vector2 hit_distance = hits[i].point - vertices[i / 2];
 
                     if (i % 2 == 0)
                     {
                         if (dir.x < 0f)
                         {
-                            if (hit_dir.x < -0.015f)
+                            if (hit_distance.x > m_Force.x)
                             {
-                                m_Force.x = 0f;
-                            }
-                            else
-                            {
-                                m_Force.x = hit_dir.x;
+                                m_Force.x = hit_distance.x;
                             }
                         }
                         else if (dir.x > 0f)
                         {
-                            if (hit_dir.x > 0.015f)
+                            if (hit_distance.x < m_Force.x)
                             {
-                                m_Force.x = 0f;
-                            }
-                            else
-                            {
-                                m_Force.x = hit_dir.x;
+                                m_Force.x = hit_distance.x;
                             }
                         }
                     }
@@ -242,24 +218,16 @@ public class MyRigidBody2D : MonoBehaviour
                     {
                         if (dir.y < 0f)
                         {
-                            if (hit_dir.y < -0.015f)
+                            if (hit_distance.y > m_Force.y)
                             {
-                                m_Force.y = 0f;
-                            }
-                            else
-                            {
-                                m_Force.y = hit_dir.y;
+                                m_Force.y = hit_distance.y;
                             }
                         }
                         else if (dir.y > 0f)
                         {
-                            if (hit_dir.y > 0.015f)
+                            if (hit_distance.y < m_Force.y)
                             {
-                                m_Force.y = 0f;
-                            }
-                            else
-                            {
-                                m_Force.y = hit_dir.y;
+                                m_Force.y = hit_distance.y;
                             }
                         }
                     }
