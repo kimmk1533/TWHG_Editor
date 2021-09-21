@@ -340,7 +340,7 @@ public class __EditManager : Singleton<__EditManager>
 
         Collider2D[] colliders = Physics2D.OverlapPointAll(origin, layerMask);
 
-        /*
+        /* 인덱스 대신 Peek, Pop, Push로 변경
         #region 빈 곳 클릭
         if (colliders.Length <= 0)
         {
