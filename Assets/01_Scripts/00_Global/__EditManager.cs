@@ -29,8 +29,10 @@ public class __EditManager : Singleton<__EditManager>
     protected bool m_IsEdit;
     [SerializeField]
     protected GameObject m_Edit_Panel;
+
+    [Header("Floating Text")]
     [SerializeField]
-    protected GameObject m_Game_Panel;
+    protected GameObject m_FloatingText_Panel;
 
     [Header("Canvas")]
     [SerializeField]
@@ -56,11 +58,14 @@ public class __EditManager : Singleton<__EditManager>
     protected List<IClickedObject> m_LastClickedObjectList;
 
     [Header("PlayButton")]
-    public Button PlayButton;
+    [SerializeField]
+    protected Button PlayButton;
 
     [Space(10)]
-    public Sprite PlayImage;
-    public Sprite ResetImage;
+    [SerializeField]
+    protected Sprite PlayImage;
+    [SerializeField]
+    protected Sprite ResetImage;
 
     #region 옵션
     protected GameObject m_Current_Panel_Option;
@@ -128,6 +133,7 @@ public class __EditManager : Singleton<__EditManager>
     #region 매니져
     protected ResourcesManager M_Resources => ResourcesManager.Instance;
     protected __GameManager M_Game => __GameManager.Instance;
+
     protected PlayerManager M_Player => PlayerManager.Instance;
     protected EnemyManager M_Enemy => EnemyManager.Instance;
     protected EnemyGizmoManager M_EnemyGizmo => EnemyGizmoManager.Instance;
@@ -135,6 +141,7 @@ public class __EditManager : Singleton<__EditManager>
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected TileManager M_Tile => TileManager.Instance;
     protected StageManager M_Stage => StageManager.Instance;
+    protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
 
     protected Vector3 spawnPoint
@@ -934,15 +941,20 @@ public class __EditManager : Singleton<__EditManager>
     {
         if (isEditMode)
         {
-            // 나중에 Debug.Log를 플로팅 메세지로 변경
-            if (M_SafetyZone.finishZoneCount <= 0)
-            {
-                Debug.Log("완료 지역이 최소 1개 이상 있어야 합니다.");
-                return;
-            }
             if (!M_Player.playerActive)
             {
-                Debug.Log("플레이어는 배치된 상태여야 합니다.");
+                FloatingText floatingText = M_FloatingText.SpawnFloatingText("플레이어는 배치된 상태여야 합니다");
+                floatingText.transform.SetParent(m_FloatingText_Panel.transform);
+                floatingText.transform.localScale = Vector3.one;
+                Debug.Log("플레이어는 배치된 상태여야 합니다");
+                return;
+            }
+            if (M_SafetyZone.finishZoneCount <= 0)
+            {
+                FloatingText floatingText = M_FloatingText.SpawnFloatingText("완료 지역이 최소 1개 이상 있어야 합니다");
+                floatingText.transform.SetParent(m_FloatingText_Panel.transform);
+                floatingText.transform.localScale = Vector3.one;
+                Debug.Log("완료 지역이 최소 1개 이상 있어야 합니다");
                 return;
             }
 

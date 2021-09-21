@@ -36,6 +36,7 @@ public class __GameManager : Singleton<__GameManager>
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected WallManager M_Wall => WallManager.Instance;
     protected TileManager M_Tile => TileManager.Instance;
+    protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
@@ -62,16 +63,19 @@ public class __GameManager : Singleton<__GameManager>
         M_Wall.__Initialize();
         M_SafetyZone.__Initialize();
         M_Tile.__Initialize();
+        M_FloatingText.__Initialize();
     }
     void __Finalize()
     {
         M_Edit.__Finalize();
-        M_Coin.__Finalize();
-        M_Enemy.__Finalize();
-        M_EnemyGizmo.__Finalize();
+
+        M_FloatingText.__Finalize();
+        M_Tile.__Finalize();
         M_SafetyZone.__Finalize();
         M_Wall.__Finalize();
-        M_Tile.__Finalize();
+        M_Coin.__Finalize();
+        M_EnemyGizmo.__Finalize();
+        M_Enemy.__Finalize();
         M_Player.__Finalize();
     }
     #endregion
