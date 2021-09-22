@@ -140,7 +140,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Speed: 3.5
   m_InitPos: {x: 0, y: 0, z: 0}
-  m_SpawnPos: {x: 0, y: 0, z: 0}
+  m_SpawnPos: {x: 0, y: 0, z: 5}
   m_IsSafe: 0
   m_CanMove: 0
   m_IsDie: 0
