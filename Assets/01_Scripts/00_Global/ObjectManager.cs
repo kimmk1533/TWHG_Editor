@@ -10,54 +10,14 @@ public abstract class ObjectManager<Pool, Origin> : Singleton<Pool> where Pool :
     protected Dictionary<string, Origin> m_Origins = null;
     protected Dictionary<string, MemoryPool<Origin>> m_Pools = null;
 
+    #region 내부 프로퍼티
+    #region 매니저
     protected __GameManager M_Game => __GameManager.Instance;
     protected __EditManager M_Edit => __EditManager.Instance;
     protected ResourcesManager M_Resources => ResourcesManager.Instance;
-
-    protected virtual void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
-    public abstract void OnPlayEnter();
-    public abstract void OnPlayExit();
-    public virtual void __Initialize()
-    {
-        if (null == m_Origins)
-        {
-            m_Origins = new Dictionary<string, Origin>();
-        }
-        if (null == m_Pools)
-        {
-            m_Pools = new Dictionary<string, MemoryPool<Origin>>();
-        }
-
-        //GameObject[] origins = m_Resources.GetPrefabs(ResourcesType);
-
-        //for (int i = 0; i < origins.Length; ++i)
-        //{
-        //    GameObject parent = new GameObject();
-        //    parent.transform.SetParent(this.transform);
-        //    parent.name = origins[i].name + "_parent";
-
-        //    m_Pools.Add(new MemoryPool(origins[i], m_PoolSize, parent.transform));
-        //}
-    }
-
-    public virtual void __Finalize()
-    {
-        //if (m_Pools == null)
-        //    return;
-
-        //foreach (var item in m_Pools)
-        //{
-        //    item.Value?.Dispose();
-        //}
-
-        //m_Pools.Clear();
-        //m_Pools = null;
-    }
-
+    #endregion
+    #endregion
+    #region 내부 함수
     protected virtual bool AddPool(string key, Origin origin, Transform parent)
     {
         if (m_Origins.ContainsKey(key))
@@ -92,4 +52,48 @@ public abstract class ObjectManager<Pool, Origin> : Singleton<Pool> where Pool :
 
         return null;
     }
+    #endregion
+    #region 외부 함수
+    public virtual void __Initialize()
+    {
+        if (null == m_Origins)
+        {
+            m_Origins = new Dictionary<string, Origin>();
+        }
+        if (null == m_Pools)
+        {
+            m_Pools = new Dictionary<string, MemoryPool<Origin>>();
+        }
+
+        //GameObject[] origins = m_Resources.GetPrefabs(ResourcesType);
+
+        //for (int i = 0; i < origins.Length; ++i)
+        //{
+        //    GameObject parent = new GameObject();
+        //    parent.transform.SetParent(this.transform);
+        //    parent.name = origins[i].name + "_parent";
+
+        //    m_Pools.Add(new MemoryPool(origins[i], m_PoolSize, parent.transform));
+        //}
+    }
+    public virtual void __Finalize()
+    {
+        //if (m_Pools == null)
+        //    return;
+
+        //foreach (var item in m_Pools)
+        //{
+        //    item.Value?.Dispose();
+        //}
+
+        //m_Pools.Clear();
+        //m_Pools = null;
+    }
+    #endregion
+    #region 유니티 콜백 함수
+    protected virtual void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+    #endregion
 }

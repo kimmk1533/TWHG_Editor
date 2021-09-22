@@ -19,8 +19,8 @@ public class EnemyGizmoManager : ObjectManager<EnemyGizmoManager, EnemyGizmo>
     {
         base.__Initialize();
 
-        M_Game.OnEnterPlayMode += OnPlayEnter;
-        M_Game.OnExitPlayMode += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnEnterPlayMode;
+        M_Game.OnExitPlayMode += OnExitPlayMode;
 
         // 적 풀 원본
         EnemyGizmo gizmo = M_Resources.GetGameObject<EnemyGizmo>("Enemy", "EnemyGizmo");
@@ -62,11 +62,11 @@ public class EnemyGizmoManager : ObjectManager<EnemyGizmoManager, EnemyGizmo>
     }
     #endregion
     #region 이벤트 함수
-    public override void OnPlayEnter()
+    public void OnEnterPlayMode()
     {
         SetActiveAllGizmo(false);
     }
-    public override void OnPlayExit()
+    public void OnExitPlayMode()
     {
         
     }

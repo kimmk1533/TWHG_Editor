@@ -5,13 +5,14 @@ using UnityEngine;
 public class SafetyZoneCollider : MonoBehaviour, IEraserable, IClickedObject
 {
     protected SafetyZone m_SafetyZone;
+
+    #region 내부 컴포넌트
     protected BoxCollider2D m_Collider;
-
+    #endregion
     #region 내부 프로퍼티
-    protected __EditManager M_Edit => __EditManager.Instance;
-
-    protected PlayerManager M_Player => PlayerManager.Instance;
+    #region 매니저
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
+    #endregion
     #endregion
     #region 외부 프로퍼티
     public BoxCollider2D Collider => m_Collider;
@@ -38,14 +39,12 @@ public class SafetyZoneCollider : MonoBehaviour, IEraserable, IClickedObject
     }
     public GameObject GetGameObject()
     {
-        return gameObject;
+        return m_SafetyZone.gameObject;
     }
     public E_ObjectType GetObjectType()
     {
         return E_ObjectType.SafetyZone;
     }
-    #endregion
-    #region 유니티 콜백 함수
     #endregion
 
     #region 기존 함수

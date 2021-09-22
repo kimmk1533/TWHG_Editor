@@ -9,13 +9,14 @@ public enum E_InputButton
 public enum E_ObjectType
 {
     None = -1,
+    Erase,
 
     Player,
     Enemy,
     Coin,
     Wall,
     SafetyZone,
-    Erase,
+    GravityZone,
 
     Max
 }
@@ -45,4 +46,5 @@ public enum E_TileType
 
     Wall, // 벽
     SafetyZone, // 안전구역
+    GravityZone, // 중력구역
 }

@@ -6,8 +6,10 @@ using UnityEngine.EventSystems;
 public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
 {
     protected Player m_Player;
-    protected BoxCollider2D m_Collider;
 
+    #region 내부 컴포넌트
+    protected BoxCollider2D m_Collider;
+    #endregion
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
@@ -17,6 +19,39 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
     #region 외부 프로퍼티
     public Player player { get => m_Player; }
     public Vector2 size => m_Collider.size;
+    #endregion
+    #region 내부 함수
+    protected void TriggerEnterEnemy(Collider2D collision)
+    {
+        if (!m_Player.isSafe)
+        {
+            m_Player.Death();
+        }
+    }
+    protected void TriggerEnterCoin(Collider2D collision)
+    {
+        collision.GetComponent<CoinCollider>().coin.gameObject.SetActive(false);
+    }
+    protected void TriggerEnterSafetyZone(Collider2D collision)
+    {
+        m_Player.isSafe = true;
+        m_Player.spawnPos = collision.transform.position;
+
+        if (M_Game.isPlayMode)
+        {
+            bool isFinishZone = collision.GetComponent<SafetyZoneCollider>().isFinishZone;
+
+            if (isFinishZone && !M_Coin.IsLeftCoin)
+            {
+                // 승리
+                Debug.Log("승리");
+            }
+        }
+    }
+    protected void TriggerEnterGravityZone(Collider2D collision)
+    {
+        m_Player.rigidBody2D.useGravity = true;
+    }
     #endregion
     #region 외부 함수
     public void __Initialize(Player player)
@@ -43,7 +78,7 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
     }
     public GameObject GetGameObject()
     {
-        return gameObject;
+        return m_Player.gameObject;
     }
     public E_ObjectType GetObjectType()
     {
@@ -53,7 +88,23 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
     #region 이벤트 함수
     public void OnPlayEnter()
     {
-
+        int layerMask = LayerMask.GetMask("Enemy", "Coin", "GravityZone");
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(m_Player.transform.position, size, 0f, layerMask);
+        foreach (var item in colliders)
+        {
+            if (item.CompareTag("Enemy"))
+            {
+                TriggerEnterEnemy(item);
+            }
+            if (item.CompareTag("Coin"))
+            {
+                TriggerEnterCoin(item);
+            }
+            if (item.CompareTag("GravityZone"))
+            {
+                TriggerEnterGravityZone(item);
+            }
+        }
     }
     public void OnPlayExit()
     {
@@ -65,44 +116,51 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
     {
         if (M_Game.isPlayMode)
         {
-            if (collision.CompareTag("Enemy") && !m_Player.isSafe)
+            if (collision.CompareTag("Enemy"))
             {
-                m_Player.Death();
+                TriggerEnterEnemy(collision);
             }
 
             if (collision.CompareTag("Coin"))
             {
-                collision.GetComponent<CoinCollider>().coin.gameObject.SetActive(false);
+                TriggerEnterCoin(collision);
+            }
+
+            if (collision.CompareTag("GravityZone"))
+            {
+                TriggerEnterGravityZone(collision);
             }
         }
 
         if (collision.CompareTag("SafetyZone"))
         {
-            m_Player.isSafe = true;
-            m_Player.spawnPos = collision.transform.position;
-
-            if (M_Game.isPlayMode)
-            {
-                bool? isFinishZone = collision.gameObject.GetComponent<SafetyZoneCollider>()?.isFinishZone;
-
-                if (isFinishZone.HasValue)
-                {
-                    if (isFinishZone.Value && !M_Coin.IsLeftCoin)
-                    {
-                        // 승리
-                        Debug.Log("승리");
-                    }
-                }
-            }
+            TriggerEnterSafetyZone(collision);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("SafetyZone") &&
-            m_Player.spawnPos == collision.transform.position)
+        if (collision.CompareTag("SafetyZone"))
         {
-            m_Player.isSafe = false;
+            int layerMask = LayerMask.GetMask("SafetyZone");
+            Collider2D[] colliders = Physics2D.OverlapBoxAll(m_Player.transform.position, size, 0f, layerMask);
+            if (colliders.Length <= 0)
+            {
+                m_Player.isSafe = false;
+            }
+        }
+
+        if (M_Game.isPlayMode)
+        {
+            if (collision.CompareTag("GravityZone"))
+            {
+                int layerMask = LayerMask.GetMask("GravityZone");
+                Collider2D[] colliders = Physics2D.OverlapBoxAll(m_Player.transform.position, size, 0f, layerMask);
+                if (colliders.Length <= 0)
+                {
+                    m_Player.rigidBody2D.useGravity = false;
+                }
+            }
         }
     }
     #endregion

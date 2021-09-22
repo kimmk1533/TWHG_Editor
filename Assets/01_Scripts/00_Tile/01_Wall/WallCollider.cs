@@ -55,7 +55,7 @@ public class WallCollider : MonoBehaviour, IEraserable, IClickedObject
     }
     public GameObject GetGameObject()
     {
-        return gameObject;
+        return m_Wall.gameObject;
     }
     public E_ObjectType GetObjectType()
     {

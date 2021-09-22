@@ -4,10 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Wall
   - Enemy
   - Coin
+  - Wall
   - SafetyZone
+  - GravityZone
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - Coin
   - Wall
   - SafetyZone
-  - 
+  - GravityZone
   - 
   - 
   - 

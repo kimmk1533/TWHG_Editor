@@ -12,16 +12,16 @@ public class __GameManager : Singleton<__GameManager>
     protected int m_height;
 
     [Header("TileColors")]
-    // 홀수 칸
     [SerializeField, ReadOnly(true)]
-    protected Color m_OddColor;
-    // 짝수 칸
+    protected Color m_OddColor; // 홀수 칸
     [SerializeField, ReadOnly(true)]
-    protected Color m_EvenColor;
+    protected Color m_EvenColor; // 짝수 칸
     [SerializeField, ReadOnly(true)]
     protected Color m_WallColor;
     [SerializeField, ReadOnly(true)]
     protected Color m_SafetyZoneColor;
+    [SerializeField, ReadOnly(true)]
+    protected Color m_GravityZoneColor;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -33,9 +33,10 @@ public class __GameManager : Singleton<__GameManager>
     protected EnemyManager M_Enemy => EnemyManager.Instance;
     protected EnemyGizmoManager M_EnemyGizmo => EnemyGizmoManager.Instance;
     protected CoinManager M_Coin => CoinManager.Instance;
-    protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
-    protected WallManager M_Wall => WallManager.Instance;
     protected TileManager M_Tile => TileManager.Instance;
+    protected WallManager M_Wall => WallManager.Instance;
+    protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
+    protected GravityZoneManager M_GravityZone => GravityZoneManager.Instance;
     protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
     #endregion
@@ -48,6 +49,7 @@ public class __GameManager : Singleton<__GameManager>
     public Color evenColor { get => m_EvenColor; set => m_EvenColor = value; }
     public Color wallColor { get => m_WallColor; set => m_WallColor = value; }
     public Color safetyZoneColor { get => m_SafetyZoneColor; set => m_SafetyZoneColor = value; }
+    public Color gravityZoneColor { get => m_GravityZoneColor; set => m_GravityZoneColor = value; }
     #endregion
     #region 내부 함수
     void __Initialize()
@@ -60,24 +62,27 @@ public class __GameManager : Singleton<__GameManager>
         M_Enemy.__Initialize();
         M_EnemyGizmo.__Initialize();
         M_Coin.__Initialize();
+        M_Tile.__Initialize();
         M_Wall.__Initialize();
         M_SafetyZone.__Initialize();
-        M_Tile.__Initialize();
+        M_GravityZone.__Initialize();
         M_FloatingText.__Initialize();
     }
     void __Finalize()
     {
-        M_Edit.__Finalize();
-
         M_FloatingText.__Finalize();
-        M_Tile.__Finalize();
+        M_GravityZone.__Finalize();
         M_SafetyZone.__Finalize();
         M_Wall.__Finalize();
+        M_Tile.__Finalize();
         M_Coin.__Finalize();
         M_EnemyGizmo.__Finalize();
         M_Enemy.__Finalize();
         M_Player.__Finalize();
         M_Stage.__Finalize();
+
+        M_Edit.__Finalize();
+        M_Resources.__Finalize();
     }
     #endregion
     #region 이벤트 함수

@@ -14,7 +14,9 @@ public class SafetyZone : MonoBehaviour
     protected SafetyZoneCollider m_Collider;
     #endregion
     #region 내부 프로퍼티
+    #region 매니저
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
+    #endregion
     #endregion
     #region 외부 프로퍼티
     public Tile tile { get => m_Tile; }
@@ -40,13 +42,13 @@ public class SafetyZone : MonoBehaviour
         if (null == m_Animator)
         {
             m_Animator = transform.GetComponentInChildren<SafetyZoneAnimator>();
-            m_Animator.__Initialize(this);
         }
+        m_Animator.__Initialize(this);
         if (null == m_Collider)
         {
             m_Collider = transform.GetComponentInChildren<SafetyZoneCollider>();
-            m_Collider.__Initialize(this);
         }
+        m_Collider.__Initialize(this);
     }
 
     public void SetText(int standard)

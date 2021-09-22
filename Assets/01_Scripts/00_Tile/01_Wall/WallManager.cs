@@ -13,9 +13,6 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
     protected TileManager M_Tile => TileManager.Instance;
     #endregion
     #endregion
-    #region 외부 프로퍼티
-    public List<Wall> wallList { get => m_WallList; }
-    #endregion
     #region 내부 함수
     protected void ClearWall()
     {
@@ -33,15 +30,15 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
         base.__Initialize();
 
         #region 이벤트 링크
-        M_Game.OnEnterPlayMode += OnPlayEnter;
-        M_Game.OnExitPlayMode += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnEnterPlayMode;
+        M_Game.OnExitPlayMode += OnExitPlayMode;
         #endregion
 
         // 풀 사이즈 설정
         m_PoolSize = M_Game.width * M_Game.height;
 
         // 벽 풀 원본
-        Wall wall = M_Resources.GetGameObject<Wall>("Wall", "Wall");
+        Wall wall = M_Resources.GetGameObject<Wall>("Tile", "Wall");
         // 벽 풀 생성
         AddPool("Wall", wall, transform);
 
@@ -163,11 +160,11 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
     }
     #endregion
     #region 이벤트 함수
-    public override void OnPlayEnter()
+    public void OnEnterPlayMode()
     {
 
     }
-    public override void OnPlayExit()
+    public void OnExitPlayMode()
     {
 
     }

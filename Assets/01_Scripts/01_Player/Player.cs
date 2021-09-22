@@ -37,6 +37,7 @@ public class Player : MonoBehaviour
     protected Vector2 halfSize => size * 0.5f;
     #endregion
     #region 외부 프로퍼티
+    public MyRigidBody2D rigidBody2D { get => m_RigidBody; }
     public new SpriteRenderer renderer { get => m_Renderer; }
     public bool isSafe { get => m_IsSafe; set => m_IsSafe = value; }
     public Vector3 spawnPos { get => m_SpawnPos; set => m_SpawnPos = value; }
@@ -189,6 +190,7 @@ public class Player : MonoBehaviour
     }
     public void OnPlayExit()
     {
+        m_RigidBody.useGravity = false;
         transform.position = m_InitPos;
     }
     #endregion

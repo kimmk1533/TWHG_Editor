@@ -9,8 +9,12 @@ public class __EditManager : Singleton<__EditManager>
     [Header("Cursor")]
     [SerializeField, ReadOnly]
     protected E_ObjectType m_Cursor_Type;
+
     [SerializeField]
     protected Texture2D m_Cursor_Default;
+    [SerializeField]
+    protected Texture2D m_Cursor_Erase;
+
     [SerializeField]
     protected Texture2D m_Cursor_Player;
     [SerializeField]
@@ -22,7 +26,7 @@ public class __EditManager : Singleton<__EditManager>
     [SerializeField]
     protected Texture2D m_Cursor_SafetyZone;
     [SerializeField]
-    protected Texture2D m_Cursor_Erase;
+    protected Texture2D m_Cursor_GravityZone;
 
     [Header("EditMode")]
     [SerializeField, ReadOnly]
@@ -122,6 +126,11 @@ public class __EditManager : Singleton<__EditManager>
     protected GameObject m_SafetyZone_Panel_Option;
     [SerializeField]
     protected CheckBox m_SafetyZone_CheckBox_FinishZone;
+    #endregion
+    #region 중력구역 옵션
+    [Header("GravityZone Option")]
+    [SerializeField]
+    protected GameObject m_GravityZone_Panel_Option;
     #endregion
     #endregion
 
@@ -290,11 +299,18 @@ public class __EditManager : Singleton<__EditManager>
             {
                 case E_ObjectType.Wall:
                     obj?.GetComponent<SafetyZoneCollider>()?.Erase();
+                    obj?.GetComponent<GravityZoneCollider>()?.Erase();
                     M_Tile.Draw(ui_obj, E_TileType.Wall);
                     break;
                 case E_ObjectType.SafetyZone:
                     obj?.GetComponent<WallCollider>()?.Erase();
+                    obj?.GetComponent<GravityZoneCollider>()?.Erase();
                     M_Tile.Draw(ui_obj, E_TileType.SafetyZone);
+                    break;
+                case E_ObjectType.GravityZone:
+                    obj?.GetComponent<WallCollider>()?.Erase();
+                    obj?.GetComponent<SafetyZoneCollider>()?.Erase();
+                    M_Tile.Draw(ui_obj, E_TileType.GravityZone);
                     break;
                 case E_ObjectType.Erase:
                     if (null != m_ClickedObject &&
@@ -336,7 +352,7 @@ public class __EditManager : Singleton<__EditManager>
 
         Vector2 origin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         int layerMask = 0;
-        for (E_ObjectType i = E_ObjectType.Player; i < E_ObjectType.Erase; ++i)
+        for (E_ObjectType i = E_ObjectType.Player; i < E_ObjectType.Max; ++i)
         {
             layerMask += 1 << LayerMask.NameToLayer(i.ToString());
         }
@@ -544,31 +560,28 @@ public class __EditManager : Singleton<__EditManager>
         {
             case E_ObjectType.None:
                 Cursor.SetCursor(m_Cursor_Default, Vector2.up, CursorMode.ForceSoftware);
-                //m_Cursor_Current = m_Cursor_Default;
-                break;
-            case E_ObjectType.Player:
-                Cursor.SetCursor(m_Cursor_Player, new Vector2(m_Cursor_Player.width, m_Cursor_Player.height) * 0.5f, CursorMode.ForceSoftware);
-                //m_Cursor_Current = m_Cursor_Player;
-                break;
-            case E_ObjectType.Enemy:
-                Cursor.SetCursor(m_Cursor_Enemy, new Vector2(m_Cursor_Enemy.width, m_Cursor_Enemy.height) * 0.5f, CursorMode.ForceSoftware);
-                //m_Cursor_Current = m_Cursor_Enemy;
-                break;
-            case E_ObjectType.Coin:
-                Cursor.SetCursor(m_Cursor_Coin, new Vector2(m_Cursor_Coin.width, m_Cursor_Coin.height) * 0.5f, CursorMode.ForceSoftware);
-                //m_Cursor_Current = m_Cursor_Coin;
-                break;
-            case E_ObjectType.Wall:
-                Cursor.SetCursor(m_Cursor_Wall, new Vector2(m_Cursor_Wall.width, m_Cursor_Wall.height) * 0.5f, CursorMode.ForceSoftware);
-                //m_Cursor_Current = m_Cursor_Wall;
-                break;
-            case E_ObjectType.SafetyZone:
-                Cursor.SetCursor(m_Cursor_SafetyZone, new Vector2(m_Cursor_SafetyZone.width, m_Cursor_SafetyZone.height) * 0.5f, CursorMode.ForceSoftware);
-                //m_Cursor_Current = m_Cursor_SafetyZone;
                 break;
             case E_ObjectType.Erase:
                 Cursor.SetCursor(m_Cursor_Erase, new Vector2(m_Cursor_Erase.width, m_Cursor_Erase.height) * 0.5f, CursorMode.ForceSoftware);
-                //m_Cursor_Current = m_Cursor_Erase;
+                break;
+
+            case E_ObjectType.Player:
+                Cursor.SetCursor(m_Cursor_Player, new Vector2(m_Cursor_Player.width, m_Cursor_Player.height) * 0.5f, CursorMode.ForceSoftware);
+                break;
+            case E_ObjectType.Enemy:
+                Cursor.SetCursor(m_Cursor_Enemy, new Vector2(m_Cursor_Enemy.width, m_Cursor_Enemy.height) * 0.5f, CursorMode.ForceSoftware);
+                break;
+            case E_ObjectType.Coin:
+                Cursor.SetCursor(m_Cursor_Coin, new Vector2(m_Cursor_Coin.width, m_Cursor_Coin.height) * 0.5f, CursorMode.ForceSoftware);
+                break;
+            case E_ObjectType.Wall:
+                Cursor.SetCursor(m_Cursor_Wall, new Vector2(m_Cursor_Wall.width, m_Cursor_Wall.height) * 0.5f, CursorMode.ForceSoftware);
+                break;
+            case E_ObjectType.SafetyZone:
+                Cursor.SetCursor(m_Cursor_SafetyZone, new Vector2(m_Cursor_SafetyZone.width, m_Cursor_SafetyZone.height) * 0.5f, CursorMode.ForceSoftware);
+                break;
+            case E_ObjectType.GravityZone:
+                Cursor.SetCursor(m_Cursor_GravityZone, new Vector2(m_Cursor_GravityZone.width, m_Cursor_GravityZone.height) * 0.5f, CursorMode.ForceSoftware);
                 break;
         }
     }
@@ -598,6 +611,10 @@ public class __EditManager : Singleton<__EditManager>
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             SetSelectedType(E_ObjectType.SafetyZone);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            SetSelectedType(E_ObjectType.GravityZone);
         }
     }
     protected void SetSelectedUI(E_ObjectType type)
@@ -630,6 +647,16 @@ public class __EditManager : Singleton<__EditManager>
                     m_Current_Panel_Option = null;
                     break;
                 }
+            case E_ObjectType.Erase:
+                {
+                    m_SelectedImage.sprite = null;
+                    m_SelectedImage.color = Color.clear;
+                    m_SelectedImageOutline.enabled = false;
+
+                    m_Current_Panel_Option = null;
+                    break;
+                }
+
             case E_ObjectType.Player:
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
@@ -651,7 +678,7 @@ public class __EditManager : Singleton<__EditManager>
 
                     if (m_ClickedObject?.GetObjectType() == E_ObjectType.Enemy)
                     {
-                        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
+                        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<Enemy>();
 
                         m_Enemy_Dropdown_Type.value = (int)enemy.type + 1;
 
@@ -688,7 +715,7 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
                     m_SelectedImageOutline.enabled = true;
 
-                    Wall wall = m_ClickedObject?.GetGameObject().GetComponent<WallCollider>().wall;
+                    Wall wall = m_ClickedObject?.GetGameObject().GetComponent<Wall>();
                     Color color;
 
                     if (null == wall)
@@ -706,23 +733,24 @@ public class __EditManager : Singleton<__EditManager>
                 }
             case E_ObjectType.SafetyZone:
                 {
-                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
+                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
                     m_SelectedImage.color = M_Game.safetyZoneColor;
-                    m_SelectedImageOutline.enabled = false;
+                    m_SelectedImageOutline.enabled = true;
 
                     m_Current_Panel_Option = m_SafetyZone_Panel_Option;
                     break;
                 }
-            case E_ObjectType.Erase:
+            case E_ObjectType.GravityZone:
                 {
-                    m_SelectedImage.sprite = null;
-                    m_SelectedImage.color = Color.clear;
-                    m_SelectedImageOutline.enabled = false;
+                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
+                    m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
+                    m_SelectedImage.color = M_Game.gravityZoneColor;
+                    m_SelectedImageOutline.enabled = true;
 
-                    m_Current_Panel_Option = null;
-                    break;
+                    m_Current_Panel_Option = m_GravityZone_Panel_Option;
                 }
+                break;
         }
 
         m_Current_Panel_Option?.SetActive(true);
@@ -730,7 +758,7 @@ public class __EditManager : Singleton<__EditManager>
 
     protected void UpdateClickedWallColor()
     {
-        Wall wall = m_ClickedObject.GetGameObject().GetComponent<WallCollider>().wall;
+        Wall wall = m_ClickedObject.GetGameObject().GetComponent<Wall>();
         wall.tile.color = M_Game.wallColor;
     }
     #region Enemy
@@ -870,6 +898,7 @@ public class __EditManager : Singleton<__EditManager>
         m_Enemy_Panel_Center.SetActive(false);
         m_Wall_Panel_Option.SetActive(false);
         m_SafetyZone_Panel_Option.SetActive(false);
+        m_GravityZone_Panel_Option.SetActive(false);
 
         SetCursorImage(E_ObjectType.None);
     }
@@ -941,13 +970,11 @@ public class __EditManager : Singleton<__EditManager>
             if (!M_Player.playerActive)
             {
                 M_FloatingText.SpawnFloatingText("플레이어는 배치된 상태여야 합니다");
-                Debug.Log("플레이어는 배치된 상태여야 합니다");
                 return;
             }
             if (M_SafetyZone.finishZoneCount <= 0)
             {
                 M_FloatingText.SpawnFloatingText("완료 구역이 최소 1개 이상 있어야 합니다");
-                Debug.Log("완료 구역이 최소 1개 이상 있어야 합니다");
                 return;
             }
 
@@ -969,7 +996,7 @@ public class __EditManager : Singleton<__EditManager>
         if (null == m_ClickedObject)
             return;
 
-        Transform clickedTransform = m_ClickedObject.GetGameObject().transform.parent;
+        Transform clickedTransform = m_ClickedObject.GetGameObject().transform;
 
         string strX = m_SelectedObject_InputField_XPos.text;
         string strY = m_SelectedObject_InputField_YPos.text;
@@ -1001,7 +1028,7 @@ public class __EditManager : Singleton<__EditManager>
         if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<Enemy>();
         enemy.type = enemyType;
         m_Enemy_InputField_Speed.text = enemy.speed.ToString();
 
@@ -1021,7 +1048,7 @@ public class __EditManager : Singleton<__EditManager>
         if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<Enemy>();
         enemy.speed = value;
 
         m_Enemy_InputField_Speed.text = enemy.speed.ToString();
@@ -1031,7 +1058,7 @@ public class __EditManager : Singleton<__EditManager>
         if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<Enemy>();
         enemy.AddWayPoint();
     }
     public void OnEnemyRemovePointButtonPressed()
@@ -1039,7 +1066,7 @@ public class __EditManager : Singleton<__EditManager>
         if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<Enemy>();
         enemy.RemoveWayPoint(m_Enemy_Scroll_WayPointList.selectedIndex);
     }
     public void OnEnemyClampWayPointIndex()
@@ -1080,7 +1107,7 @@ public class __EditManager : Singleton<__EditManager>
         if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
+        Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<Enemy>();
 
         int index = m_Enemy_Scroll_WayPointList.selectedIndex;
         ScrollInputFieldListItem scrollInputFieldItem = m_Enemy_Scroll_WayPointList.GetInputFieldItem(index);
@@ -1114,7 +1141,7 @@ public class __EditManager : Singleton<__EditManager>
         if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
             return;
 
-        EnemyGizmo center = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy.center;
+        EnemyGizmo center = m_ClickedObject.GetGameObject().GetComponent<Enemy>().center;
 
         string strX = m_Enemy_InputField_CenterX.text;
         string strY = m_Enemy_InputField_CenterY.text;

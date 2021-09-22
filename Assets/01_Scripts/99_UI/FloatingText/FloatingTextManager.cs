@@ -23,6 +23,10 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
             m_FloatingTextList = new List<FloatingText>();
         }
     }
+    public override void __Finalize()
+    {
+        base.__Finalize();
+    }
 
     public void SpawnFloatingText(string text)
     {
@@ -63,11 +67,11 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
     }
     #endregion
     #region 이벤트 함수
-    public override void OnPlayEnter()
+    public void OnEnterPlayMode()
     {
 
     }
-    public override void OnPlayExit()
+    public void OnExitPlayMode()
     {
         
     }

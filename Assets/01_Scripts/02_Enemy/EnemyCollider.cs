@@ -46,7 +46,7 @@ public class EnemyCollider : MonoBehaviour, IEraserable, IClickedObject
     }
     public GameObject GetGameObject()
     {
-        return gameObject;
+        return m_Enemy.gameObject;
     }
     public E_ObjectType GetObjectType()
     {

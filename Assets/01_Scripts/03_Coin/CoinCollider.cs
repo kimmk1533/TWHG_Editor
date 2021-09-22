@@ -29,11 +29,11 @@ public class CoinCollider : MonoBehaviour, IEraserable, IClickedObject
     }
     public SpriteRenderer GetSpriteRenderer()
     {
-        return coin.renderer;
+        return m_Coin.renderer;
     }
     public GameObject GetGameObject()
     {
-        return gameObject;
+        return m_Coin.gameObject;
     }
     public E_ObjectType GetObjectType()
     {

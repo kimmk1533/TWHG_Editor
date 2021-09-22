@@ -97,8 +97,8 @@ public class TileManager : ObjectManager<TileManager, Tile>
         base.__Initialize();
 
         // 이벤트 링크
-        M_Game.OnEnterPlayMode += OnPlayEnter;
-        M_Game.OnExitPlayMode += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnEnterPlayMode;
+        M_Game.OnExitPlayMode += OnExitPlayMode;
 
         // 관리 리스트 초기화
         if (null == m_TileList)
@@ -145,7 +145,7 @@ public class TileManager : ObjectManager<TileManager, Tile>
     }
     #endregion
     #region 이벤트 함수
-    public override void OnPlayEnter()
+    public void OnEnterPlayMode()
     {
         //// 타일(BG) 삭제
         //ClearTiles();
@@ -153,7 +153,7 @@ public class TileManager : ObjectManager<TileManager, Tile>
         //// 타일(BG) 생성
         //CreateTiles();
     }
-    public override void OnPlayExit()
+    public void OnExitPlayMode()
     {
         //// 타일(BG) 삭제
         //ClearTiles();

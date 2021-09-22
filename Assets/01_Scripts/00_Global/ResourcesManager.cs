@@ -64,6 +64,10 @@ public class ResourcesManager : Singleton<ResourcesManager>
             LoadAll(m_TypeInfos[i]);
         }
     }
+    public void __Finalize()
+    {
+
+    }
     #endregion
 
     private void LoadAll(ResourcesType type)

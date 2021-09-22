@@ -26,7 +26,6 @@ public class Enemy : MonoBehaviour
     #endregion
 
     #region 내부 컴포넌트
-    protected MyRigidBody2D m_Rigidbody;
     protected SpriteRenderer m_Renderer;
     protected EnemyCollider m_Collider;
     #endregion
@@ -135,10 +134,6 @@ public class Enemy : MonoBehaviour
     #region 외부 함수
     public void __Initialize()
     {
-        if (null == m_Rigidbody)
-        {
-            m_Rigidbody = GetComponent<MyRigidBody2D>();
-        }
         if (null == m_Renderer)
         {
             m_Renderer = GetComponentInChildren<SpriteRenderer>();

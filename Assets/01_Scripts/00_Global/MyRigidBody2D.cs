@@ -227,7 +227,7 @@ public class MyRigidBody2D : MonoBehaviour
         #endregion
 
         #region 중력
-        if (m_UseGravity && !m_IsKinematic)
+        if (m_UseGravity)
         {
             Vector2 gravity = Vector2.up * m_Gravity * m_Mass;
 

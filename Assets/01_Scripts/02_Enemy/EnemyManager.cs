@@ -7,16 +7,13 @@ public class EnemyManager : ObjectManager<EnemyManager, Enemy>, ISaveHandler, IL
 {
     protected List<Enemy> m_EnemyList;
 
-    #region 외부 프로퍼티
-    public List<Enemy> enemyList { get => m_EnemyList; }
-    #endregion
     #region 외부 함수
     public override void __Initialize()
     {
         base.__Initialize();
 
-        M_Game.OnEnterPlayMode += OnPlayEnter;
-        M_Game.OnExitPlayMode += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnEnterPlayMode;
+        M_Game.OnExitPlayMode += OnExitPlayMode;
 
         // 적 풀 원본
         Enemy enemy = M_Resources.GetGameObject<Enemy>("Enemy", "Enemy");
@@ -231,14 +228,14 @@ public class EnemyManager : ObjectManager<EnemyManager, Enemy>, ISaveHandler, IL
     }
     #endregion
     #region 이벤트 함수
-    public override void OnPlayEnter()
+    public void OnEnterPlayMode()
     {
         foreach (var item in m_EnemyList)
         {
             item.OnPlayEnter();
         }
     }
-    public override void OnPlayExit()
+    public void OnExitPlayMode()
     {
         foreach (var item in m_EnemyList)
         {

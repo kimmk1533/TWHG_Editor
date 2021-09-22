@@ -18,7 +18,6 @@ public class CoinManager : ObjectManager<CoinManager, Coin>, ISaveHandler, ILoad
     #endregion
     #endregion
     #region 외부 프로퍼티
-    public List<Coin> coinList { get => m_CoinList; }
     public int CoinCount { get => m_CoinCount; set => m_CoinCount = value; }
     public bool IsLeftCoin => m_CoinCount > 0;
     #endregion
@@ -41,8 +40,8 @@ public class CoinManager : ObjectManager<CoinManager, Coin>, ISaveHandler, ILoad
         base.__Initialize();
 
         #region 이벤트 링크
-        M_Game.OnEnterPlayMode += OnPlayEnter;
-        M_Game.OnExitPlayMode += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnEnterPlayMode;
+        M_Game.OnExitPlayMode += OnExitPlayMode;
 
         M_Player.OnPlayerRespawn += RespawnCoin;
         #endregion
@@ -155,11 +154,11 @@ public class CoinManager : ObjectManager<CoinManager, Coin>, ISaveHandler, ILoad
     }
     #endregion
     #region 이벤트 함수
-    public override void OnPlayEnter()
+    public void OnEnterPlayMode()
     {
         m_CoinCount = m_CoinList.Count;
     }
-    public override void OnPlayExit()
+    public void OnExitPlayMode()
     {
         RespawnCoin();
     }

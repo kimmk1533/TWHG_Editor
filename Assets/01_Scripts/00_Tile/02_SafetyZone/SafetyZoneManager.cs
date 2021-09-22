@@ -20,9 +20,17 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
     #region 외부 프로퍼티
     public int safetyZoneIndex { get => m_SafetyZoneIndex; }
     public int finishZoneCount { get => m_FinishZoneList.Count; }
-    public List<SafetyZone> safetyZoneList { get => m_SafetyZoneList; }
     #endregion
     #region 내부 함수
+    protected void ClearSafetyZone()
+    {
+        for (int i = 0; i < m_SafetyZoneList.Count; i++)
+        {
+            GetPool("SafetyZone").DeSpawn(m_SafetyZoneList[i]);
+        }
+        m_SafetyZoneList.Clear();
+        m_SafetyZoneIndex = 0;
+    }
     #endregion
     #region 외부 함수
     public override void __Initialize()
@@ -30,8 +38,8 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
         base.__Initialize();
 
         #region 이벤트 링크
-        M_Game.OnEnterPlayMode += OnPlayEnter;
-        M_Game.OnExitPlayMode += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnEnterPlayMode;
+        M_Game.OnExitPlayMode += OnExitPlayMode;
         #endregion
 
         m_SafetyZoneIndex = 0;
@@ -56,6 +64,8 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
     }
     public override void __Finalize()
     {
+        base.__Finalize();
+
         //ClearSafetyZone();
     }
 
@@ -72,6 +82,10 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
         M_Edit.RemoveSafetyZoneOption(safetyZone.safetyZoneCount);
         --m_SafetyZoneIndex;
         m_SafetyZoneList.Remove(safetyZone);
+        if (safetyZone.isFinishZone)
+        {
+            m_FinishZoneList.Remove(safetyZone);
+        }
         GetPool("SafetyZone").DeSpawn(safetyZone);
 
         for (int i = 0; i < m_SafetyZoneList.Count; ++i)
@@ -80,15 +94,6 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
         }
     }
 
-    public void ClearSafetyZone()
-    {
-        for (int i = 0; i < m_SafetyZoneList.Count; i++)
-        {
-            GetPool("SafetyZone").DeSpawn(m_SafetyZoneList[i]);
-        }
-        m_SafetyZoneList.Clear();
-        m_SafetyZoneIndex = 0;
-    }
     public void ToggleFinishZone(int index)
     {
         if (index < 0 || index >= m_SafetyZoneList.Count)
@@ -200,6 +205,11 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
                         M_Edit.safetyZoneFinishZone.items[i].toggle.isOn =
                         M_Edit.safetyZoneFinishZone.options[i].isOn =
                         safetyZone.isFinishZone = isFinishZone;
+
+                        if (isFinishZone)
+                        {
+                            m_FinishZoneList.Add(safetyZone);
+                        }
                     }
                 }
             }
@@ -207,11 +217,11 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
     }
     #endregion
     #region 이벤트 함수
-    public override void OnPlayEnter()
+    public void OnEnterPlayMode()
     {
 
     }
-    public override void OnPlayExit()
+    public void OnExitPlayMode()
     {
 
     }

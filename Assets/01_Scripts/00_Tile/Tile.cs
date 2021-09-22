@@ -17,9 +17,11 @@ public class Tile : MonoBehaviour
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
+
+    protected StageManager M_Stage => StageManager.Instance;
     protected WallManager M_Wall => WallManager.Instance;
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
-    protected StageManager M_Stage => StageManager.Instance;
+    protected GravityZoneManager M_GravityZone => GravityZoneManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
@@ -96,6 +98,18 @@ public class Tile : MonoBehaviour
                 safetyZone.__Initialize(this);
                 // 활성화
                 safetyZone.gameObject.SetActive(true);
+                break;
+            case E_TileType.GravityZone:
+                m_Image.color = M_Game.gravityZoneColor;
+
+                // 스폰
+                GravityZone gravityZone = M_GravityZone.SpawnGravityZone();
+                // 위치 설정
+                gravityZone.transform.position = spawnPos;
+                // 초기화
+                gravityZone.__Initialize(this);
+                // 활성화
+                gravityZone.gameObject.SetActive(true);
                 break;
         }
     }
