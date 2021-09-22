@@ -660,6 +660,7 @@ public class __EditManager : Singleton<__EditManager>
                         m_Enemy_Dropdown_Type.value = (int)enemy.type + 1;
 
                         m_Enemy_Panel_Speed.SetActive(false);
+                        m_Enemy_InputField_Speed.text = "";
                         if (enemy.type != E_EnemyType.None)
                         {
                             m_Enemy_Panel_Speed.SetActive(true);
@@ -1003,7 +1004,6 @@ public class __EditManager : Singleton<__EditManager>
         if (enemyType != E_EnemyType.None)
         {
             m_Enemy_Panel_Speed.SetActive(true);
-            OnEnemyClampSpeed();
         }
 
         if (m_ClickedObject?.GetObjectType() != E_ObjectType.Enemy)
@@ -1011,6 +1011,7 @@ public class __EditManager : Singleton<__EditManager>
 
         Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<EnemyCollider>().enemy;
         enemy.type = enemyType;
+        m_Enemy_InputField_Speed.text = enemy.speed.ToString();
 
         ShowEnemyGizmo(enemy);
     }
