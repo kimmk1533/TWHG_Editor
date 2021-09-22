@@ -19,8 +19,8 @@ public class EnemyGizmoManager : ObjectManager<EnemyGizmoManager, EnemyGizmo>
     {
         base.__Initialize();
 
-        M_Game.OnPlayEnter += OnPlayEnter;
-        M_Game.OnPlayExit += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnPlayEnter;
+        M_Game.OnExitPlayMode += OnPlayExit;
 
         // 적 풀 원본
         EnemyGizmo gizmo = M_Resources.GetGameObject<EnemyGizmo>("Enemy", "EnemyGizmo");

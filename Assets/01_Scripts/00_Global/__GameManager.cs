@@ -77,19 +77,20 @@ public class __GameManager : Singleton<__GameManager>
         M_EnemyGizmo.__Finalize();
         M_Enemy.__Finalize();
         M_Player.__Finalize();
+        M_Stage.__Finalize();
     }
     #endregion
     #region 이벤트 함수
-    public event Action OnPlayEnter;
-    public event Action OnPlayExit;
+    public event Action OnEnterPlayMode;
+    public event Action OnExitPlayMode;
 
     public void EnterPlayMode()
     {
-        OnPlayEnter?.Invoke();
+        OnEnterPlayMode?.Invoke();
     }
     public void ExitPlayMode()
     {
-        OnPlayExit?.Invoke();
+        OnExitPlayMode?.Invoke();
     }
     #endregion
     #region 유니티 콜백 함수

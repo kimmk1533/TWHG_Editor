@@ -27,11 +27,11 @@ public class TileManager : ObjectManager<TileManager, Tile>
     // 타일(BG) 전체 생성 함수
     void CreateTiles()
     {
-        for (int i = 0; i < M_Game.height; ++i)
+        for (int y = 0; y < M_Game.height; ++y)
         {
-            for (int j = 0; j < M_Game.width; ++j)
+            for (int x = 0; x < M_Game.width; ++x)
             {
-                CreateTile(j, i);
+                CreateTile(x, y);
             }
         }
     }
@@ -97,8 +97,8 @@ public class TileManager : ObjectManager<TileManager, Tile>
         base.__Initialize();
 
         // 이벤트 링크
-        M_Game.OnPlayEnter += OnPlayEnter;
-        M_Game.OnPlayExit += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnPlayEnter;
+        M_Game.OnExitPlayMode += OnPlayExit;
 
         // 관리 리스트 초기화
         if (null == m_TileList)

@@ -25,8 +25,8 @@ public class SafetyZoneAnimator : MonoBehaviour
     #region 외부 함수
     public void __Initialize(SafetyZone safetyZone)
     {
-        M_Game.OnPlayEnter += OnPlayEnter;
-        M_Game.OnPlayExit += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnPlayEnter;
+        M_Game.OnExitPlayMode += OnPlayExit;
 
         m_SafetyZone = safetyZone;
 

@@ -44,5 +44,5 @@ public enum E_TileType
     None = -1,
 
     Wall, // 벽
-    SafetyZone, // 안전지역
+    SafetyZone, // 안전구역
 }

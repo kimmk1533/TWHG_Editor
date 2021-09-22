@@ -550,6 +550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
+  m_FloatingText_Panel: {fileID: 1088408545}
 --- !u!4 &68705564
 Transform:
   m_ObjectHideFlags: 0
@@ -6710,7 +6711,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0000019073486}
+  m_AnchoredPosition: {x: 0, y: -0.0000019073486}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &747468147
@@ -7011,7 +7012,6 @@ MonoBehaviour:
   m_Cursor_Erase: {fileID: 2800000, guid: 00504810ed2545e4aaaa50226da0b37c, type: 3}
   m_IsEdit: 0
   m_Edit_Panel: {fileID: 704061973}
-  m_FloatingText_Panel: {fileID: 1088408545}
   m_Canvas_BG: {fileID: 2066010173}
   m_Canvas_UI: {fileID: 1100444798}
   m_SelectedType: -1
@@ -9679,6 +9679,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
+  m_ManagerList:
+  - {fileID: 1423210554}
+  - {fileID: 106963848}
+  - {fileID: 236755198}
+  - {fileID: 255385527}
+  - {fileID: 1599521859}
 --- !u!4 &1152907726
 Transform:
   m_ObjectHideFlags: 0
@@ -10894,7 +10900,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1524445548}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.85
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

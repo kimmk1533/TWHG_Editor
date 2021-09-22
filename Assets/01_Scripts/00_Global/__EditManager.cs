@@ -30,10 +30,6 @@ public class __EditManager : Singleton<__EditManager>
     [SerializeField]
     protected GameObject m_Edit_Panel;
 
-    [Header("Floating Text")]
-    [SerializeField]
-    protected GameObject m_FloatingText_Panel;
-
     [Header("Canvas")]
     [SerializeField]
     protected Canvas m_Canvas_BG;
@@ -120,7 +116,7 @@ public class __EditManager : Singleton<__EditManager>
     [SerializeField]
     protected Slider m_WallColor_Slider_Blue;
     #endregion
-    #region 안전지역 옵션
+    #region 안전구역 옵션
     [Header("SafetyZone Option")]
     [SerializeField]
     protected GameObject m_SafetyZone_Panel_Option;
@@ -783,8 +779,8 @@ public class __EditManager : Singleton<__EditManager>
     #region 외부 함수
     public void __Initialize()
     {
-        M_Game.OnPlayEnter += OnPlayEnter;
-        M_Game.OnPlayExit += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnPlayEnter;
+        M_Game.OnExitPlayMode += OnPlayExit;
 
         // 멤버 초기화
         m_IsEdit = true;
@@ -944,18 +940,14 @@ public class __EditManager : Singleton<__EditManager>
         {
             if (!M_Player.playerActive)
             {
-                FloatingText floatingText = M_FloatingText.SpawnFloatingText("플레이어는 배치된 상태여야 합니다");
-                floatingText.transform.SetParent(m_FloatingText_Panel.transform);
-                floatingText.transform.localScale = Vector3.one;
+                M_FloatingText.SpawnFloatingText("플레이어는 배치된 상태여야 합니다");
                 Debug.Log("플레이어는 배치된 상태여야 합니다");
                 return;
             }
             if (M_SafetyZone.finishZoneCount <= 0)
             {
-                FloatingText floatingText = M_FloatingText.SpawnFloatingText("완료 지역이 최소 1개 이상 있어야 합니다");
-                floatingText.transform.SetParent(m_FloatingText_Panel.transform);
-                floatingText.transform.localScale = Vector3.one;
-                Debug.Log("완료 지역이 최소 1개 이상 있어야 합니다");
+                M_FloatingText.SpawnFloatingText("완료 구역이 최소 1개 이상 있어야 합니다");
+                Debug.Log("완료 구역이 최소 1개 이상 있어야 합니다");
                 return;
             }
 

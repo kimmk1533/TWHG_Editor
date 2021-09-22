@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using UnityEngine;
 
-public class CoinManager : ObjectManager<CoinManager, Coin>
+public class CoinManager : ObjectManager<CoinManager, Coin>, ISaveHandler, ILoadHandler
 {
     // 관리 리스트
     protected List<Coin> m_CoinList;
@@ -40,8 +41,8 @@ public class CoinManager : ObjectManager<CoinManager, Coin>
         base.__Initialize();
 
         #region 이벤트 링크
-        M_Game.OnPlayEnter += OnPlayEnter;
-        M_Game.OnPlayExit += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnPlayEnter;
+        M_Game.OnExitPlayMode += OnPlayExit;
 
         M_Player.OnPlayerRespawn += RespawnCoin;
         #endregion
@@ -87,6 +88,70 @@ public class CoinManager : ObjectManager<CoinManager, Coin>
         m_CoinList.Remove(coin);
         // 디스폰
         GetPool("Coin").DeSpawn(coin);
+    }
+
+    public void Save(XmlWriter writer)
+    {
+        // 주석
+        writer.WriteComment("코인");
+        // 코인 리스트 시작
+        writer.WriteStartElement("CoinList");
+
+        #region 갯수
+        // 코인 갯수 시작
+        writer.WriteStartAttribute("Count");
+        // 코인 갯수 입력
+        writer.WriteValue(m_CoinList.Count);
+        // 코인 갯수 끝
+        writer.WriteEndAttribute();
+        #endregion
+        #region 코인
+        foreach (var coin in m_CoinList)
+        {
+            // 코인 시작
+            writer.WriteStartElement("Coin");
+
+            #region 위치
+            // 코인 위치 시작
+            writer.WriteStartElement("Position");
+            // 코인 위치 입력
+            writer.WriteVector(coin.transform.position);
+            // 코인 위치 끝
+            writer.WriteEndElement();
+            #endregion
+
+            // 코인 끝
+            writer.WriteEndElement();
+        }
+        #endregion
+
+        // 코인 리스트 끝
+        writer.WriteEndElement();
+    }
+    public void Load(XmlReader reader)
+    {
+        if (reader.LoadToElement("CoinList"))
+        {
+            int count;
+            string count_str = reader.GetAttribute("Count");
+            if (!int.TryParse(count_str, out count))
+            {
+                count = 0;
+            }
+
+            for (int i = 0; i < count; ++i)
+            {
+                Coin coin = SpawnCoin();
+
+                if (reader.LoadToElement("Coin"))
+                {
+                    if (reader.LoadToElement("Position"))
+                    {
+                        coin.transform.position = reader.ReadVector("Position");
+                    }
+                }
+            }
+        }
     }
     #endregion
     #region 이벤트 함수

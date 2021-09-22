@@ -19,8 +19,8 @@ public class PlayerAnimator : MonoBehaviour
     public void __Initialize(Player player)
     {
         // 이벤트 링크
-        M_Game.OnPlayEnter += OnPlayEnter;
-        M_Game.OnPlayExit += OnPlayExit;
+        M_Game.OnEnterPlayMode += OnPlayEnter;
+        M_Game.OnExitPlayMode += OnPlayExit;
 
         m_Player = player;
 
