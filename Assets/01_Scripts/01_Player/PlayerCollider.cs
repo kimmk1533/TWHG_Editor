@@ -51,6 +51,7 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
     protected void TriggerEnterGravityZone(Collider2D collision)
     {
         m_Player.rigidBody2D.useGravity = true;
+        m_Player.rigidBody2D.gravity = collision.GetComponent<GravityZoneCollider>().gravityZone.gravity;
     }
     #endregion
     #region 외부 함수
@@ -159,6 +160,11 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
                 if (colliders.Length <= 0)
                 {
                     m_Player.rigidBody2D.useGravity = false;
+                    m_Player.rigidBody2D.gravity = MyRigidBody2D.Gravity;
+                }
+                else
+                {
+                    m_Player.rigidBody2D.gravity = colliders[0].GetComponent<GravityZoneCollider>().gravityZone.gravity;
                 }
             }
         }

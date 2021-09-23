@@ -15,6 +15,7 @@ public class GravityZoneCollider : MonoBehaviour, IEraserable, IClickedObject
     #endregion
     #endregion
     #region 외부 프로퍼티
+    public GravityZone gravityZone { get => m_GravityZone; }
     #endregion
     #region 내부 함수
     #endregion

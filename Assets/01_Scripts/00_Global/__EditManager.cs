@@ -131,6 +131,8 @@ public class __EditManager : Singleton<__EditManager>
     [Header("GravityZone Option")]
     [SerializeField]
     protected GameObject m_GravityZone_Panel_Option;
+    [SerializeField]
+    protected InputField m_GravityZone_InputField_Gravity;
     #endregion
     #endregion
 
@@ -193,6 +195,18 @@ public class __EditManager : Singleton<__EditManager>
                 speed = 0.01f;
             }
             return speed;
+        }
+    }
+    protected float gravity
+    {
+        get
+        {
+            float gravity;
+            if (!float.TryParse(m_GravityZone_InputField_Gravity.text, out gravity))
+            {
+                gravity = MyRigidBody2D.Gravity;
+            }
+            return gravity;
         }
     }
     #endregion
@@ -749,6 +763,13 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImageOutline.enabled = true;
 
                     m_Current_Panel_Option = m_GravityZone_Panel_Option;
+
+                    if (m_ClickedObject?.GetObjectType() == E_ObjectType.GravityZone)
+                    {
+                        GravityZone gravityZone = m_ClickedObject.GetGameObject().GetComponent<GravityZone>();
+
+                        m_GravityZone_InputField_Gravity.text = gravityZone.gravity.ToString();
+                    }
                 }
                 break;
         }
@@ -1196,6 +1217,21 @@ public class __EditManager : Singleton<__EditManager>
         {
             UpdateClickedWallColor();
         }
+    }
+    #endregion
+    #region GravityZone
+    public void OnGravityZoneChangeGravity()
+    {
+        if (m_ClickedObject?.GetObjectType() != E_ObjectType.GravityZone)
+            return;
+
+        GravityZone gravityZone = m_ClickedObject.GetGameObject().GetComponent<GravityZone>();
+        float gravity;
+        if (!float.TryParse(m_GravityZone_InputField_Gravity.text, out gravity))
+        {
+            gravity = MyRigidBody2D.Gravity;
+        }
+        gravityZone.gravity = gravity;
     }
     #endregion
     #endregion
