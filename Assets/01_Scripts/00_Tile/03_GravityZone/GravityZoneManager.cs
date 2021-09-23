@@ -140,19 +140,29 @@ public class GravityZoneManager : ObjectManager<GravityZoneManager, GravityZone>
                     Tile tile = M_Tile.tileList[index];
                     tile.SetType(E_TileType.GravityZone);
 
+                    Vector3 spawnPoint = tile.transform.position;
+                    spawnPoint.z = 5f;
+
+                    float gravity = MyRigidBody2D.Gravity;
                     if (reader.LoadToElement("Gravity"))
                     {
-                        GravityZone gravityZone = m_GravityZoneList[i];
-
-                        float gravity;
                         reader.ReadStartElement("Gravity");
                         if (!float.TryParse(reader.Value, out gravity))
                         {
-                            gravity = 0f;
+                            gravity = MyRigidBody2D.Gravity;
                         }
-
-                        gravityZone.gravity = gravity;
                     }
+
+                    // 스폰
+                    GravityZone gravityZone = SpawnGravityZone();
+                    // 위치 설정
+                    gravityZone.transform.position = spawnPoint;
+                    // 초기화
+                    gravityZone.__Initialize(tile);
+                    // 중력 설정
+                    gravityZone.gravity = gravity;
+                    // 활성화
+                    gravityZone.gameObject.SetActive(true);
                 }
             }
         }

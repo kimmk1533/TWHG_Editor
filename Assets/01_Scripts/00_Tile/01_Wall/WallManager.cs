@@ -150,10 +150,22 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
                     Tile tile = M_Tile.tileList[index];
                     tile.SetType(E_TileType.Wall);
 
+                    Vector3 spawnPoint = tile.transform.position;
+                    spawnPoint.z = 5f;
+
                     if (reader.LoadToElement("Color"))
                     {
                         tile.color = reader.ReadColor("Color");
                     }
+
+                    // 스폰
+                    Wall wall = SpawnWall();
+                    // 위치 설정
+                    wall.transform.position = spawnPoint;
+                    // 초기화
+                    wall.__Initialize(tile);
+                    // 활성화
+                    wall.gameObject.SetActive(true);
                 }
             }
         }

@@ -191,26 +191,37 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
                     Tile tile = M_Tile.tileList[index];
                     tile.SetType(E_TileType.SafetyZone);
 
+                    Vector3 spawnPoint = tile.transform.position;
+                    spawnPoint.z = 5f;
+
+                    bool isFinishZone = false;
                     if (reader.LoadToElement("IsFinishZone"))
                     {
-                        SafetyZone safetyZone = m_SafetyZoneList[i];
-
-                        bool isFinishZone;
                         reader.ReadStartElement("IsFinishZone");
                         if (!bool.TryParse(reader.Value, out isFinishZone))
                         {
                             isFinishZone = false;
                         }
-
-                        M_Edit.safetyZoneFinishZone.items[i].toggle.isOn =
-                        M_Edit.safetyZoneFinishZone.options[i].isOn =
-                        safetyZone.isFinishZone = isFinishZone;
-
-                        if (isFinishZone)
-                        {
-                            m_FinishZoneList.Add(safetyZone);
-                        }
                     }
+
+                    // 스폰
+                    SafetyZone safetyZone = SpawnSafetyZone();
+                    // 위치 설정
+                    safetyZone.transform.position = spawnPoint;
+                    // 초기화
+                    safetyZone.__Initialize(tile);
+
+                    M_Edit.safetyZoneFinishZone.items[i].toggle.isOn =
+                    M_Edit.safetyZoneFinishZone.options[i].isOn =
+                    safetyZone.isFinishZone = isFinishZone;
+
+                    if (isFinishZone)
+                    {
+                        m_FinishZoneList.Add(safetyZone);
+                    }
+
+                    // 활성화
+                    safetyZone.gameObject.SetActive(true);
                 }
             }
         }
