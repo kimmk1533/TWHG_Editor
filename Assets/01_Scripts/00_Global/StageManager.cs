@@ -158,15 +158,18 @@ public class StageManager : Singleton<StageManager>
     #region 유니티 콜백 함수
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.J))
+        if (M_Edit.isEditMode)
         {
-            SaveStage("TestStage");
-            Debug.Log("Save Complete");
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            LoadStage("TestStage");
-            Debug.Log("Load Complete");
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                SaveStage("TestStage");
+                Debug.Log("Save Complete");
+            }
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                LoadStage("TestStage");
+                Debug.Log("Load Complete");
+            }
         }
     }
     #endregion
