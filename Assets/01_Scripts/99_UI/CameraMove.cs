@@ -73,7 +73,8 @@ public class CameraMove : MonoBehaviour
         }
         #endregion
         #region 키보드로 이동
-        if (M_Edit.isEditMode)
+        if (M_Edit.isEditMode &&
+            !M_Edit.isInputFieldFocus)
         {
             Vector3 dir = new Vector2();
             dir.x = Input.GetAxisRaw("Horizontal");
@@ -203,9 +204,6 @@ public class CameraMove : MonoBehaviour
     {
         Scale();
         Move();
-    }
-    void LateUpdate()
-    {
         Clamp();
     }
     #endregion

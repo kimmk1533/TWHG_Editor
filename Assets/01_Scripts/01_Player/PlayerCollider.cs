@@ -13,7 +13,10 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
+    protected StageManager M_Stage => StageManager.Instance;
+
     protected CoinManager M_Coin => CoinManager.Instance;
+    protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
@@ -21,6 +24,13 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
     public Vector2 size => m_Collider.size;
     #endregion
     #region 내부 함수
+    protected IEnumerator WaitAndExitPlayMode(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        M_Game.ExitPlayMode();
+    }
+
     protected void TriggerEnterEnemy(Collider2D collision)
     {
         if (!m_Player.isSafe)
@@ -44,7 +54,9 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
             if (isFinishZone && !M_Coin.IsLeftCoin)
             {
                 // 승리
-                Debug.Log("승리");
+                M_Stage.canSave = true;
+                M_FloatingText.SpawnFloatingText("클리어!");
+                StartCoroutine(WaitAndExitPlayMode(0.2f));
             }
         }
     }

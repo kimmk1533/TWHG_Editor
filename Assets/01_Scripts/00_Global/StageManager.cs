@@ -2,9 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class StageManager : Singleton<StageManager>
 {
@@ -14,6 +15,23 @@ public class StageManager : Singleton<StageManager>
     protected List<GameObject> m_ManagerList;
     protected List<ISaveHandler> m_SaveList;
     protected List<ILoadHandler> m_LoadList;
+
+    protected E_Type m_Type;
+
+    protected string m_StageName;
+    protected bool m_CanSave;
+    [SerializeField]
+    protected GameObject m_SaveLoadPanel;
+    [SerializeField]
+    protected InputField m_StageNameInputField;
+    [SerializeField]
+    protected Button m_SavePanelButton;
+    [SerializeField]
+    protected Button m_LoadPanelButton;
+    [SerializeField]
+    protected Button m_ApplyButton;
+    [SerializeField]
+    protected TextMeshProUGUI m_Text;
 
     #region 내부 프로퍼티
     #region 매니저
@@ -31,9 +49,46 @@ public class StageManager : Singleton<StageManager>
 
     protected int width { get => M_Game.width; set => M_Game.width = value; }
     protected int height { get => M_Game.height; set => M_Game.height = value; }
+
+    protected bool saveButtonActive
+    {
+        get => m_SavePanelButton.gameObject.activeSelf;
+        set
+        {
+            m_SavePanelButton.gameObject.SetActive(value);
+
+            if (value)
+            {
+                if (!m_CanSave)
+                {
+                    m_SavePanelButton.image.color = Color.white * 0.5f;
+                }
+                else
+                {
+                    m_SavePanelButton.image.color = Color.white;
+                }
+            }
+        }
+    }
+    protected bool loadButtonActive
+    {
+        get => m_LoadPanelButton.gameObject.activeSelf;
+        set => m_LoadPanelButton.gameObject.SetActive(value);
+    }
     #endregion
     #region 외부 프로퍼티
     public E_TileType[,] stage { get => m_Stage; }
+    public string stageName { get => m_StageName; set => m_StageName = value; }
+    public bool canSave
+    {
+        get => m_CanSave;
+        set
+        {
+            m_CanSave = value;
+            panelActive = false;
+        }
+    }
+    public bool panelActive { get => m_SaveLoadPanel.activeSelf; set => m_SaveLoadPanel.SetActive(value); }
     #endregion
     #region 내부 함수
     protected void ResetStage()
@@ -50,6 +105,9 @@ public class StageManager : Singleton<StageManager>
     #region 외부 함수
     public void __Initialize()
     {
+        M_Game.OnEnterPlayMode += OnEnterPlayMode;
+        M_Game.OnExitPlayMode += OnExitPlayMode;
+
         m_Stage = new E_TileType[height, width];
 
         ResetStage();
@@ -68,6 +126,56 @@ public class StageManager : Singleton<StageManager>
             m_SaveList.Add(item.GetComponent<ISaveHandler>());
             m_LoadList.Add(item.GetComponent<ILoadHandler>());
         }
+
+        m_CanSave = false;
+        panelActive = false;
+
+        saveButtonActive = true;
+        loadButtonActive = true;
+
+        m_StageNameInputField.onEndEdit.AddListener(item =>
+        {
+            m_StageName = item;
+        });
+
+        m_SavePanelButton.onClick.AddListener(() =>
+        {
+            if (!m_CanSave)
+            {
+                M_FloatingText.SpawnFloatingText("클리어 후에 저장이 가능합니다.");
+                return;
+            }
+
+            m_Type = E_Type.Save;
+            m_Text.text = "Save";
+            panelActive = true;
+
+            m_StageNameInputField.Select();
+            m_StageNameInputField.ActivateInputField();
+        });
+        m_LoadPanelButton.onClick.AddListener(() =>
+        {
+            m_Type = E_Type.Load;
+            m_Text.text = "Load";
+            panelActive = true;
+
+            m_StageNameInputField.Select();
+            m_StageNameInputField.ActivateInputField();
+        });
+        m_ApplyButton.onClick.AddListener(() =>
+        {
+            switch (m_Type)
+            {
+                case E_Type.Save:
+                    SaveStage(stageName);
+                    break;
+                case E_Type.Load:
+                    LoadStage(stageName);
+                    break;
+            }
+
+            panelActive = false;
+        });
     }
     public void __Finalize()
     {
@@ -78,6 +186,12 @@ public class StageManager : Singleton<StageManager>
     {
         string path = Path.Combine(Application.dataPath, "Stage");
         string file = stageName;
+        if (null == file)
+        {
+            M_FloatingText.SpawnFloatingText("저장 실패");
+            M_FloatingText.SpawnFloatingText("스테이지 이름을 입력해주세요", 0.5f);
+            return;
+        }
         if (!file.EndsWith(".std"))
         {
             file += ".std";
@@ -117,7 +231,6 @@ public class StageManager : Singleton<StageManager>
 
             writer.Close();
 
-            //Debug.Log(Encrypt.EncryData(filepath));
             File.WriteAllText(filepath, Encrypt.EncryptData(filepath));
 
             M_FloatingText.SpawnFloatingText("저장 완료");
@@ -125,7 +238,7 @@ public class StageManager : Singleton<StageManager>
         catch (Exception e)
         {
             M_FloatingText.SpawnFloatingText("저장 실패");
-            M_FloatingText.SpawnFloatingText(e.Message);
+            M_FloatingText.SpawnFloatingText(e.Message, 0.5f);
         }
         finally
         {
@@ -137,8 +250,15 @@ public class StageManager : Singleton<StageManager>
     {
         string path = Path.Combine(Application.dataPath, "Stage", stageName + ".std");
 
-        StringReader a = new StringReader(Decrypt.DecryptData(path));
-        XmlReader reader = XmlReader.Create(a);
+        if (!File.Exists(path))
+        {
+            M_FloatingText.SpawnFloatingText("불러오기 실패");
+            M_FloatingText.SpawnFloatingText("파일이 존재하지 않습니다.", 0.5f);
+            return;
+        }
+
+        StringReader xml = new StringReader(Decrypt.DecryptData(path));
+        XmlReader reader = XmlReader.Create(xml);
 
         try
         {
@@ -152,7 +272,7 @@ public class StageManager : Singleton<StageManager>
         catch (Exception e)
         {
             M_FloatingText.SpawnFloatingText("불러오기 실패");
-            M_FloatingText.SpawnFloatingText(e.Message);
+            M_FloatingText.SpawnFloatingText(e.Message, 0.5f);
         }
         finally
         {
@@ -161,20 +281,25 @@ public class StageManager : Singleton<StageManager>
         }
     }
     #endregion
-    #region 유니티 콜백 함수
-    private void Update()
+    #region 이벤트 함수
+    public void OnEnterPlayMode()
     {
-        if (M_Edit.isEditMode)
-        {
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                SaveStage("TestStage");
-            }
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                LoadStage("TestStage");
-            }
-        }
+        panelActive = false;
+        saveButtonActive = false;
+        loadButtonActive = false;
+    }
+    public void OnExitPlayMode()
+    {
+        saveButtonActive = true;
+        loadButtonActive = true;
     }
     #endregion
+
+    protected enum E_Type
+    {
+        None = -1,
+
+        Save,
+        Load
+    }
 }

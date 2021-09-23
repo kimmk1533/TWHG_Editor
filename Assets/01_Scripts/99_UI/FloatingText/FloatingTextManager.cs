@@ -10,6 +10,14 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
     [SerializeField]
     protected GameObject m_FloatingText_Panel;
 
+    #region 내부 함수
+    IEnumerator Spawn(string text, float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        SpawnFloatingText(text);
+    }
+    #endregion
     #region 외부 함수
     public override void __Initialize()
     {
@@ -43,6 +51,10 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
         // 관리 리스트에 추가
         m_FloatingTextList.Add(floatingText);
     }
+    public void SpawnFloatingText(string text, float time)
+    {
+        StartCoroutine(Spawn(text, time));
+    }
     public void SpawnFloatingText(string text, Vector3 position)
     {
         // 스폰
@@ -69,7 +81,10 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
     #region 이벤트 함수
     public void OnEnterPlayMode()
     {
-
+        for (int i = 0; i < m_FloatingTextList.Count; i++)
+        {
+            DespawnFloatingText(m_FloatingTextList[0]);
+        }
     }
     public void OnExitPlayMode()
     {

@@ -140,6 +140,7 @@ public class __EditManager : Singleton<__EditManager>
     #region 매니져
     protected ResourcesManager M_Resources => ResourcesManager.Instance;
     protected __GameManager M_Game => __GameManager.Instance;
+    protected StageManager M_Stage => StageManager.Instance;
 
     protected PlayerManager M_Player => PlayerManager.Instance;
     protected EnemyManager M_Enemy => EnemyManager.Instance;
@@ -169,21 +170,6 @@ public class __EditManager : Singleton<__EditManager>
     protected bool IsLeftUp => Input.GetMouseButtonUp((int)E_InputButton.Left);
     protected bool IsRightUp => Input.GetMouseButtonUp((int)E_InputButton.Right);
 
-    protected bool isInputFieldFocus
-    {
-        get
-        {
-            if (null == EventSystem.current.currentSelectedGameObject)
-                return false;
-
-            bool? isFocus = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>()?.isFocused;
-
-            if (isFocus.HasValue)
-                return isFocus.Value;
-
-            return false;
-        }
-    }
     protected E_EnemyType enemyType => (E_EnemyType)m_Enemy_Dropdown_Type.value - 1;
     protected float enemySpeed
     {
@@ -225,6 +211,21 @@ public class __EditManager : Singleton<__EditManager>
     #region 외부 프로퍼티
     public bool isEditMode => m_IsEdit;
 
+    public bool isInputFieldFocus
+    {
+        get
+        {
+            if (null == EventSystem.current.currentSelectedGameObject)
+                return false;
+
+            bool? isFocus = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>()?.isFocused;
+
+            if (isFocus.HasValue)
+                return isFocus.Value;
+
+            return false;
+        }
+    }
     public CheckBox safetyZoneFinishZone { get => m_SafetyZone_CheckBox_FinishZone; }
     #endregion
     #region 내부 함수
@@ -278,13 +279,21 @@ public class __EditManager : Singleton<__EditManager>
                 SetSelectedUI(E_ObjectType.Erase);
             }
 
-            obj?.GetComponent<IEraserable>()?.Erase();
+            IEraserable eraserable = obj?.GetComponent<IEraserable>();
+            if (null != eraserable)
+            {
+                eraserable.Erase();
+
+                M_Stage.canSave = false;
+            }
 
             Tile tile = ui_obj.GetComponent<Tile>();
 
             if (null != tile)
             {
                 tile.SetType(E_TileType.None);
+
+                M_Stage.canSave = false;
             }
         }
         #endregion
@@ -303,6 +312,8 @@ public class __EditManager : Singleton<__EditManager>
                         Player player = M_Player.SpawnPlayer();
                         // 위치 설정
                         player.transform.position = spawnPoint_Obj;
+
+                        M_Stage.canSave = false;
                         break;
                     case E_ObjectType.Enemy:
                         // 적 스폰
@@ -313,12 +324,16 @@ public class __EditManager : Singleton<__EditManager>
                         enemy.type = enemyType;
                         // 적 이동 속도 설정
                         enemy.speed = enemySpeed;
+
+                        M_Stage.canSave = false;
                         break;
                     case E_ObjectType.Coin:
                         // 코인 스폰
                         Coin coin = M_Coin.SpawnCoin();
                         // 위치 설정
                         coin.transform.position = spawnPoint_Obj;
+
+                        M_Stage.canSave = false;
                         break;
                 }
             }
@@ -351,6 +366,8 @@ public class __EditManager : Singleton<__EditManager>
                                 wall.__Initialize(tile);
                                 // 활성화
                                 wall.gameObject.SetActive(true);
+
+                                M_Stage.canSave = false;
                             }
                             else
                             {
@@ -383,6 +400,8 @@ public class __EditManager : Singleton<__EditManager>
                                 safetyZone.__Initialize(tile);
                                 // 활성화
                                 safetyZone.gameObject.SetActive(true);
+
+                                M_Stage.canSave = false;
                             }
                         }
                     }
@@ -411,6 +430,8 @@ public class __EditManager : Singleton<__EditManager>
                                 gravityZone.gravity = gravity;
                                 // 활성화
                                 gravityZone.gameObject.SetActive(true);
+
+                                M_Stage.canSave = false;
                             }
                         }
                     }
@@ -431,13 +452,21 @@ public class __EditManager : Singleton<__EditManager>
                             SetSelectedUI(E_ObjectType.Erase);
                         }
 
-                        obj?.GetComponent<IEraserable>()?.Erase();
+                        IEraserable eraserable = obj?.GetComponent<IEraserable>();
+                        if (null != eraserable)
+                        {
+                            eraserable.Erase();
+
+                            M_Stage.canSave = false;
+                        }
 
                         Tile tile = ui_obj.GetComponent<Tile>();
 
                         if (null != tile)
                         {
                             tile.SetType(E_TileType.None);
+
+                            M_Stage.canSave = false;
                         }
                     }
                     break;
@@ -470,69 +499,69 @@ public class __EditManager : Singleton<__EditManager>
 
         Collider2D[] colliders = Physics2D.OverlapPointAll(origin, layerMask);
 
-        /* 인덱스 대신 Peek, Pop, Push로 변경
-        #region 빈 곳 클릭
-        if (colliders.Length <= 0)
-        {
-            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
-            if (null != renderer)
-            {
-                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
-            }
+        #region 추후 인덱스 대신 Peek, Pop, Push로 변경
+        //#region 빈 곳 클릭
+        //if (colliders.Length <= 0)
+        //{
+        //    SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+        //    if (null != renderer)
+        //    {
+        //        renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+        //    }
 
-            m_ClickedObject = null;
+        //    m_ClickedObject = null;
 
-            SetSelectedUI(m_SelectedType);
-            return;
-        }
+        //    SetSelectedUI(m_SelectedType);
+        //    return;
+        //}
+        //#endregion
+
+        //#region 리스트 세팅
+        //if (m_LastClickedObjectList.Count > 0)
+        //{
+        //    m_LastClickedObjectList.Clear();
+        //}
+        //m_LastClickedObjectList.AddRange(m_CurrentClickedObjectList);
+
+        //if (m_CurrentClickedObjectList.Count > 0)
+        //{
+        //    m_CurrentClickedObjectList.Clear();
+        //}
+        //foreach (var item in colliders)
+        //{
+        //    IClickedObject clickedObject = item.GetComponent<IClickedObject>();
+        //    if (null == clickedObject)
+        //        continue;
+
+        //    m_CurrentClickedObjectList.Add(clickedObject);
+        //}
+        //#endregion
+
+        //int currentCount = m_CurrentClickedObjectList.Count;
+        //int lastCount = m_LastClickedObjectList.Count;
+
+        //if (lastCount <= 0)
+        //{
+        //    SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+        //    if (null != renderer)
+        //    {
+        //        renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+        //    }
+
+        //    m_ClickIndex = 1;
+        //    m_ClickedObject = m_CurrentClickedObjectList[0];
+
+        //    renderer = m_ClickedObject?.GetSpriteRenderer();
+        //    if (null != renderer)
+        //    {
+        //        m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
+        //        renderer.sortingLayerID = SortingLayer.NameToID("Selected");
+        //    }
+
+        //    SetSelectedUI(m_ClickedObject.GetObjectType());
+        //    return;
+        //}
         #endregion
-
-        #region 리스트 세팅
-        if (m_LastClickedObjectList.Count > 0)
-        {
-            m_LastClickedObjectList.Clear();
-        }
-        m_LastClickedObjectList.AddRange(m_CurrentClickedObjectList);
-
-        if (m_CurrentClickedObjectList.Count > 0)
-        {
-            m_CurrentClickedObjectList.Clear();
-        }
-        foreach (var item in colliders)
-        {
-            IClickedObject clickedObject = item.GetComponent<IClickedObject>();
-            if (null == clickedObject)
-                continue;
-
-            m_CurrentClickedObjectList.Add(clickedObject);
-        }
-        #endregion
-
-        int currentCount = m_CurrentClickedObjectList.Count;
-        int lastCount = m_LastClickedObjectList.Count;
-
-        if (lastCount <= 0)
-        {
-            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
-            if (null != renderer)
-            {
-                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
-            }
-
-            m_ClickIndex = 1;
-            m_ClickedObject = m_CurrentClickedObjectList[0];
-
-            renderer = m_ClickedObject?.GetSpriteRenderer();
-            if (null != renderer)
-            {
-                m_ClickedObjectSortingLayerID = renderer.sortingLayerID;
-                renderer.sortingLayerID = SortingLayer.NameToID("Selected");
-            }
-
-            SetSelectedUI(m_ClickedObject.GetObjectType());
-            return;
-        }
-        */
 
         #region 기존 코드
         #region 빈 곳 클릭
@@ -1020,6 +1049,98 @@ public class __EditManager : Singleton<__EditManager>
         m_GravityZone_Panel_Option.SetActive(false);
 
         SetCursorImage(E_ObjectType.None);
+
+        #region Stage
+        m_SelectedObject_InputField_XPos.onEndEdit.AddListener(item =>
+        {
+            if (M_Stage.canSave)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+        m_SelectedObject_InputField_YPos.onEndEdit.AddListener(item =>
+        {
+            if (M_Stage.canSave)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+
+        m_Enemy_Dropdown_Type.onValueChanged.AddListener(item =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+        m_Enemy_InputField_Speed.onEndEdit.AddListener(item =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+        m_Enemy_Scroll_WayPointList.onItemValueChanged += (item) =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        };
+        m_Enemy_Scroll_WayPointList.onAddButtonClicked.AddListener(() =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+        m_Enemy_Scroll_WayPointList.onRemoveButtonClicked.AddListener(() =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+        m_Enemy_InputField_CenterX.onEndEdit.AddListener(item =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+        m_Enemy_InputField_CenterY.onEndEdit.AddListener(item =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+
+        m_SafetyZone_CheckBox_FinishZone.onValueChanged.AddListener(item =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+
+        m_GravityZone_InputField_Gravity.onEndEdit.AddListener(item =>
+        {
+            if (M_Stage.canSave &&
+                null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+        #endregion
     }
     public void __Finalize()
     {
@@ -1049,6 +1170,8 @@ public class __EditManager : Singleton<__EditManager>
         m_ClickedObject = null;
         SetSelectedUI(type);
         SetCursorImage(type);
+
+        M_Stage.panelActive = false;
     }
     public bool IsPointerOverUIObject()
     {

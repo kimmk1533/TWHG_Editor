@@ -49,6 +49,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: GravityZone
+    uniqueID: 3013512901
+    locked: 0
+  - name: SafetyZone
+    uniqueID: 2931180705
+    locked: 0
+  - name: Wall
+    uniqueID: 2776542031
+    locked: 0
   - name: Coin
     uniqueID: 1625272783
     locked: 0
@@ -57,9 +66,6 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1002295317
-    locked: 0
-  - name: Wall
-    uniqueID: 2776542031
     locked: 0
   - name: Selected
     uniqueID: 3892184361
