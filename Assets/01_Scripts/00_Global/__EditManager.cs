@@ -145,13 +145,13 @@ public class __EditManager : Singleton<__EditManager>
     protected EnemyManager M_Enemy => EnemyManager.Instance;
     protected EnemyGizmoManager M_EnemyGizmo => EnemyGizmoManager.Instance;
     protected CoinManager M_Coin => CoinManager.Instance;
+    protected WallManager M_Wall => WallManager.Instance;
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
-    protected TileManager M_Tile => TileManager.Instance;
-    protected StageManager M_Stage => StageManager.Instance;
+    protected GravityZoneManager M_GravityZone => GravityZoneManager.Instance;
     protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
 
-    protected Vector3 spawnPoint
+    protected Vector3 spawnPoint_Obj
     {
         get
         {
@@ -195,6 +195,18 @@ public class __EditManager : Singleton<__EditManager>
                 speed = 0.01f;
             }
             return speed;
+        }
+    }
+    protected Color wallColor
+    {
+        get
+        {
+            Color color;
+            color.r = m_WallColor_Slider_Red.value;
+            color.g = m_WallColor_Slider_Green.value;
+            color.b = m_WallColor_Slider_Blue.value;
+            color.a = 1f;
+            return color;
         }
     }
     protected float gravity
@@ -267,7 +279,13 @@ public class __EditManager : Singleton<__EditManager>
             }
 
             obj?.GetComponent<IEraserable>()?.Erase();
-            M_Tile.Draw(ui_obj, E_TileType.None);
+
+            Tile tile = ui_obj.GetComponent<Tile>();
+
+            if (null != tile)
+            {
+                tile.SetType(E_TileType.None);
+            }
         }
         #endregion
 
@@ -284,13 +302,13 @@ public class __EditManager : Singleton<__EditManager>
                         // 플레이어 스폰
                         Player player = M_Player.SpawnPlayer();
                         // 위치 설정
-                        player.transform.position = spawnPoint;
+                        player.transform.position = spawnPoint_Obj;
                         break;
                     case E_ObjectType.Enemy:
                         // 적 스폰
                         Enemy enemy = M_Enemy.SpawnEnemy();
                         // 위치 설정
-                        enemy.transform.position = spawnPoint;
+                        enemy.transform.position = spawnPoint_Obj;
                         // 적 타입 설정
                         enemy.type = enemyType;
                         // 적 이동 속도 설정
@@ -300,7 +318,7 @@ public class __EditManager : Singleton<__EditManager>
                         // 코인 스폰
                         Coin coin = M_Coin.SpawnCoin();
                         // 위치 설정
-                        coin.transform.position = spawnPoint;
+                        coin.transform.position = spawnPoint_Obj;
                         break;
                 }
             }
@@ -312,37 +330,116 @@ public class __EditManager : Singleton<__EditManager>
             switch (m_SelectedType)
             {
                 case E_ObjectType.Wall:
-                    obj?.GetComponent<SafetyZoneCollider>()?.Erase();
-                    obj?.GetComponent<GravityZoneCollider>()?.Erase();
-                    M_Tile.Draw(ui_obj, E_TileType.Wall);
+                    {
+                        Tile tile = ui_obj.GetComponent<Tile>();
+
+                        if (null != tile)
+                        {
+                            if (tile.SetType(E_TileType.Wall))
+                            {
+                                obj?.GetComponent<SafetyZoneCollider>()?.Erase();
+                                obj?.GetComponent<GravityZoneCollider>()?.Erase();
+
+                                Vector3 spawnPoint = tile.transform.position;
+                                spawnPoint.z = 5f;
+
+                                // 스폰
+                                Wall wall = M_Wall.SpawnWall();
+                                // 위치 설정
+                                wall.transform.position = spawnPoint;
+                                // 초기화
+                                wall.__Initialize(tile);
+                                // 활성화
+                                wall.gameObject.SetActive(true);
+                            }
+                            else
+                            {
+                                Wall wall = obj?.GetComponent<WallCollider>()?.wall;
+
+                                wall.tile.color = wallColor;
+                            }
+                        }
+                    }
                     break;
                 case E_ObjectType.SafetyZone:
-                    obj?.GetComponent<WallCollider>()?.Erase();
-                    obj?.GetComponent<GravityZoneCollider>()?.Erase();
-                    M_Tile.Draw(ui_obj, E_TileType.SafetyZone);
+                    {
+                        Tile tile = ui_obj.GetComponent<Tile>();
+
+                        if (null != tile)
+                        {
+                            if (tile.SetType(E_TileType.SafetyZone))
+                            {
+                                obj?.GetComponent<WallCollider>()?.Erase();
+                                obj?.GetComponent<GravityZoneCollider>()?.Erase();
+
+                                Vector3 spawnPoint = tile.transform.position;
+                                spawnPoint.z = 5f;
+
+                                // 스폰
+                                SafetyZone safetyZone = M_SafetyZone.SpawnSafetyZone();
+                                // 위치 설정
+                                safetyZone.transform.position = spawnPoint;
+                                // 초기화
+                                safetyZone.__Initialize(tile);
+                                // 활성화
+                                safetyZone.gameObject.SetActive(true);
+                            }
+                        }
+                    }
                     break;
                 case E_ObjectType.GravityZone:
-                    obj?.GetComponent<WallCollider>()?.Erase();
-                    obj?.GetComponent<SafetyZoneCollider>()?.Erase();
-                    M_Tile.Draw(ui_obj, E_TileType.GravityZone);
+                    {
+                        Tile tile = ui_obj.GetComponent<Tile>();
+
+                        if (null != tile)
+                        {
+                            if (tile.SetType(E_TileType.GravityZone))
+                            {
+                                obj?.GetComponent<WallCollider>()?.Erase();
+                                obj?.GetComponent<SafetyZoneCollider>()?.Erase();
+
+                                Vector3 spawnPoint = tile.transform.position;
+                                spawnPoint.z = 5f;
+
+                                // 스폰
+                                GravityZone gravityZone = M_GravityZone.SpawnGravityZone();
+                                // 위치 설정
+                                gravityZone.transform.position = spawnPoint;
+                                // 초기화
+                                gravityZone.__Initialize(tile);
+                                // 중력 설정
+                                gravityZone.gravity = gravity;
+                                // 활성화
+                                gravityZone.gameObject.SetActive(true);
+                            }
+                        }
+                    }
                     break;
                 case E_ObjectType.Erase:
-                    if (null != m_ClickedObject &&
-                        obj?.GetComponent<IClickedObject>() == m_ClickedObject)
                     {
-                        SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
-                        if (null != renderer)
+                        if (null != m_ClickedObject &&
+                            obj?.GetComponent<IClickedObject>() == m_ClickedObject)
                         {
-                            renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+                            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+                            if (null != renderer)
+                            {
+                                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+                            }
+
+                            m_ClickedObject = null;
+
+                            SetSelectedUI(E_ObjectType.Erase);
                         }
 
-                        m_ClickedObject = null;
+                        obj?.GetComponent<IEraserable>()?.Erase();
 
-                        SetSelectedUI(E_ObjectType.Erase);
+                        Tile tile = ui_obj.GetComponent<Tile>();
+
+                        if (null != tile)
+                        {
+                            tile.SetType(E_TileType.None);
+                        }
                     }
-
-                    obj?.GetComponent<IEraserable>()?.Erase();
-                    M_Tile.Draw(ui_obj, E_TileType.None);
                     break;
             }
         }
@@ -659,8 +756,8 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImageOutline.enabled = false;
 
                     m_Current_Panel_Option = null;
-                    break;
                 }
+                break;
             case E_ObjectType.Erase:
                 {
                     m_SelectedImage.sprite = null;
@@ -668,8 +765,8 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImageOutline.enabled = false;
 
                     m_Current_Panel_Option = null;
-                    break;
                 }
+                break;
 
             case E_ObjectType.Player:
                 {
@@ -679,8 +776,8 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImageOutline.enabled = false;
 
                     m_Current_Panel_Option = null;
-                    break;
                 }
+                break;
             case E_ObjectType.Enemy:
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
@@ -711,8 +808,8 @@ public class __EditManager : Singleton<__EditManager>
                         m_Enemy_Panel_WayPoint.SetActive(false);
                         m_Enemy_Panel_Center.SetActive(false);
                     }
-                    break;
                 }
+                break;
             case E_ObjectType.Coin:
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f);
@@ -721,30 +818,31 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImageOutline.enabled = false;
 
                     m_Current_Panel_Option = null;
-                    break;
                 }
+                break;
             case E_ObjectType.Wall:
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
                     m_SelectedImageOutline.enabled = true;
 
-                    Wall wall = m_ClickedObject?.GetGameObject().GetComponent<Wall>();
-                    Color color;
-
-                    if (null == wall)
-                        color = m_SelectedImage.color = M_Game.wallColor;
-                    else
-                        color = m_SelectedImage.color = wall.tile.color;
-
-                    m_WallColor_Slider_Red.value = color.r;
-                    m_WallColor_Slider_Green.value = color.g;
-                    m_WallColor_Slider_Blue.value = color.b;
-                    ColorToText();
-
                     m_Current_Panel_Option = m_Wall_Panel_Option;
-                    break;
+
+                    Color color = m_SelectedImage.color = M_Game.wallColor;
+                    if (m_ClickedObject?.GetObjectType() == E_ObjectType.Wall)
+                    {
+                        Wall wall = m_ClickedObject.GetGameObject().GetComponent<Wall>();
+
+                        if (null != wall)
+                            color = m_SelectedImage.color = wall.tile.color;
+
+                        m_WallColor_Slider_Red.value = color.r;
+                        m_WallColor_Slider_Green.value = color.g;
+                        m_WallColor_Slider_Blue.value = color.b;
+                        ColorToText();
+                    }
                 }
+                break;
             case E_ObjectType.SafetyZone:
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
@@ -753,8 +851,8 @@ public class __EditManager : Singleton<__EditManager>
                     m_SelectedImageOutline.enabled = true;
 
                     m_Current_Panel_Option = m_SafetyZone_Panel_Option;
-                    break;
                 }
+                break;
             case E_ObjectType.GravityZone:
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;

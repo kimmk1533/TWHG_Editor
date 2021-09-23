@@ -134,38 +134,15 @@ public class TileManager : ObjectManager<TileManager, Tile>
 
         base.__Finalize();
     }
-
-    public void Draw(int index, E_TileType type)
-    {
-        m_TileList[index].SetType(type);
-    }
-    public void Draw(GameObject obj, E_TileType type)
-    {
-        obj.GetComponent<Tile>()?.SetType(type);
-    }
     #endregion
     #region 이벤트 함수
     public void OnEnterPlayMode()
     {
-        //// 타일(BG) 삭제
-        //ClearTiles();
 
-        //// 타일(BG) 생성
-        //CreateTiles();
     }
     public void OnExitPlayMode()
     {
-        //// 타일(BG) 삭제
-        //ClearTiles();
 
-        //// 타일(BG) 생성
-        //CreateTiles();
     }
-    #endregion
-    #region 유니티 콜백 함수
-    //protected override void Awake()
-    //{
-    //    base.Awake();
-    //}
     #endregion
 }

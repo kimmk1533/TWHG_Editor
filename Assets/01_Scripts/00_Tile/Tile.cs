@@ -6,9 +6,9 @@ using UnityEngine.UI;
 public class Tile : MonoBehaviour
 {
     [SerializeField]
-    protected E_TileIndexType m_IndexType;
-    [SerializeField]
     protected E_TileType m_Type;
+    [SerializeField]
+    protected E_TileIndexType m_IndexType;
     protected Image m_Image;
 
     protected int m_X;
@@ -19,15 +19,12 @@ public class Tile : MonoBehaviour
     protected __GameManager M_Game => __GameManager.Instance;
 
     protected StageManager M_Stage => StageManager.Instance;
-    protected WallManager M_Wall => WallManager.Instance;
-    protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
-    protected GravityZoneManager M_GravityZone => GravityZoneManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
     public int index { get => m_X + (M_Game.width * m_Y); }
-    public E_TileIndexType indexType => m_IndexType;
     public E_TileType type => m_Type;
+    public E_TileIndexType indexType => m_IndexType;
     public Color color { get => m_Image.color; set => m_Image.color = value; }
     #endregion
     #region 외부 함수
@@ -49,16 +46,13 @@ public class Tile : MonoBehaviour
             m_IndexType = E_TileIndexType.Odd;
     }
 
-    public void SetType(E_TileType type)
+    public bool SetType(E_TileType type)
     {
         if (m_Type == type)
-            return;
+            return false;
 
         M_Stage.stage[m_Y, m_X] = m_Type = type;
-
-        Vector3 spawnPos = transform.position;
-        spawnPos.z = 5f;
-
+        
         switch (m_Type)
         {
             case E_TileType.None:
@@ -77,41 +71,16 @@ public class Tile : MonoBehaviour
                 break;
             case E_TileType.Wall:
                 m_Image.color = M_Game.wallColor;
-
-                // 스폰
-                Wall wall = M_Wall.SpawnWall();
-                // 위치 설정
-                wall.transform.position = spawnPos;
-                // 초기화
-                wall.__Initialize(this);
-                // 활성화
-                wall.gameObject.SetActive(true);
                 break;
             case E_TileType.SafetyZone:
                 m_Image.color = M_Game.safetyZoneColor;
-
-                // 스폰
-                SafetyZone safetyZone = M_SafetyZone.SpawnSafetyZone();
-                // 위치 설정
-                safetyZone.transform.position = spawnPos;
-                // 초기화
-                safetyZone.__Initialize(this);
-                // 활성화
-                safetyZone.gameObject.SetActive(true);
                 break;
             case E_TileType.GravityZone:
                 m_Image.color = M_Game.gravityZoneColor;
-
-                // 스폰
-                GravityZone gravityZone = M_GravityZone.SpawnGravityZone();
-                // 위치 설정
-                gravityZone.transform.position = spawnPos;
-                // 초기화
-                gravityZone.__Initialize(this);
-                // 활성화
-                gravityZone.gameObject.SetActive(true);
                 break;
         }
+
+        return true;
     }
     #endregion
 }
