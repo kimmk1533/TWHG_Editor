@@ -78,9 +78,9 @@ public class StageManager : Singleton<StageManager>
     {
         string path = Path.Combine(Application.dataPath, "Stage");
         string file = stageName;
-        if (!file.EndsWith(".xml"))
+        if (!file.EndsWith(".std"))
         {
-            file += ".xml";
+            file += ".std";
         }
         string filepath = Path.Combine(path, file);
 
@@ -115,6 +115,11 @@ public class StageManager : Singleton<StageManager>
             // 루트 끝
             writer.WriteEndElement();
 
+            writer.Close();
+
+            //Debug.Log(Encrypt.EncryData(filepath));
+            File.WriteAllText(filepath, Encrypt.EncryptData(filepath));
+
             M_FloatingText.SpawnFloatingText("저장 완료");
         }
         catch (Exception e)
@@ -130,9 +135,10 @@ public class StageManager : Singleton<StageManager>
     }
     public void LoadStage(string stageName)
     {
-        string path = Path.Combine(Application.dataPath, "Stage", stageName + ".xml");
+        string path = Path.Combine(Application.dataPath, "Stage", stageName + ".std");
 
-        XmlReader reader = XmlReader.Create(path);
+        StringReader a = new StringReader(Decrypt.DecryptData(path));
+        XmlReader reader = XmlReader.Create(a);
 
         try
         {
@@ -163,12 +169,10 @@ public class StageManager : Singleton<StageManager>
             if (Input.GetKeyDown(KeyCode.J))
             {
                 SaveStage("TestStage");
-                Debug.Log("Save Complete");
             }
             if (Input.GetKeyDown(KeyCode.K))
             {
                 LoadStage("TestStage");
-                Debug.Log("Load Complete");
             }
         }
     }
