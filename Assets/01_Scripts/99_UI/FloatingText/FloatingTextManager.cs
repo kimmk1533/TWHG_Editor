@@ -23,6 +23,9 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
     {
         base.__Initialize();
 
+        M_Game.OnEnterPlayMode += OnEnterPlayMode;
+        M_Game.OnExitPlayMode += OnExitPlayMode;
+
         FloatingText floatingText = M_Resources.GetGameObject<FloatingText>("UI", "FloatingText");
         AddPool("FloatingText", floatingText, transform);
 
