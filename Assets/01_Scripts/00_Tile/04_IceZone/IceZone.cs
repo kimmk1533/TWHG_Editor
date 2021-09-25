@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GravityZone : MonoBehaviour
+public class IceZone : MonoBehaviour
 {
     protected Tile m_Tile;
 
     [SerializeField, ReadOnly]
-    protected float m_Gravity;
+    protected float m_Drag;
 
     #region 내부 컴포넌트
-    protected GravityZoneCollider m_Collider;
+    protected IceZoneCollider m_Collider;
     #endregion
     #region 외부 프로퍼티
     public Tile tile { get => m_Tile; }
-    public float gravity { get => m_Gravity; set => m_Gravity = value; }
+    public float drag { get => m_Drag; set => m_Drag = value; }
     #endregion
     #region 외부 함수
     public void __Initialize(Tile tile)
@@ -23,7 +23,7 @@ public class GravityZone : MonoBehaviour
 
         if (null == m_Collider)
         {
-            m_Collider = GetComponentInChildren<GravityZoneCollider>();
+            m_Collider = GetComponentInChildren<IceZoneCollider>();
             m_Collider.__Initialize(this);
         }
     }

@@ -22,6 +22,8 @@ public class __GameManager : Singleton<__GameManager>
     protected Color m_SafetyZoneColor;
     [SerializeField, ReadOnly(true)]
     protected Color m_GravityZoneColor;
+    [SerializeField, ReadOnly(true)]
+    protected Color m_IceZoneColor;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -37,6 +39,7 @@ public class __GameManager : Singleton<__GameManager>
     protected WallManager M_Wall => WallManager.Instance;
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected GravityZoneManager M_GravityZone => GravityZoneManager.Instance;
+    protected IceZoneManager M_IceZone => IceZoneManager.Instance;
     protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
     #endregion
@@ -50,6 +53,7 @@ public class __GameManager : Singleton<__GameManager>
     public Color wallColor { get => m_WallColor; set => m_WallColor = value; }
     public Color safetyZoneColor { get => m_SafetyZoneColor; set => m_SafetyZoneColor = value; }
     public Color gravityZoneColor { get => m_GravityZoneColor; set => m_GravityZoneColor = value; }
+    public Color iceZoneColor { get => m_IceZoneColor; set => m_IceZoneColor = value; }
     #endregion
     #region 내부 함수
     void __Initialize()
@@ -66,11 +70,13 @@ public class __GameManager : Singleton<__GameManager>
         M_Wall.__Initialize();
         M_SafetyZone.__Initialize();
         M_GravityZone.__Initialize();
+        M_IceZone.__Initialize();
         M_FloatingText.__Initialize();
     }
     void __Finalize()
     {
         M_FloatingText.__Finalize();
+        M_IceZone.__Finalize();
         M_GravityZone.__Finalize();
         M_SafetyZone.__Finalize();
         M_Wall.__Finalize();

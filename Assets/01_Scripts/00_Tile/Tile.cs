@@ -78,6 +78,9 @@ public class Tile : MonoBehaviour
             case E_TileType.GravityZone:
                 m_Image.color = M_Game.gravityZoneColor;
                 break;
+            case E_TileType.IceZone:
+                m_Image.color = M_Game.iceZoneColor;
+                break;
         }
 
         return true;

@@ -17,6 +17,7 @@ public enum E_ObjectType
     Wall,
     SafetyZone,
     GravityZone,
+    IceZone,
 
     Max
 }
@@ -47,4 +48,5 @@ public enum E_TileType
     Wall, // 벽
     SafetyZone, // 안전구역
     GravityZone, // 중력구역
+    IceZone, // 얼음구역
 }

@@ -27,6 +27,8 @@ public class __EditManager : Singleton<__EditManager>
     protected Texture2D m_Cursor_SafetyZone;
     [SerializeField]
     protected Texture2D m_Cursor_GravityZone;
+    [SerializeField]
+    protected Texture2D m_Cursor_IceZone;
 
     [Header("EditMode")]
     [SerializeField, ReadOnly]
@@ -134,6 +136,13 @@ public class __EditManager : Singleton<__EditManager>
     [SerializeField]
     protected InputField m_GravityZone_InputField_Gravity;
     #endregion
+    #region 얼음구역 옵션
+    [Header("IceZone Option")]
+    [SerializeField]
+    protected GameObject m_IceZone_Panel_Option;
+    [SerializeField]
+    protected InputField m_IceZone_InputField_Drag;
+    #endregion
     #endregion
 
     #region 내부 프로퍼티
@@ -149,6 +158,7 @@ public class __EditManager : Singleton<__EditManager>
     protected WallManager M_Wall => WallManager.Instance;
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected GravityZoneManager M_GravityZone => GravityZoneManager.Instance;
+    protected IceZoneManager M_IceZone => IceZoneManager.Instance;
     protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
 
@@ -434,6 +444,35 @@ public class __EditManager : Singleton<__EditManager>
                                 gravityZone.gravity = gravity;
                                 // 활성화
                                 gravityZone.gameObject.SetActive(true);
+
+                                M_Stage.canSave = false;
+                            }
+                        }
+                    }
+                    break;
+                case E_ObjectType.IceZone:
+                    {
+                        Tile tile = ui_obj.GetComponent<Tile>();
+
+                        if (null != tile)
+                        {
+                            if (tile.SetType(E_TileType.IceZone))
+                            {
+                                obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.IceZone);
+
+                                Vector3 spawnPoint = tile.transform.position;
+                                spawnPoint.z = 5f;
+
+                                // 스폰
+                                IceZone iceZone = M_IceZone.SpawnIceZone();
+                                // 위치 설정
+                                iceZone.transform.position = spawnPoint;
+                                // 초기화
+                                iceZone.__Initialize(tile);
+                                // 저항 설정
+                                iceZone.drag = 0f;
+                                // 활성화
+                                iceZone.gameObject.SetActive(true);
 
                                 M_Stage.canSave = false;
                             }
@@ -734,6 +773,9 @@ public class __EditManager : Singleton<__EditManager>
             case E_ObjectType.GravityZone:
                 Cursor.SetCursor(m_Cursor_GravityZone, new Vector2(m_Cursor_GravityZone.width, m_Cursor_GravityZone.height) * 0.5f, CursorMode.ForceSoftware);
                 break;
+            case E_ObjectType.IceZone:
+                Cursor.SetCursor(m_Cursor_IceZone, new Vector2(m_Cursor_IceZone.width, m_Cursor_IceZone.height) * 0.5f, CursorMode.ForceSoftware);
+                break;
         }
     }
 
@@ -766,6 +808,10 @@ public class __EditManager : Singleton<__EditManager>
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
             SetSelectedType(E_ObjectType.GravityZone);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            SetSelectedType(E_ObjectType.IceZone);
         }
     }
     protected void SetSelectedUI(E_ObjectType type)
@@ -909,6 +955,23 @@ public class __EditManager : Singleton<__EditManager>
                     }
                 }
                 break;
+            case E_ObjectType.IceZone:
+                {
+                    m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
+                    m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
+                    m_SelectedImage.color = M_Game.iceZoneColor;
+                    m_SelectedImageOutline.enabled = true;
+
+                    m_Current_Panel_Option = m_IceZone_Panel_Option;
+
+                    if (m_ClickedObject?.GetObjectType() == E_ObjectType.IceZone)
+                    {
+                        IceZone iceZone = m_ClickedObject.GetGameObject().GetComponent<IceZone>();
+
+                        m_IceZone_InputField_Drag.text = iceZone.drag.ToString();
+                    }
+                }
+                break;
         }
 
         m_Current_Panel_Option?.SetActive(true);
@@ -1046,6 +1109,18 @@ public class __EditManager : Singleton<__EditManager>
             M_SafetyZone.ToggleFinishZone((int)(index - 1));
         });
         #endregion
+        #region GravityZone
+        m_GravityZone_InputField_Gravity.onEndEdit.AddListener(item =>
+        {
+            OnGravityZoneChangeGravity();
+        });
+        #endregion
+        #region IceZone
+        m_IceZone_InputField_Drag.onEndEdit.AddListener(item =>
+        {
+            OnIceZoneChangeDrag();
+        });
+        #endregion
 
         m_SelectedObject_Panel_Option.SetActive(false);
         m_Enemy_Panel_Option.SetActive(false);
@@ -1055,10 +1130,11 @@ public class __EditManager : Singleton<__EditManager>
         m_Wall_Panel_Option.SetActive(false);
         m_SafetyZone_Panel_Option.SetActive(false);
         m_GravityZone_Panel_Option.SetActive(false);
+        m_IceZone_Panel_Option.SetActive(false);
 
         SetCursorImage(E_ObjectType.None);
 
-        #region Stage
+        #region Stage Save
         m_SelectedObject_InputField_XPos.onEndEdit.AddListener(item =>
         {
             if (M_Stage.canSave)
@@ -1144,6 +1220,14 @@ public class __EditManager : Singleton<__EditManager>
         {
             if (M_Stage.canSave &&
                 null != m_ClickedObject)
+            {
+                M_Stage.canSave = false;
+            }
+        });
+        m_IceZone_InputField_Drag.onEndEdit.AddListener(item =>
+        {
+            if (M_Stage.canSave &&
+            null != m_ClickedObject)
             {
                 M_Stage.canSave = false;
             }
@@ -1461,6 +1545,21 @@ public class __EditManager : Singleton<__EditManager>
             gravity = MyRigidBody2D.Gravity;
         }
         gravityZone.gravity = gravity;
+    }
+    #endregion
+    #region IceZone
+    public void OnIceZoneChangeDrag()
+    {
+        if (m_ClickedObject?.GetObjectType() != E_ObjectType.IceZone)
+            return;
+
+        IceZone iceZone = m_ClickedObject.GetGameObject().GetComponent<IceZone>();
+        float drag;
+        if (!float.TryParse(m_IceZone_InputField_Drag.text, out drag))
+        {
+            drag = 0f;
+        }
+        iceZone.drag = drag;
     }
     #endregion
     #endregion

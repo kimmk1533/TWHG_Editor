@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
 
-public class GravityZoneManager : ObjectManager<GravityZoneManager, GravityZone>, ISaveHandler, ILoadHandler
+public class IceZoneManager : ObjectManager<IceZoneManager, IceZone>, ISaveHandler, ILoadHandler
 {
     [SerializeField]
-    protected List<GravityZone> m_GravityZoneList;
+    protected List<IceZone> m_IceZoneList;
 
     #region 내부 컴포넌트
     #region 매니저
@@ -24,23 +24,21 @@ public class GravityZoneManager : ObjectManager<GravityZoneManager, GravityZone>
     {
         base.__Initialize();
 
-        #region 이벤트 링크
         M_Game.OnEnterPlayMode += OnEnterPlayMode;
         M_Game.OnExitPlayMode += OnExitPlayMode;
-        #endregion
 
         // 풀 사이즈 설정
         m_PoolSize = M_Game.width * M_Game.height;
 
-        // 중력구역 풀 원본
-        GravityZone gravityZone = M_Resources.GetGameObject<GravityZone>("Tile", "GravityZone");
-        // 중력구역 풀 생성
-        AddPool("GravityZone", gravityZone, transform);
+        // 얼음구역 풀 원본
+        IceZone iceZone = M_Resources.GetGameObject<IceZone>("Tile", "IceZone");
+        // 얼음구역 풀 생성
+        AddPool("IceZone", iceZone, transform);
 
         // 관리 리스트 초기화
-        if (null == m_GravityZoneList)
+        if (null == m_IceZoneList)
         {
-            m_GravityZoneList = new List<GravityZone>();
+            m_IceZoneList = new List<IceZone>();
         }
     }
     public override void __Finalize()
@@ -49,67 +47,67 @@ public class GravityZoneManager : ObjectManager<GravityZoneManager, GravityZone>
 
     }
 
-    public GravityZone SpawnGravityZone()
+    public IceZone SpawnIceZone()
     {
-        GravityZone gravityZone = GetPool("GravityZone").Spawn();
-        m_GravityZoneList.Add(gravityZone);
-        return gravityZone;
+        IceZone iceZone = GetPool("IceZone").Spawn();
+        m_IceZoneList.Add(iceZone);
+        return iceZone;
     }
-    public void DespawnGravityZone(GravityZone gravityZone)
+    public void DespawnIceZone(IceZone iceZone)
     {
-        m_GravityZoneList.Remove(gravityZone);
-        GetPool("GravityZone").DeSpawn(gravityZone);
+        m_IceZoneList.Remove(iceZone);
+        GetPool("IceZone").DeSpawn(iceZone);
     }
 
     public void Save(XmlWriter writer)
     {
         // 주석
-        writer.WriteComment("중력구역");
-        // 중력구역 리스트 시작
-        writer.WriteStartElement("GravityZoneList");
+        writer.WriteComment("얼음구역");
+        // 얼음구역 리스트 시작
+        writer.WriteStartElement("IceZoneList");
 
         #region 갯수
-        // 중력구역 갯수 시작
+        // 얼음구역 갯수 시작
         writer.WriteStartAttribute("Count");
-        // 중력구역 갯수 입력
-        writer.WriteValue(m_GravityZoneList.Count);
-        // 중력구역 갯수 끝
+        // 얼음구역 갯수 입력
+        writer.WriteValue(m_IceZoneList.Count);
+        // 얼음구역 갯수 끝
         writer.WriteEndAttribute();
         #endregion
-        #region 중력구역
-        foreach (var gravityZone in m_GravityZoneList)
+        #region 얼음구역
+        foreach (var iceZone in m_IceZoneList)
         {
-            // 중력구역 시작
-            writer.WriteStartElement("GravityZone");
+            // 얼음구역 시작
+            writer.WriteStartElement("IceZone");
 
             #region 인덱스
-            // 중력구역 인덱스 시작
+            // 얼음구역 인덱스 시작
             writer.WriteStartElement("Index");
-            // 중력구역 인덱스 입력
-            writer.WriteValue(gravityZone.tile.index);
-            // 중력구역 인덱스 끝
+            // 얼음구역 인덱스 입력
+            writer.WriteValue(iceZone.tile.index);
+            // 얼음구역 인덱스 끝
             writer.WriteEndElement();
             #endregion
-            #region 중력
-            // 중력구역 중력 시작
-            writer.WriteStartElement("Gravity");
-            // 중력구역 중력 입력
-            writer.WriteValue(gravityZone.gravity);
-            // 중력구역 중력 끝
+            #region 저항
+            // 얼음구역 저항 시작
+            writer.WriteStartElement("Drag");
+            // 얼음구역 저항 입력
+            writer.WriteValue(iceZone.drag);
+            // 얼음구역 저항 끝
             writer.WriteEndElement();
             #endregion
 
-            // 중력구역 끝
+            // 얼음구역 끝
             writer.WriteEndElement();
         }
         #endregion
 
-        // 중력구역 리스트 끝
+        // 얼음구역 리스트 끝
         writer.WriteEndElement();
     }
     public void Load(XmlReader reader)
     {
-        if (reader.LoadToElement("GravityZoneList"))
+        if (reader.LoadToElement("IceZoneList"))
         {
             int count;
             string count_str = reader.GetAttribute("Count");
@@ -120,7 +118,7 @@ public class GravityZoneManager : ObjectManager<GravityZoneManager, GravityZone>
 
             for (int i = 0; i < count; ++i)
             {
-                if (reader.LoadToElement("GravityZone"))
+                if (reader.LoadToElement("IceZone"))
                 {
                     int index = 0;
 
@@ -133,37 +131,37 @@ public class GravityZoneManager : ObjectManager<GravityZoneManager, GravityZone>
                         }
                         if (index < 0 || index >= M_Tile.tileList.Count)
                         {
-                            Debug.LogError("GravityZone 불러오기 중 타일 인덱스 오류");
+                            Debug.LogError("IceZone 불러오기 중 타일 인덱스 오류");
                             continue;
                         }
                     }
 
                     Tile tile = M_Tile.tileList[index];
-                    tile.SetType(E_TileType.GravityZone);
+                    tile.SetType(E_TileType.IceZone);
 
                     Vector3 spawnPoint = tile.transform.position;
                     spawnPoint.z = 5f;
 
-                    float gravity = MyRigidBody2D.Gravity;
-                    if (reader.LoadToElement("Gravity"))
+                    float drag = 0f;
+                    if (reader.LoadToElement("Drag"))
                     {
-                        reader.ReadStartElement("Gravity");
-                        if (!float.TryParse(reader.Value, out gravity))
+                        reader.ReadStartElement("Drag");
+                        if (!float.TryParse(reader.Value, out drag))
                         {
-                            gravity = MyRigidBody2D.Gravity;
+                            drag = 0f;
                         }
                     }
 
                     // 스폰
-                    GravityZone gravityZone = SpawnGravityZone();
+                    IceZone iceZone = SpawnIceZone();
                     // 위치 설정
-                    gravityZone.transform.position = spawnPoint;
+                    iceZone.transform.position = spawnPoint;
                     // 초기화
-                    gravityZone.__Initialize(tile);
-                    // 중력 설정
-                    gravityZone.gravity = gravity;
+                    iceZone.__Initialize(tile);
+                    // 저항 설정
+                    iceZone.drag = drag;
                     // 활성화
-                    gravityZone.gameObject.SetActive(true);
+                    iceZone.gameObject.SetActive(true);
                 }
             }
         }
