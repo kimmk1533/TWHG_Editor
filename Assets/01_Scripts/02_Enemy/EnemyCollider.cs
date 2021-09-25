@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyCollider : MonoBehaviour, IEraserable, IClickedObject
+public class EnemyCollider : MonoBehaviour, IEraserableObject, IClickedObject
 {
     protected Enemy m_Enemy;
 
@@ -31,7 +31,7 @@ public class EnemyCollider : MonoBehaviour, IEraserable, IClickedObject
         }
     }
 
-    public void Erase()
+    public void EraseObject()
     {
         for (int i = 0; i < m_Enemy.wayPointList.Count; ++i)
         {

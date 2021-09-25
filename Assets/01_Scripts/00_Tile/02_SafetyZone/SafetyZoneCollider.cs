@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SafetyZoneCollider : MonoBehaviour, IEraserable, IClickedObject
+public class SafetyZoneCollider : MonoBehaviour, IEraserableTile, IClickedObject
 {
     protected SafetyZone m_SafetyZone;
 
@@ -29,9 +29,12 @@ public class SafetyZoneCollider : MonoBehaviour, IEraserable, IClickedObject
         }
     }
 
-    public void Erase()
+    public void EraseTile(E_ObjectType currentType = E_ObjectType.None)
     {
-        M_SafetyZone.DespawnSafetyZone(m_SafetyZone);
+        if (currentType != E_ObjectType.SafetyZone)
+        {
+            M_SafetyZone.DespawnSafetyZone(m_SafetyZone);
+        }
     }
     public SpriteRenderer GetSpriteRenderer()
     {

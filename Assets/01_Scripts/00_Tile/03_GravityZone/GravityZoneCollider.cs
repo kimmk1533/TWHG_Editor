@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GravityZoneCollider : MonoBehaviour, IEraserable, IClickedObject
+public class GravityZoneCollider : MonoBehaviour, IEraserableTile, IClickedObject
 {
     protected GravityZone m_GravityZone;
 
@@ -17,17 +17,18 @@ public class GravityZoneCollider : MonoBehaviour, IEraserable, IClickedObject
     #region 외부 프로퍼티
     public GravityZone gravityZone { get => m_GravityZone; }
     #endregion
-    #region 내부 함수
-    #endregion
     #region 외부 함수
     public void __Initialize(GravityZone gravityZone)
     {
         m_GravityZone = gravityZone;
     }
 
-    public void Erase()
+    public void EraseTile(E_ObjectType currentType = E_ObjectType.None)
     {
-        M_GravityZone.DespawnGravityZone(m_GravityZone);
+        if (currentType != E_ObjectType.GravityZone)
+        {
+            M_GravityZone.DespawnGravityZone(m_GravityZone);
+        }
     }
     public SpriteRenderer GetSpriteRenderer()
     {
@@ -40,16 +41,6 @@ public class GravityZoneCollider : MonoBehaviour, IEraserable, IClickedObject
     public E_ObjectType GetObjectType()
     {
         return E_ObjectType.GravityZone;
-    }
-    #endregion
-    #region 유니티 콜백 함수
-    void Awake()
-    {
-        
-    }
-    void Update()
-    {
-        
     }
     #endregion
 }

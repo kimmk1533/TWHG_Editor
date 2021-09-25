@@ -279,10 +279,17 @@ public class __EditManager : Singleton<__EditManager>
                 SetSelectedUI(E_ObjectType.Erase);
             }
 
-            IEraserable eraserable = obj?.GetComponent<IEraserable>();
-            if (null != eraserable)
+            IEraserableObject eraserableObject = obj?.GetComponent<IEraserableObject>();
+            if (null != eraserableObject)
             {
-                eraserable.Erase();
+                eraserableObject.EraseObject();
+
+                M_Stage.canSave = false;
+            }
+            IEraserableTile eraserableTile = obj?.GetComponent<IEraserableTile>();
+            if (null != eraserableTile)
+            {
+                eraserableTile.EraseTile();
 
                 M_Stage.canSave = false;
             }
@@ -352,8 +359,7 @@ public class __EditManager : Singleton<__EditManager>
                         {
                             if (tile.SetType(E_TileType.Wall))
                             {
-                                obj?.GetComponent<SafetyZoneCollider>()?.Erase();
-                                obj?.GetComponent<GravityZoneCollider>()?.Erase();
+                                obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.Wall);
 
                                 Vector3 spawnPoint = tile.transform.position;
                                 spawnPoint.z = 5f;
@@ -386,8 +392,7 @@ public class __EditManager : Singleton<__EditManager>
                         {
                             if (tile.SetType(E_TileType.SafetyZone))
                             {
-                                obj?.GetComponent<WallCollider>()?.Erase();
-                                obj?.GetComponent<GravityZoneCollider>()?.Erase();
+                                obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.SafetyZone);
 
                                 Vector3 spawnPoint = tile.transform.position;
                                 spawnPoint.z = 5f;
@@ -414,8 +419,7 @@ public class __EditManager : Singleton<__EditManager>
                         {
                             if (tile.SetType(E_TileType.GravityZone))
                             {
-                                obj?.GetComponent<WallCollider>()?.Erase();
-                                obj?.GetComponent<SafetyZoneCollider>()?.Erase();
+                                obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.GravityZone);
 
                                 Vector3 spawnPoint = tile.transform.position;
                                 spawnPoint.z = 5f;
@@ -452,10 +456,17 @@ public class __EditManager : Singleton<__EditManager>
                             SetSelectedUI(E_ObjectType.Erase);
                         }
 
-                        IEraserable eraserable = obj?.GetComponent<IEraserable>();
-                        if (null != eraserable)
+                        IEraserableObject eraserableObject = obj?.GetComponent<IEraserableObject>();
+                        if (null != eraserableObject)
                         {
-                            eraserable.Erase();
+                            eraserableObject.EraseObject();
+
+                            M_Stage.canSave = false;
+                        }
+                        IEraserableTile eraserableTile = obj?.GetComponent<IEraserableTile>();
+                        if (null != eraserableTile)
+                        {
+                            eraserableTile.EraseTile();
 
                             M_Stage.canSave = false;
                         }
@@ -766,8 +777,7 @@ public class __EditManager : Singleton<__EditManager>
 
         if (null != m_ClickedObject)
         {
-            if (m_ClickedObject.GetObjectType() != E_ObjectType.Wall &&
-                m_ClickedObject.GetObjectType() != E_ObjectType.SafetyZone)
+            if (null != m_ClickedObject.GetGameObject().GetComponentInChildren<IEraserableObject>())
             {
                 Vector2 pos = m_ClickedObject.GetGameObject().transform.position;
                 m_SelectedObject_InputField_XPos.text = pos.x.ToString();
@@ -1023,7 +1033,6 @@ public class __EditManager : Singleton<__EditManager>
         });
         #endregion
         #endregion
-
         #region Wall
         m_WallColor_Slider_Red.value = M_Game.wallColor.r;
         m_WallColor_Slider_Green.value = M_Game.wallColor.g;
@@ -1031,7 +1040,6 @@ public class __EditManager : Singleton<__EditManager>
         m_SelectedImage.color = Color.clear;
         ColorToText();
         #endregion
-
         #region SafetyZone
         m_SafetyZone_CheckBox_FinishZone.onValueChanged.AddListener(index =>
         {

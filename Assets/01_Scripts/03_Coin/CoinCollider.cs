@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinCollider : MonoBehaviour, IEraserable, IClickedObject
+public class CoinCollider : MonoBehaviour, IEraserableObject, IClickedObject
 {
     // 관리 컴포넌트
     [SerializeField, ReadOnly]
@@ -23,7 +23,7 @@ public class CoinCollider : MonoBehaviour, IEraserable, IClickedObject
         m_Coin = coin;
     }
 
-    public void Erase()
+    public void EraseObject()
     {
         M_Coin.DespawnCoin(m_Coin);
     }

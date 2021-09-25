@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
 
-public interface IEraserable
+public interface IEraserableObject
 {
-    void Erase();
+    void EraseObject();
+}
+public interface IEraserableTile
+{
+    void EraseTile(E_ObjectType currentType = E_ObjectType.None);
 }
 public interface IClickedObject
 {
-    GameObject GetGameObject();
     SpriteRenderer GetSpriteRenderer();
+    GameObject GetGameObject();
     E_ObjectType GetObjectType();
 }
 public interface ISaveHandler

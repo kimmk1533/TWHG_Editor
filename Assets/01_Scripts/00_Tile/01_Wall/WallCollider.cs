@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static WallManager;
 
-public class WallCollider : MonoBehaviour, IEraserable, IClickedObject
+public class WallCollider : MonoBehaviour, IEraserableTile, IClickedObject
 {
     protected Wall m_Wall;
     protected BoxCollider2D m_Collider;
@@ -32,22 +32,25 @@ public class WallCollider : MonoBehaviour, IEraserable, IClickedObject
             GetComponent<BoxCollider2D>();
         }
     }
-    public void Erase()
+    public void EraseTile(E_ObjectType currentType = E_ObjectType.None)
     {
-        for (E_WallDirection i = 0; i < E_WallDirection.Max; ++i)
+        if (currentType != E_ObjectType.Wall)
         {
-            int index = (int)(i + 1 - (int)i % 2 * 2);
-
-            m_Wall.lines[(int)i].gameObject.SetActive(true);
-
-            if (null != m_Wall.walls[(int)i])
+            for (E_WallDirection i = 0; i < E_WallDirection.Max; ++i)
             {
-                m_Wall.walls[(int)i].walls[index] = null;
-                m_Wall.walls[(int)i].lines[index].gameObject.SetActive(true);
-            }
-        }
+                int index = (int)(i + 1 - (int)i % 2 * 2);
 
-        M_Wall.DespawnWall(m_Wall);
+                m_Wall.lines[(int)i].gameObject.SetActive(true);
+
+                if (null != m_Wall.walls[(int)i])
+                {
+                    m_Wall.walls[(int)i].walls[index] = null;
+                    m_Wall.walls[(int)i].lines[index].gameObject.SetActive(true);
+                }
+            }
+
+            M_Wall.DespawnWall(m_Wall);
+        }
     }
     public SpriteRenderer GetSpriteRenderer()
     {
@@ -67,7 +70,7 @@ public class WallCollider : MonoBehaviour, IEraserable, IClickedObject
     {
         if (M_Edit.isEditMode)
         {
-            collision.GetComponent<IEraserable>()?.Erase();
+            collision.GetComponent<IEraserableObject>()?.EraseObject();
         }
     }
     #endregion

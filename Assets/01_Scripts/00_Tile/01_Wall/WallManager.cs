@@ -18,7 +18,7 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
     {
         for (int i = 0; i < m_WallList.Count; ++i)
         {
-            m_WallList[i].collider.Erase();
+            m_WallList[i].collider.EraseTile();
         }
 
         m_WallList.Clear();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
+public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
 {
     protected Player m_Player;
 
@@ -56,7 +56,7 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
                 // 승리
                 M_Stage.canSave = true;
                 M_FloatingText.SpawnFloatingText("클리어!");
-                StartCoroutine(WaitAndExitPlayMode(0.2f));
+                StartCoroutine(WaitAndExitPlayMode(0.5f));
             }
         }
     }
@@ -81,7 +81,7 @@ public class PlayerCollider : MonoBehaviour, IEraserable, IClickedObject
         }
     }
 
-    public void Erase()
+    public void EraseObject()
     {
         m_Player.gameObject.SetActive(false);
     }
