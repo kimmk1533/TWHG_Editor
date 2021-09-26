@@ -9317,7 +9317,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
-  m_GameMode: 1
   m_Width: 22
   m_Height: 14
 --- !u!4 &925128301
@@ -13205,7 +13204,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1524445548}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.84999985
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18932,12 +18931,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
-  m_OddColor: {r: 0, g: 0, b: 0, a: 0}
-  m_EvenColor: {r: 0, g: 0, b: 0, a: 0}
-  m_WallColor: {r: 0, g: 0, b: 0, a: 0}
-  m_SafetyZoneColor: {r: 0, g: 0, b: 0, a: 0}
-  m_GravityZoneColor: {r: 0, g: 0, b: 0, a: 0}
-  m_IceZoneColor: {r: 0, g: 0, b: 0, a: 0}
+  m_TileParent: {fileID: 1568169830}
+  m_OddColor: {r: 0.8528302, g: 0.854819, b: 1, a: 1}
+  m_EvenColor: {r: 1, g: 1, b: 1, a: 1}
+  m_WallColor: {r: 0.7058824, g: 0.70980394, b: 0.9960785, a: 1}
+  m_SafetyZoneColor: {r: 0.6901961, g: 0.9490197, b: 0.69803923, a: 1}
+  m_GravityZoneColor: {r: 0.32156864, g: 0, b: 0.7372549, a: 1}
+  m_IceZoneColor: {r: 0, g: 0.8862746, b: 1, a: 1}
 --- !u!4 &1855371357
 Transform:
   m_ObjectHideFlags: 0

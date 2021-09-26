@@ -915,15 +915,13 @@ public class __EditManager : Singleton<__EditManager>
 
                     m_Current_Panel_Option = m_Wall_Panel_Option;
 
-                    Color color = M_Tile.wallColor;
+                    Color color = m_SelectedImage.color = M_Tile.wallColor;
                     if (m_ClickedObject?.GetObjectType() == E_ObjectType.Wall)
                     {
                         Wall wall = m_ClickedObject.GetGameObject().GetComponent<Wall>();
 
                         if (null != wall)
-                            color= wall.tile.color;
-
-                        m_SelectedImage.color = color;
+                            color = m_SelectedImage.color = wall.tile.color;
 
                         m_WallColor_Slider_Red.value = color.r;
                         m_WallColor_Slider_Green.value = color.g;
