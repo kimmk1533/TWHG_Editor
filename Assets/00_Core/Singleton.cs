@@ -33,10 +33,26 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
-    //protected virtual void Awake()
-    //{
-    //    DontDestroyOnLoad(gameObject);
-    //}
+    [ContextMenu("다른 켜져있는 싱글톤 모두 끄기")]
+    private void SetFlagAllOff()
+    {
+        Singleton<T>[] objs = FindObjectsOfType<Singleton<T>>();
+        Singleton<T>[] flags = objs.Where(item => item.flag == true).ToArray();
+        foreach (var item in flags)
+        {
+            if (this != item)
+            {
+                item.flag = false;
+            }
+        }
+    }
+    private void OnValidate()
+    {
+        if (!flag)
+            return;
+
+        SetFlagAllOff();
+    }
 }
 
 public class SingletonBasic<T> where T : new()

@@ -66,7 +66,7 @@ public class CameraMove : MonoBehaviour
                 m_IsMove = false;
             }
 
-            if (M_Game.isPlayMode)
+            if (M_Edit.isEditPlayMode)
             {
                 m_Timer = m_MaxTimer;
             }
@@ -84,7 +84,7 @@ public class CameraMove : MonoBehaviour
         }
         #endregion
         #region 플레이어에게 이동
-        if (M_Game.isPlayMode)
+        if (M_Edit.isEditPlayMode)
         {
             // 플레이어 찾아서 이동 시 3초 뒤에 플레이어에게 돌아가도록 구현
             if (m_Timer > 0f)

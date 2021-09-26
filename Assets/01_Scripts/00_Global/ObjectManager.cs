@@ -90,10 +90,4 @@ public abstract class ObjectManager<Pool, Origin> : Singleton<Pool> where Pool :
         //m_Pools = null;
     }
     #endregion
-    #region 유니티 콜백 함수
-    protected virtual void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-    #endregion
 }

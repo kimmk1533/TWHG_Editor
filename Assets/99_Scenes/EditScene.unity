@@ -7813,7 +7813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0000038146973}
+  m_AnchoredPosition: {x: 0, y: -0.000005722046}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &747468147
@@ -8205,9 +8205,9 @@ MonoBehaviour:
   m_SelectedImage: {fileID: 2045152907}
   m_SelectedText: {fileID: 1730769859}
   m_SelectedImageOutline: {fileID: 2045152909}
-  PlayButton: {fileID: 1580253760}
-  PlayImage: {fileID: -2534983082481615764, guid: 46d314adf271c3d4b896eed609416398, type: 3}
-  ResetImage: {fileID: 8029673296183758054, guid: 46d314adf271c3d4b896eed609416398, type: 3}
+  m_PlayButton: {fileID: 1580253760}
+  m_PlayImage: {fileID: -2534983082481615764, guid: 46d314adf271c3d4b896eed609416398, type: 3}
+  m_ResetImage: {fileID: 8029673296183758054, guid: 46d314adf271c3d4b896eed609416398, type: 3}
   m_SelectedObject_Panel_Option: {fileID: 925392624}
   m_SelectedObject_InputField_XPos: {fileID: 1287436778}
   m_SelectedObject_InputField_YPos: {fileID: 364017489}
@@ -9317,8 +9317,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
-  m_width: 22
-  m_height: 14
+  m_GameMode: 1
+  m_Width: 22
+  m_Height: 14
   m_OddColor: {r: 0.90196085, g: 0.90196085, b: 1, a: 1}
   m_EvenColor: {r: 1, g: 1, b: 1, a: 1}
   m_WallColor: {r: 0.7058824, g: 0.70980394, b: 0.9960785, a: 1}
@@ -12393,7 +12394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30c25537c2ba49b43867d322b431e3a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flag: 1
+  flag: 0
 --- !u!4 &1256445111
 Transform:
   m_ObjectHideFlags: 0

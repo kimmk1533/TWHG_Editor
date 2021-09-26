@@ -24,6 +24,8 @@ public class ResourcesManager : Singleton<ResourcesManager>
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
+
+        __Initialize();
     }
 
     #region 외부 함수

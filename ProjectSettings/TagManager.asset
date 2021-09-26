@@ -9,6 +9,7 @@ TagManager:
   - Wall
   - SafetyZone
   - GravityZone
+  - IceZone
   layers:
   - Default
   - TransparentFX
@@ -22,7 +23,7 @@ TagManager:
   - Wall
   - SafetyZone
   - GravityZone
-  - 
+  - IceZone
   - 
   - 
   - 
@@ -48,6 +49,9 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: IceZone
+    uniqueID: 3483342579
     locked: 0
   - name: GravityZone
     uniqueID: 3013512901
