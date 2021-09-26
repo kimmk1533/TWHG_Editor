@@ -155,6 +155,7 @@ public class __EditManager : Singleton<__EditManager>
     protected EnemyManager M_Enemy => EnemyManager.Instance;
     protected EnemyGizmoManager M_EnemyGizmo => EnemyGizmoManager.Instance;
     protected CoinManager M_Coin => CoinManager.Instance;
+    protected TileManager M_Tile => TileManager.Instance;
     protected WallManager M_Wall => WallManager.Instance;
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected GravityZoneManager M_GravityZone => GravityZoneManager.Instance;
@@ -913,7 +914,7 @@ public class __EditManager : Singleton<__EditManager>
 
                     m_Current_Panel_Option = m_Wall_Panel_Option;
 
-                    Color color = m_SelectedImage.color = M_Game.wallColor;
+                    Color color = M_Tile.wallColor;
                     if (m_ClickedObject?.GetObjectType() == E_ObjectType.Wall)
                     {
                         Wall wall = m_ClickedObject.GetGameObject().GetComponent<Wall>();
@@ -932,7 +933,7 @@ public class __EditManager : Singleton<__EditManager>
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
-                    m_SelectedImage.color = M_Game.safetyZoneColor;
+                    m_SelectedImage.color = M_Tile.safetyZoneColor;
                     m_SelectedImageOutline.enabled = true;
 
                     m_Current_Panel_Option = m_SafetyZone_Panel_Option;
@@ -942,7 +943,7 @@ public class __EditManager : Singleton<__EditManager>
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
-                    m_SelectedImage.color = M_Game.gravityZoneColor;
+                    m_SelectedImage.color = M_Tile.gravityZoneColor;
                     m_SelectedImageOutline.enabled = true;
 
                     m_Current_Panel_Option = m_GravityZone_Panel_Option;
@@ -959,7 +960,7 @@ public class __EditManager : Singleton<__EditManager>
                 {
                     m_SelectedImage.rectTransform.sizeDelta = new Vector2(100f, 100f) - m_SelectedImageOutline.effectDistance * 2f;
                     m_SelectedImage.sprite = M_Resources.GetSprites("Tile", "Tile")[0];
-                    m_SelectedImage.color = M_Game.iceZoneColor;
+                    m_SelectedImage.color = M_Tile.iceZoneColor;
                     m_SelectedImageOutline.enabled = true;
 
                     m_Current_Panel_Option = m_IceZone_Panel_Option;
@@ -980,7 +981,7 @@ public class __EditManager : Singleton<__EditManager>
     protected void UpdateClickedWallColor()
     {
         Wall wall = m_ClickedObject.GetGameObject().GetComponent<Wall>();
-        wall.tile.color = M_Game.wallColor;
+        wall.tile.color = M_Tile.wallColor;
     }
     #region Enemy
     protected void ShowEnemyGizmo(Enemy enemy)
@@ -1097,9 +1098,9 @@ public class __EditManager : Singleton<__EditManager>
         #endregion
         #endregion
         #region Wall
-        m_WallColor_Slider_Red.value = M_Game.wallColor.r;
-        m_WallColor_Slider_Green.value = M_Game.wallColor.g;
-        m_WallColor_Slider_Blue.value = M_Game.wallColor.b;
+        m_WallColor_Slider_Red.value = M_Tile.wallColor.r;
+        m_WallColor_Slider_Green.value = M_Tile.wallColor.g;
+        m_WallColor_Slider_Blue.value = M_Tile.wallColor.b;
         m_SelectedImage.color = Color.clear;
         ColorToText();
         #endregion
@@ -1524,7 +1525,7 @@ public class __EditManager : Singleton<__EditManager>
         color.r = m_WallColor_Slider_Red.value;
         color.g = m_WallColor_Slider_Green.value;
         color.b = m_WallColor_Slider_Blue.value;
-        m_SelectedImage.color = M_Game.wallColor = color;
+        m_SelectedImage.color = M_Tile.wallColor = color;
 
         if (m_ClickedObject?.GetObjectType() == E_ObjectType.Wall)
         {

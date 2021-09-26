@@ -15,6 +15,22 @@ public class TileManager : ObjectManager<TileManager, Tile>
     // 정렬 컴포넌트
     protected GridLayoutGroup m_GridLayoutGroup;
 
+    #region 타일 컬러
+    [Header("TileColors")]
+    [SerializeField, ReadOnly(true)]
+    protected Color m_OddColor; // 홀수 칸
+    [SerializeField, ReadOnly(true)]
+    protected Color m_EvenColor; // 짝수 칸
+    [SerializeField, ReadOnly(true)]
+    protected Color m_WallColor;
+    [SerializeField, ReadOnly(true)]
+    protected Color m_SafetyZoneColor;
+    [SerializeField, ReadOnly(true)]
+    protected Color m_GravityZoneColor;
+    [SerializeField, ReadOnly(true)]
+    protected Color m_IceZoneColor;
+    #endregion
+
     #region 내부 프로퍼티
     #region 매니져
     protected StageManager M_Stage => StageManager.Instance;
@@ -22,6 +38,15 @@ public class TileManager : ObjectManager<TileManager, Tile>
     #endregion
     #region 외부 프로퍼티
     public List<Tile> tileList { get => m_TileList; }
+
+    #region 타일 컬러
+    public Color oddColor { get => m_OddColor; set => m_OddColor = value; }
+    public Color evenColor { get => m_EvenColor; set => m_EvenColor = value; }
+    public Color wallColor { get => m_WallColor; set => m_WallColor = value; }
+    public Color safetyZoneColor { get => m_SafetyZoneColor; set => m_SafetyZoneColor = value; }
+    public Color gravityZoneColor { get => m_GravityZoneColor; set => m_GravityZoneColor = value; }
+    public Color iceZoneColor { get => m_IceZoneColor; set => m_IceZoneColor = value; }
+    #endregion
     #endregion
     #region 내부 함수
     // 타일(BG) 전체 생성 함수
@@ -42,40 +67,12 @@ public class TileManager : ObjectManager<TileManager, Tile>
         Tile tile = GetPool("Tile").Spawn();
 
         // 타일(BG) 설정
+        tile.__Initialize(x, y);
         tile.transform.SetParent(m_TileParent.transform);
         tile.transform.localScale = Vector3.one;
         tile.transform.localPosition = Vector3.zero;
-        tile.__Initialize(x, y);
+        tile.SetColor(M_Stage.stage[y, x]);
         tile.gameObject.SetActive(true);
-
-        // 타일(BG) 이미지 설정
-        Image image = tile.GetComponent<Image>();
-        switch (M_Stage.stage[y, x])
-        {
-            case E_TileType.None:
-                switch (tile.indexType)
-                {
-                    case E_TileIndexType.Odd:
-                        image.color = M_Game.oddColor;
-                        break;
-                    case E_TileIndexType.Even:
-                        image.color = M_Game.evenColor;
-                        break;
-                    default:
-                        Debug.LogError("타일 홀짝 오류");
-                        break;
-                }
-                break;
-            case E_TileType.Wall:
-                image.color = M_Game.wallColor;
-                break;
-            case E_TileType.SafetyZone:
-                image.color = M_Game.safetyZoneColor;
-                break;
-            default:
-                Debug.LogError("스테이지 값 오류");
-                break;
-        }
 
         // 관리 리스트에 추가
         m_TileList.Add(tile);

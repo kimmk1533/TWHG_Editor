@@ -38,7 +38,7 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
         m_PoolSize = M_Game.width * M_Game.height;
 
         // 벽 풀 원본
-        Wall wall = M_Resources.GetGameObject<Wall>("Tile", "Wall");
+        Wall wall = M_Resources.GetGameObject<Wall>("Wall", "Wall");
         // 벽 풀 생성
         AddPool("Wall", wall, transform);
 

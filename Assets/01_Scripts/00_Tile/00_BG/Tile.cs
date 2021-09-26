@@ -17,8 +17,9 @@ public class Tile : MonoBehaviour
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
-
     protected StageManager M_Stage => StageManager.Instance;
+
+    protected TileManager M_Tile => TileManager.Instance;
     #endregion
     #endregion
     #region 외부 프로퍼티
@@ -46,23 +47,18 @@ public class Tile : MonoBehaviour
             m_IndexType = E_TileIndexType.Odd;
     }
 
-    public bool SetType(E_TileType type)
+    public void SetColor(E_TileType type)
     {
-        if (m_Type == type)
-            return false;
-
-        M_Stage.stage[m_Y, m_X] = m_Type = type;
-        
-        switch (m_Type)
+        switch (type)
         {
             case E_TileType.None:
                 switch (m_IndexType)
                 {
                     case E_TileIndexType.Odd:
-                        m_Image.color = M_Game.oddColor;
+                        m_Image.color = M_Tile.oddColor;
                         break;
                     case E_TileIndexType.Even:
-                        m_Image.color = M_Game.evenColor;
+                        m_Image.color = M_Tile.evenColor;
                         break;
                     default:
                         Debug.LogError("타일 홀짝 오류");
@@ -70,18 +66,27 @@ public class Tile : MonoBehaviour
                 }
                 break;
             case E_TileType.Wall:
-                m_Image.color = M_Game.wallColor;
+                m_Image.color = M_Tile.wallColor;
                 break;
             case E_TileType.SafetyZone:
-                m_Image.color = M_Game.safetyZoneColor;
+                m_Image.color = M_Tile.safetyZoneColor;
                 break;
             case E_TileType.GravityZone:
-                m_Image.color = M_Game.gravityZoneColor;
+                m_Image.color = M_Tile.gravityZoneColor;
                 break;
             case E_TileType.IceZone:
-                m_Image.color = M_Game.iceZoneColor;
+                m_Image.color = M_Tile.iceZoneColor;
                 break;
         }
+    }
+    public bool SetType(E_TileType type)
+    {
+        if (m_Type == type)
+            return false;
+
+        M_Stage.stage[m_Y, m_X] = m_Type = type;
+
+        SetColor(type);
 
         return true;
     }

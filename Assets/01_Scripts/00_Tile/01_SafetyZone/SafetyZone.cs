@@ -30,8 +30,6 @@ public class SafetyZone : MonoBehaviour
         set => m_IsFinishZone = value;
     }
     #endregion
-    #region 내부 함수
-    #endregion
     #region 외부 함수
     public void __Initialize(Tile tile)
     {
@@ -69,7 +67,5 @@ public class SafetyZone : MonoBehaviour
     {
 
     }
-    #endregion
-    #region 유니티 콜백 함수
     #endregion
 }

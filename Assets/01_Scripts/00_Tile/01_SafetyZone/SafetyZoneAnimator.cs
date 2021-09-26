@@ -20,15 +20,13 @@ public class SafetyZoneAnimator : MonoBehaviour
     #region 외부 프로퍼티
     public TextMeshPro text => m_Text;
     #endregion
-    #region 내부 함수
-    #endregion
     #region 외부 함수
     public void __Initialize(SafetyZone safetyZone)
     {
+        m_SafetyZone = safetyZone;
+
         M_Game.OnEnterPlayMode += OnPlayEnter;
         M_Game.OnExitPlayMode += OnPlayExit;
-
-        m_SafetyZone = safetyZone;
 
         if (null == m_Animator)
         {
@@ -37,8 +35,8 @@ public class SafetyZoneAnimator : MonoBehaviour
         if (null == m_Text)
         {
             m_Text = transform.GetComponentInChildren<TextMeshPro>();
-            m_Text.text = m_SafetyZone.safetyZoneCount.ToString();
         }
+        m_Text.text = m_SafetyZone.safetyZoneCount.ToString();
     }
     #endregion
     #region 이벤트 함수
@@ -49,16 +47,6 @@ public class SafetyZoneAnimator : MonoBehaviour
     public void OnPlayExit()
     {
         m_Animator.SetTrigger("GameEnd");
-    }
-    #endregion
-    #region 유니티 콜백 함수
-    void Awake()
-    {
-        
-    }
-    void Update()
-    {
-        
     }
     #endregion
 }
