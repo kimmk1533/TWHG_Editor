@@ -13,6 +13,7 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
     #region 내부 프로퍼티
     #region 매니져
     protected __GameManager M_Game => __GameManager.Instance;
+    protected __EditManager M_Edit => __EditManager.Instance;
     protected StageManager M_Stage => StageManager.Instance;
 
     protected CoinManager M_Coin => CoinManager.Instance;
@@ -47,7 +48,7 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
         m_Player.isSafe = true;
         m_Player.spawnPos = collision.transform.position;
 
-        if (M_Game.isPlayMode)
+        if (M_Edit.isEditPlayMode)
         {
             bool isFinishZone = collision.GetComponent<SafetyZoneCollider>().isFinishZone;
 
@@ -127,7 +128,7 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
     #region 유니티 콜백 함수
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (M_Game.isPlayMode)
+        if (M_Edit.isEditPlayMode)
         {
             if (collision.CompareTag("Enemy"))
             {
@@ -163,7 +164,7 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
             }
         }
 
-        if (M_Game.isPlayMode)
+        if (M_Edit.isEditPlayMode)
         {
             if (collision.CompareTag("GravityZone"))
             {

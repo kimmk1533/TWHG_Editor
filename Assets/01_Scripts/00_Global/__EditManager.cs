@@ -61,13 +61,13 @@ public class __EditManager : Singleton<__EditManager>
 
     [Header("PlayButton")]
     [SerializeField]
-    protected Button PlayButton;
+    protected Button m_PlayButton;
 
     [Space(10)]
     [SerializeField]
-    protected Sprite PlayImage;
+    protected Sprite m_PlayImage;
     [SerializeField]
-    protected Sprite ResetImage;
+    protected Sprite m_ResetImage;
 
     #region 옵션
     protected GameObject m_Current_Panel_Option;
@@ -221,6 +221,7 @@ public class __EditManager : Singleton<__EditManager>
     #endregion
     #region 외부 프로퍼티
     public bool isEditMode => m_IsEdit;
+    public bool isEditPlayMode => !m_IsEdit;
 
     public bool isInputFieldFocus
     {
@@ -920,7 +921,9 @@ public class __EditManager : Singleton<__EditManager>
                         Wall wall = m_ClickedObject.GetGameObject().GetComponent<Wall>();
 
                         if (null != wall)
-                            color = m_SelectedImage.color = wall.tile.color;
+                            color= wall.tile.color;
+
+                        m_SelectedImage.color = color;
 
                         m_WallColor_Slider_Red.value = color.r;
                         m_WallColor_Slider_Green.value = color.g;
@@ -1135,7 +1138,7 @@ public class __EditManager : Singleton<__EditManager>
 
         SetCursorImage(E_ObjectType.None);
 
-        #region Stage Save
+        #region Stage Save Event Link
         m_SelectedObject_InputField_XPos.onEndEdit.AddListener(item =>
         {
             if (M_Stage.canSave)
@@ -1272,7 +1275,7 @@ public class __EditManager : Singleton<__EditManager>
         eventData.position = Input.mousePosition;
 
         List<RaycastResult> results = new List<RaycastResult>();
-        m_Raycaster_UI.Raycast(eventData, results);
+        m_Raycaster_UI?.Raycast(eventData, results);
 
         return results.Count > 0;
     }
@@ -1281,7 +1284,7 @@ public class __EditManager : Singleton<__EditManager>
     #region 이벤트 함수
     public void OnPlayEnter()
     {
-        PlayButton.image.sprite = ResetImage;
+        m_PlayButton.image.sprite = m_ResetImage;
 
         m_Edit_Panel.SetActive(false);
 
@@ -1295,7 +1298,7 @@ public class __EditManager : Singleton<__EditManager>
 
         m_Edit_Panel.SetActive(true);
 
-        PlayButton.image.sprite = PlayImage;
+        m_PlayButton.image.sprite = m_PlayImage;
     }
 
     public void OnPlayButtonClicked()

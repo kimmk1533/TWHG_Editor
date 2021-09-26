@@ -47,8 +47,8 @@ public class StageManager : Singleton<StageManager>
     protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
 
-    protected int width { get => M_Game.width; set => M_Game.width = value; }
-    protected int height { get => M_Game.height; set => M_Game.height = value; }
+    protected int width { get => M_Game.width; }
+    protected int height { get => M_Game.height; }
 
     protected bool saveButtonActive
     {

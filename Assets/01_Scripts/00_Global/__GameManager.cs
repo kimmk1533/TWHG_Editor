@@ -7,23 +7,9 @@ using UnityEngine;
 public class __GameManager : Singleton<__GameManager>
 {
     [SerializeField, ReadOnly(true)]
-    protected int m_width;
+    protected int m_Width;
     [SerializeField, ReadOnly(true)]
-    protected int m_height;
-
-    [Header("TileColors")]
-    [SerializeField, ReadOnly(true)]
-    protected Color m_OddColor; // 홀수 칸
-    [SerializeField, ReadOnly(true)]
-    protected Color m_EvenColor; // 짝수 칸
-    [SerializeField, ReadOnly(true)]
-    protected Color m_WallColor;
-    [SerializeField, ReadOnly(true)]
-    protected Color m_SafetyZoneColor;
-    [SerializeField, ReadOnly(true)]
-    protected Color m_GravityZoneColor;
-    [SerializeField, ReadOnly(true)]
-    protected Color m_IceZoneColor;
+    protected int m_Height;
 
     #region 내부 프로퍼티
     #region 매니져
@@ -44,21 +30,12 @@ public class __GameManager : Singleton<__GameManager>
     #endregion
     #endregion
     #region 외부 프로퍼티
-    public int width { get => m_width; set => m_width = value; }
-    public int height { get => m_height; set => m_height = value; }
-    public bool isPlayMode => !M_Edit.isEditMode;
-
-    public Color oddColor { get => m_OddColor; set => m_OddColor = value; }
-    public Color evenColor { get => m_EvenColor; set => m_EvenColor = value; }
-    public Color wallColor { get => m_WallColor; set => m_WallColor = value; }
-    public Color safetyZoneColor { get => m_SafetyZoneColor; set => m_SafetyZoneColor = value; }
-    public Color gravityZoneColor { get => m_GravityZoneColor; set => m_GravityZoneColor = value; }
-    public Color iceZoneColor { get => m_IceZoneColor; set => m_IceZoneColor = value; }
+    public int width { get => m_Width; }
+    public int height { get => m_Height; }
     #endregion
     #region 내부 함수
     void __Initialize()
     {
-        M_Resources.__Initialize();
         M_Edit.__Initialize();
 
         M_Stage.__Initialize();
