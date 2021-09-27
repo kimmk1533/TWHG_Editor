@@ -53,22 +53,7 @@ public class StageManager : Singleton<StageManager>
     protected bool saveButtonActive
     {
         get => m_SavePanelButton.gameObject.activeSelf;
-        set
-        {
-            m_SavePanelButton.gameObject.SetActive(value);
-
-            if (value)
-            {
-                if (!m_CanSave)
-                {
-                    m_SavePanelButton.image.color = Color.white * 0.5f;
-                }
-                else
-                {
-                    m_SavePanelButton.image.color = Color.white;
-                }
-            }
-        }
+        set => m_SavePanelButton.gameObject.SetActive(value);
     }
     protected bool loadButtonActive
     {
@@ -86,6 +71,18 @@ public class StageManager : Singleton<StageManager>
         {
             m_CanSave = value;
             panelActive = false;
+
+            Color color = m_SavePanelButton.image.color;
+            if (!m_CanSave)
+            {
+                color.a = 0.5f;
+                m_SavePanelButton.image.color = color;
+            }
+            else
+            {
+                color.a = 1f;
+                m_SavePanelButton.image.color = color;
+            }
         }
     }
     public bool panelActive { get => m_SaveLoadPanel.activeSelf; set => m_SaveLoadPanel.SetActive(value); }
@@ -130,6 +127,9 @@ public class StageManager : Singleton<StageManager>
         m_CanSave = false;
         panelActive = false;
 
+        Color color = m_SavePanelButton.image.color;
+        color.a = 0.5f;
+        m_SavePanelButton.image.color = color;
         saveButtonActive = true;
         loadButtonActive = true;
 
