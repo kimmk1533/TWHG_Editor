@@ -139,7 +139,7 @@ public class IceZoneManager : ObjectManager<IceZoneManager, IceZone>, ISaveHandl
                     Tile tile = M_Tile.tileList[index];
                     tile.SetType(E_TileType.IceZone);
 
-                    Vector3 spawnPoint = tile.transform.position;
+                    Vector3 spawnPoint = (Vector2)tile.transform.position;
 
                     float drag = 0f;
                     if (reader.LoadToElement("Drag"))

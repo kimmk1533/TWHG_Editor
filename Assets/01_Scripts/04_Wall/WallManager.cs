@@ -150,7 +150,7 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
                     Tile tile = M_Tile.tileList[index];
                     tile.SetType(E_TileType.Wall);
 
-                    Vector3 spawnPoint = tile.transform.position;
+                    Vector3 spawnPoint = (Vector2)tile.transform.position;
 
                     if (reader.LoadToElement("Color"))
                     {

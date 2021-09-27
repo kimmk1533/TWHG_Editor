@@ -385,7 +385,7 @@ public class __EditManager : Singleton<__EditManager>
                             {
                                 obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.Wall);
 
-                                Vector3 spawnPoint = tile.transform.position;
+                                Vector3 spawnPoint = (Vector2)tile.transform.position;
 
                                 // 스폰
                                 Wall wall = M_Wall.SpawnWall();
@@ -417,7 +417,7 @@ public class __EditManager : Singleton<__EditManager>
                             {
                                 obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.SafetyZone);
 
-                                Vector3 spawnPoint = tile.transform.position;
+                                Vector3 spawnPoint = (Vector2)tile.transform.position;
 
                                 // 스폰
                                 SafetyZone safetyZone = M_SafetyZone.SpawnSafetyZone();
@@ -443,7 +443,7 @@ public class __EditManager : Singleton<__EditManager>
                             {
                                 obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.GravityZone);
 
-                                Vector3 spawnPoint = tile.transform.position;
+                                Vector3 spawnPoint = (Vector2)tile.transform.position;
 
                                 // 스폰
                                 GravityZone gravityZone = M_GravityZone.SpawnGravityZone();
@@ -471,7 +471,7 @@ public class __EditManager : Singleton<__EditManager>
                             {
                                 obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.IceZone);
 
-                                Vector3 spawnPoint = tile.transform.position;
+                                Vector3 spawnPoint = (Vector2)tile.transform.position;
 
                                 // 스폰
                                 IceZone iceZone = M_IceZone.SpawnIceZone();
