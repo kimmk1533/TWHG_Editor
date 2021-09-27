@@ -26,7 +26,7 @@ public class FloatingText : MonoBehaviour
     {
         if (null == m_Text)
         {
-            m_Text = GetComponent<TextMeshProUGUI>();
+            m_Text = GetComponentInChildren<TextMeshProUGUI>();
         }
         if (null == m_Animator)
         {

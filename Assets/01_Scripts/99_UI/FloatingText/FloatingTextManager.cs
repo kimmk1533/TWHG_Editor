@@ -49,6 +49,8 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
         floatingText.text = text;
         // 부모 설정
         floatingText.transform.SetParent(m_FloatingText_Panel.transform);
+        // 크기 설정
+        floatingText.transform.localScale = Vector3.one;
         // 활성화 설정
         floatingText.gameObject.SetActive(true);
         // 관리 리스트에 추가
@@ -68,6 +70,8 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
         floatingText.text = text;
         // 부모 설정
         floatingText.transform.SetParent(m_FloatingText_Panel.transform);
+        // 크기 설정
+        floatingText.transform.localScale = Vector3.one;
         // 위치 설정
         floatingText.transform.position = position;
         // 활성화 설정
