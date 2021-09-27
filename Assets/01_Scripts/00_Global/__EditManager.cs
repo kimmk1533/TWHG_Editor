@@ -218,6 +218,18 @@ public class __EditManager : Singleton<__EditManager>
             return gravity;
         }
     }
+    protected float iceZone_Drag
+    {
+        get
+        {
+            float drag;
+            if (!float.TryParse(m_IceZone_InputField_Drag.text, out drag))
+            {
+                drag = 0f;
+            }
+            return drag;
+        }
+    }
     #endregion
     #region 외부 프로퍼티
     public bool isEditMode => m_IsEdit;
@@ -472,7 +484,7 @@ public class __EditManager : Singleton<__EditManager>
                                 // 초기화
                                 iceZone.__Initialize(tile);
                                 // 저항 설정
-                                iceZone.drag = 0f;
+                                iceZone.drag = iceZone_Drag;
                                 // 활성화
                                 iceZone.gameObject.SetActive(true);
 

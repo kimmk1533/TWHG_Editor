@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
 {
     protected Player m_Player;
+
+    protected delegate void OnTrigger(Collider2D collider);
+    protected Dictionary<string, OnTrigger> m_TriggerEnter;
+    protected Dictionary<string, OnTrigger> m_TriggerExit;
 
     #region 내부 컴포넌트
     protected BoxCollider2D m_Collider;
@@ -32,25 +35,32 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
         M_Game.ExitPlayMode();
     }
 
-    protected void TriggerEnterEnemy(Collider2D collision)
+    #region TriggerEnter
+    protected void TriggerEnterEnemy(Collider2D collider)
     {
+        if (M_Edit.isEditMode)
+            return;
+
         if (!m_Player.isSafe)
         {
             m_Player.Death();
         }
     }
-    protected void TriggerEnterCoin(Collider2D collision)
+    protected void TriggerEnterCoin(Collider2D collider)
     {
-        collision.GetComponent<CoinCollider>().coin.gameObject.SetActive(false);
+        if (M_Edit.isEditMode)
+            return;
+
+        collider.GetComponent<CoinCollider>().coin.gameObject.SetActive(false);
     }
-    protected void TriggerEnterSafetyZone(Collider2D collision)
+    protected void TriggerEnterSafetyZone(Collider2D collider)
     {
         m_Player.isSafe = true;
-        m_Player.spawnPos = collision.transform.position;
+        m_Player.spawnPos = collider.transform.position;
 
-        if (M_Edit.isEditPlayMode)
+        if (M_Edit.isPlayMode)
         {
-            bool isFinishZone = collision.GetComponent<SafetyZoneCollider>().isFinishZone;
+            bool isFinishZone = collider.GetComponent<SafetyZoneCollider>().isFinishZone;
 
             if (isFinishZone && !M_Coin.IsLeftCoin)
             {
@@ -61,11 +71,69 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
             }
         }
     }
-    protected void TriggerEnterGravityZone(Collider2D collision)
+    protected void TriggerEnterGravityZone(Collider2D collider)
     {
+        if (M_Edit.isEditMode)
+            return;
+
         m_Player.rigidBody2D.useGravity = true;
-        m_Player.rigidBody2D.gravity = collision.GetComponent<GravityZoneCollider>().gravityZone.gravity;
+        m_Player.rigidBody2D.gravity = collider.GetComponent<GravityZoneCollider>().gravityZone.gravity;
     }
+    protected void TriggerEnterIceZone(Collider2D collider)
+    {
+        if (M_Edit.isEditMode)
+            return;
+
+        m_Player.rigidBody2D.isKinematic = false;
+        m_Player.rigidBody2D.drag = collider.GetComponent<IceZoneCollider>().iceZone.drag;
+        //m_Player.rigidBody2D.velocity = m_Player.rigidBody2D.force;
+    }
+    #endregion
+    #region TriggerExit
+    protected void TriggerExitSafetyZone(Collider2D collider)
+    {
+        int layerMask = LayerMask.GetMask("SafetyZone");
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(m_Player.transform.position, size, 0f, layerMask);
+        if (colliders.Length <= 0)
+        {
+            m_Player.isSafe = false;
+        }
+    }
+    protected void TriggerExitGravityZone(Collider2D collider)
+    {
+        if (M_Edit.isEditMode)
+            return;
+
+        int layerMask = LayerMask.GetMask("GravityZone");
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(m_Player.transform.position, size, 0f, layerMask);
+        if (colliders.Length <= 0)
+        {
+            m_Player.rigidBody2D.useGravity = false;
+            m_Player.rigidBody2D.gravity = MyRigidBody2D.Gravity;
+        }
+        else
+        {
+            m_Player.rigidBody2D.gravity = colliders[0].GetComponent<GravityZoneCollider>().gravityZone.gravity;
+        }
+    }
+    protected void TriggerExitIceZone(Collider2D collider)
+    {
+        if (M_Edit.isEditMode)
+            return;
+
+        int layerMask = LayerMask.GetMask("IceZone");
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(m_Player.transform.position, size, 0f, layerMask);
+        if (colliders.Length <= 0)
+        {
+            m_Player.rigidBody2D.isKinematic = true;
+            m_Player.rigidBody2D.drag = 1f;
+        }
+        else
+        {
+            m_Player.rigidBody2D.drag = collider.GetComponent<IceZoneCollider>().iceZone.drag;
+        }
+    }
+    #endregion
     #endregion
     #region 외부 함수
     public void __Initialize(Player player)
@@ -126,61 +194,35 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
     }
     #endregion
     #region 유니티 콜백 함수
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Awake()
     {
-        if (M_Edit.isEditPlayMode)
-        {
-            if (collision.CompareTag("Enemy"))
-            {
-                TriggerEnterEnemy(collision);
-            }
+        m_TriggerEnter = new Dictionary<string, OnTrigger>();
+        m_TriggerExit = new Dictionary<string, OnTrigger>();
 
-            if (collision.CompareTag("Coin"))
-            {
-                TriggerEnterCoin(collision);
-            }
+        m_TriggerEnter.Add("Enemy", TriggerEnterEnemy);
+        m_TriggerEnter.Add("Coin", TriggerEnterCoin);
+        m_TriggerEnter.Add("SafetyZone", TriggerEnterSafetyZone);
+        m_TriggerEnter.Add("GravityZone", TriggerEnterGravityZone);
+        m_TriggerEnter.Add("IceZone", TriggerEnterIceZone);
 
-            if (collision.CompareTag("GravityZone"))
-            {
-                TriggerEnterGravityZone(collision);
-            }
-        }
-
-        if (collision.CompareTag("SafetyZone"))
-        {
-            TriggerEnterSafetyZone(collision);
-        }
+        m_TriggerExit.Add("SafetyZone", TriggerExitSafetyZone);
+        m_TriggerExit.Add("GravityZone", TriggerExitGravityZone);
+        m_TriggerExit.Add("IceZone", TriggerExitIceZone);
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collision.CompareTag("SafetyZone"))
-        {
-            int layerMask = LayerMask.GetMask("SafetyZone");
-            Collider2D[] colliders = Physics2D.OverlapBoxAll(m_Player.transform.position, size, 0f, layerMask);
-            if (colliders.Length <= 0)
-            {
-                m_Player.isSafe = false;
-            }
-        }
+        if (!m_TriggerEnter.ContainsKey(collider.tag))
+            return;
 
-        if (M_Edit.isEditPlayMode)
-        {
-            if (collision.CompareTag("GravityZone"))
-            {
-                int layerMask = LayerMask.GetMask("GravityZone");
-                Collider2D[] colliders = Physics2D.OverlapBoxAll(m_Player.transform.position, size, 0f, layerMask);
-                if (colliders.Length <= 0)
-                {
-                    m_Player.rigidBody2D.useGravity = false;
-                    m_Player.rigidBody2D.gravity = MyRigidBody2D.Gravity;
-                }
-                else
-                {
-                    m_Player.rigidBody2D.gravity = colliders[0].GetComponent<GravityZoneCollider>().gravityZone.gravity;
-                }
-            }
-        }
+        m_TriggerEnter[collider.tag]?.Invoke(collider);
+    }
+    private void OnTriggerExit2D(Collider2D collider)
+    {
+        if (!m_TriggerExit.ContainsKey(collider.tag))
+            return;
+
+        m_TriggerExit[collider.tag]?.Invoke(collider);
     }
     #endregion
 }

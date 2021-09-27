@@ -52,10 +52,12 @@ public class MyRigidBody2D : MonoBehaviour
 
     #region 외부 프로퍼티
     public float mass { get => m_Mass; set => m_Mass = value; }
+    public float drag { get => m_Drag; set => m_Drag = value; }
     public bool useGravity { get => m_UseGravity; set => m_UseGravity = value; }
     public float gravity { get => m_Gravity; set => m_Gravity = value; }
     public bool isKinematic { get => m_IsKinematic; set => m_IsKinematic = value; }
     public Vector3 velocity { get => m_Velocity; set => m_Velocity = value; }
+    public Vector3 force { get => m_Force; set => m_Force = value; }
     public int layerMask { get => m_LayerMask; set => m_LayerMask = value; }
     #endregion
     #region 내부 함수

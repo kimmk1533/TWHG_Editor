@@ -14,6 +14,9 @@ public class IceZoneCollider : MonoBehaviour, IClickedObject, IEraserableTile
     protected IceZoneManager M_IceZone => IceZoneManager.Instance;
     #endregion
     #endregion
+    #region 외부 프로퍼티
+    public IceZone iceZone { get => m_IceZone; }
+    #endregion
     #region 외부 함수
     public void __Initialize(IceZone iceZone)
     {
