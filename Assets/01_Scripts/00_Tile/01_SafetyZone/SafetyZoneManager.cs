@@ -192,7 +192,6 @@ public class SafetyZoneManager : ObjectManager<SafetyZoneManager, SafetyZone>, I
                     tile.SetType(E_TileType.SafetyZone);
 
                     Vector3 spawnPoint = tile.transform.position;
-                    spawnPoint.z = 5f;
 
                     bool isFinishZone = false;
                     if (reader.LoadToElement("IsFinishZone"))

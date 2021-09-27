@@ -151,7 +151,6 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
                     tile.SetType(E_TileType.Wall);
 
                     Vector3 spawnPoint = tile.transform.position;
-                    spawnPoint.z = 5f;
 
                     if (reader.LoadToElement("Color"))
                     {

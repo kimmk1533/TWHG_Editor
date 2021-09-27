@@ -66,7 +66,7 @@ public class CameraMove : MonoBehaviour
                 m_IsMove = false;
             }
 
-            if (M_Edit.isEditPlayMode)
+            if (M_Edit.isPlayMode)
             {
                 m_Timer = m_MaxTimer;
             }
@@ -76,7 +76,7 @@ public class CameraMove : MonoBehaviour
         if (M_Edit.isEditMode &&
             !M_Edit.isInputFieldFocus)
         {
-            Vector3 dir = new Vector2();
+            Vector3 dir = new Vector3();
             dir.x = Input.GetAxisRaw("Horizontal");
             dir.y = Input.GetAxisRaw("Vertical");
 
@@ -84,7 +84,7 @@ public class CameraMove : MonoBehaviour
         }
         #endregion
         #region 플레이어에게 이동
-        if (M_Edit.isEditPlayMode)
+        if (M_Edit.isPlayMode)
         {
             // 플레이어 찾아서 이동 시 3초 뒤에 플레이어에게 돌아가도록 구현
             if (m_Timer > 0f)
@@ -93,7 +93,9 @@ public class CameraMove : MonoBehaviour
             }
             else
             {
-                transform.position = Vector3.Lerp(transform.position, M_Player.playerPos, m_MoveSpeed * Time.deltaTime);
+                Vector3 pos = Vector3.Lerp(transform.position, M_Player.playerPos, m_MoveSpeed * Time.deltaTime);
+                pos.z = m_StartZ;
+                transform.position = pos;
                 if (Vector3.Distance(transform.position, M_Player.playerPos) < 0.05f)
                 {
                     m_Timer = m_MaxTimer;
@@ -122,11 +124,11 @@ public class CameraMove : MonoBehaviour
     }
     protected void ClampMove()
     {
-        Vector2 cameraPos = m_Camera.transform.position;
-        Vector2 canvasPos = m_Canvas.transform.position;
+        Vector3 cameraPos = m_Camera.transform.position;
+        Vector3 canvasPos = m_Canvas.transform.position;
 
         Vector2 screenSize = new Vector2(m_Width, m_Height);
-        Vector2 cameraSize = (Vector2)m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
+        Vector2 cameraSize = m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
         Vector2 canvasSize = m_CanvasRectTransform.sizeDelta * 0.5f / m_Canvas.referencePixelsPerUnit;
 
         // 하
@@ -142,14 +144,15 @@ public class CameraMove : MonoBehaviour
         if (cameraPos.x - cameraSize.x < canvasPos.x - canvasSize.x)
             cameraPos.x = canvasPos.x - canvasSize.x + cameraSize.x;
 
+        cameraPos.z = m_StartZ;
         m_Camera.transform.position = cameraPos;
     }
     protected void ClampScale()
     {
-        Vector2 cameraPos = m_Camera.transform.position;
+        Vector3 cameraPos = m_Camera.transform.position;
 
         Vector2 screenSize = new Vector2(m_Width, m_Height);
-        Vector2 cameraSize = (Vector2)m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
+        Vector2 cameraSize = m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
         Vector2 canvasSize = m_CanvasRectTransform.sizeDelta * 0.5f / unit;
 
         if (cameraSize.x >= canvasSize.x &&
@@ -160,11 +163,11 @@ public class CameraMove : MonoBehaviour
     }
     protected void Clamp()
     {
-        Vector2 cameraPos = m_Camera.transform.position;
-        Vector2 canvasPos = m_Canvas.transform.position;
+        Vector3 cameraPos = m_Camera.transform.position;
+        Vector3 canvasPos = m_Canvas.transform.position;
 
         Vector2 screenSize = new Vector2(m_Width, m_Height);
-        Vector2 cameraSize = (Vector2)m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
+        Vector2 cameraSize = m_Camera.ScreenToWorldPoint(screenSize) - cameraPos;
         Vector2 canvasSize = m_CanvasRectTransform.sizeDelta * 0.5f / unit;
 
         if (cameraSize.x > canvasSize.x)
@@ -176,6 +179,7 @@ public class CameraMove : MonoBehaviour
             cameraPos.y = canvasPos.y;
         }
 
+        cameraPos.z = m_StartZ;
         m_Camera.transform.position = cameraPos;
     }
     #endregion

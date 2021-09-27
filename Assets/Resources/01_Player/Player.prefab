@@ -140,7 +140,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Speed: 3.5
   m_InitPos: {x: 0, y: 0, z: 0}
-  m_SpawnPos: {x: 0, y: 0, z: 5}
+  m_SpawnPos: {x: 0, y: 0, z: 0}
   m_IsSafe: 0
   m_CanMove: 0
   m_IsDie: 0
@@ -236,7 +236,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1002295317
-  m_SortingLayer: 3
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: e23fad855d986e24890cbd6b592aa561, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

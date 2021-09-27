@@ -6122,7 +6122,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -7813,7 +7813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.000020980835}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &747468147
@@ -8246,7 +8246,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &809937484
 GameObject:
@@ -9317,15 +9317,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
-  m_GameMode: 0
   m_Width: 22
   m_Height: 14
-  m_OddColor: {r: 0.90196085, g: 0.90196085, b: 1, a: 1}
-  m_EvenColor: {r: 1, g: 1, b: 1, a: 1}
-  m_WallColor: {r: 0.7058824, g: 0.70980394, b: 0.9960785, a: 1}
-  m_SafetyZoneColor: {r: 0.6901961, g: 0.9490197, b: 0.69803923, a: 1}
-  m_GravityZoneColor: {r: 0.32156864, g: 0, b: 0.7372549, a: 1}
-  m_IceZoneColor: {r: 0, g: 0.8862745, b: 1, a: 1}
 --- !u!4 &925128301
 Transform:
   m_ObjectHideFlags: 0
@@ -9338,7 +9331,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &925392624
 GameObject:
@@ -11728,6 +11721,7 @@ MonoBehaviour:
   - {fileID: 255385527}
   - {fileID: 1599521859}
   - {fileID: 1695173622}
+  - {fileID: 1840623375}
   m_SaveLoadPanel: {fileID: 29615573}
   m_StageNameInputField: {fileID: 809937486}
   m_SavePanelButton: {fileID: 1005932964}
@@ -11746,7 +11740,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1154230818
 GameObject:
@@ -13211,7 +13205,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1524445548}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.84999985
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -16287,6 +16281,9 @@ MonoBehaviour:
   - type: Coin
     path: 03_Coin
     resourceType: 3
+  - type: Wall
+    path: 04_Wall
+    resourceType: 1
   - type: UI
     path: 99_UI
     resourceType: 1
@@ -18936,6 +18933,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flag: 1
   m_TileParent: {fileID: 1568169830}
+  m_OddColor: {r: 0.8528302, g: 0.854819, b: 1, a: 1}
+  m_EvenColor: {r: 1, g: 1, b: 1, a: 1}
+  m_WallColor: {r: 0.7058824, g: 0.70980394, b: 0.9960785, a: 1}
+  m_SafetyZoneColor: {r: 0.6901961, g: 0.9490197, b: 0.69803923, a: 1}
+  m_GravityZoneColor: {r: 0.32156864, g: 0, b: 0.7372549, a: 1}
+  m_IceZoneColor: {r: 0, g: 0.8862746, b: 1, a: 1}
 --- !u!4 &1855371357
 Transform:
   m_ObjectHideFlags: 0

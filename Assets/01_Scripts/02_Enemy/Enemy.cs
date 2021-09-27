@@ -152,7 +152,7 @@ public class Enemy : MonoBehaviour
         if (null == m_Center)
         {
             m_Center = M_EnemyGizmo.SpawnGizmo();
-            m_Center.transform.position = new Vector3(0f, 0f, 5f);
+            m_Center.transform.position = Vector3.zero;
             m_Center.gameObject.SetActive(false);
         }
     }
@@ -160,7 +160,7 @@ public class Enemy : MonoBehaviour
     public void AddWayPoint()
     {
         EnemyGizmo wayPoint = M_EnemyGizmo.SpawnGizmo();
-        wayPoint.transform.position = new Vector3(0f, 0f, 5f);
+        wayPoint.transform.position = Vector3.zero;
 
         wayPoint.index = m_WayPointList.Count;
         wayPoint.text.text = (wayPoint.index + 1).ToString();
@@ -208,7 +208,7 @@ public class Enemy : MonoBehaviour
     #region 유니티 콜백 함수
     void Update()
     {
-        if (M_Edit.isEditPlayMode)
+        if (M_Edit.isPlayMode)
         {
             Move();
         }

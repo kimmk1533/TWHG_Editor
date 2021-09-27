@@ -142,7 +142,6 @@ public class GravityZoneManager : ObjectManager<GravityZoneManager, GravityZone>
                     tile.SetType(E_TileType.GravityZone);
 
                     Vector3 spawnPoint = tile.transform.position;
-                    spawnPoint.z = 5f;
 
                     float gravity = MyRigidBody2D.Gravity;
                     if (reader.LoadToElement("Gravity"))

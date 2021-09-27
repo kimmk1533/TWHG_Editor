@@ -167,10 +167,10 @@ public class __EditManager : Singleton<__EditManager>
     {
         get
         {
-            float distance = 5f;
-            Vector3 position = Input.mousePosition;
-            position.z = distance;
-            return Camera.main.ScreenToWorldPoint(position);
+            Vector3 mousePos = Input.mousePosition;
+            Vector3 pos = Camera.main.ScreenToWorldPoint(mousePos);
+            pos.z = 0f;
+            return pos;
         }
     }
     protected bool IsMouseDown => IsLeft || IsRight;
@@ -181,8 +181,8 @@ public class __EditManager : Singleton<__EditManager>
     protected bool IsLeftUp => Input.GetMouseButtonUp((int)E_InputButton.Left);
     protected bool IsRightUp => Input.GetMouseButtonUp((int)E_InputButton.Right);
 
-    protected E_EnemyType enemyType => (E_EnemyType)m_Enemy_Dropdown_Type.value - 1;
-    protected float enemySpeed
+    protected E_EnemyType enemy_Type => (E_EnemyType)m_Enemy_Dropdown_Type.value - 1;
+    protected float enemy_Speed
     {
         get
         {
@@ -194,7 +194,7 @@ public class __EditManager : Singleton<__EditManager>
             return speed;
         }
     }
-    protected Color wallColor
+    protected Color wall_Color
     {
         get
         {
@@ -206,7 +206,7 @@ public class __EditManager : Singleton<__EditManager>
             return color;
         }
     }
-    protected float gravity
+    protected float gravityZone_Gravity
     {
         get
         {
@@ -233,7 +233,7 @@ public class __EditManager : Singleton<__EditManager>
     #endregion
     #region 외부 프로퍼티
     public bool isEditMode => m_IsEdit;
-    public bool isEditPlayMode => !m_IsEdit;
+    public bool isPlayMode => !m_IsEdit;
 
     public bool isInputFieldFocus
     {
@@ -352,9 +352,9 @@ public class __EditManager : Singleton<__EditManager>
                         // 위치 설정
                         enemy.transform.position = spawnPoint_Obj;
                         // 적 타입 설정
-                        enemy.type = enemyType;
+                        enemy.type = enemy_Type;
                         // 적 이동 속도 설정
-                        enemy.speed = enemySpeed;
+                        enemy.speed = enemy_Speed;
 
                         M_Stage.canSave = false;
                         break;
@@ -386,7 +386,6 @@ public class __EditManager : Singleton<__EditManager>
                                 obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.Wall);
 
                                 Vector3 spawnPoint = tile.transform.position;
-                                spawnPoint.z = 5f;
 
                                 // 스폰
                                 Wall wall = M_Wall.SpawnWall();
@@ -403,7 +402,7 @@ public class __EditManager : Singleton<__EditManager>
                             {
                                 Wall wall = obj?.GetComponent<WallCollider>()?.wall;
 
-                                wall.tile.color = wallColor;
+                                wall.tile.color = wall_Color;
                             }
                         }
                     }
@@ -419,7 +418,6 @@ public class __EditManager : Singleton<__EditManager>
                                 obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.SafetyZone);
 
                                 Vector3 spawnPoint = tile.transform.position;
-                                spawnPoint.z = 5f;
 
                                 // 스폰
                                 SafetyZone safetyZone = M_SafetyZone.SpawnSafetyZone();
@@ -446,7 +444,6 @@ public class __EditManager : Singleton<__EditManager>
                                 obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.GravityZone);
 
                                 Vector3 spawnPoint = tile.transform.position;
-                                spawnPoint.z = 5f;
 
                                 // 스폰
                                 GravityZone gravityZone = M_GravityZone.SpawnGravityZone();
@@ -455,7 +452,7 @@ public class __EditManager : Singleton<__EditManager>
                                 // 초기화
                                 gravityZone.__Initialize(tile);
                                 // 중력 설정
-                                gravityZone.gravity = gravity;
+                                gravityZone.gravity = gravityZone_Gravity;
                                 // 활성화
                                 gravityZone.gameObject.SetActive(true);
 
@@ -475,7 +472,6 @@ public class __EditManager : Singleton<__EditManager>
                                 obj?.GetComponent<IEraserableTile>()?.EraseTile(E_ObjectType.IceZone);
 
                                 Vector3 spawnPoint = tile.transform.position;
-                                spawnPoint.z = 5f;
 
                                 // 스폰
                                 IceZone iceZone = M_IceZone.SpawnIceZone();
@@ -1368,7 +1364,7 @@ public class __EditManager : Singleton<__EditManager>
     public void OnEnemyChangeType()
     {
         m_Enemy_Panel_Speed.SetActive(false);
-        if (enemyType != E_EnemyType.None)
+        if (enemy_Type != E_EnemyType.None)
         {
             m_Enemy_Panel_Speed.SetActive(true);
         }
@@ -1377,7 +1373,7 @@ public class __EditManager : Singleton<__EditManager>
             return;
 
         Enemy enemy = m_ClickedObject.GetGameObject().GetComponent<Enemy>();
-        enemy.type = enemyType;
+        enemy.type = enemy_Type;
         m_Enemy_InputField_Speed.text = enemy.speed.ToString();
 
         ShowEnemyGizmo(enemy);
