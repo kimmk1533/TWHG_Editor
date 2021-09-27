@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingText>
 {
@@ -41,24 +40,7 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
 
     public void SpawnFloatingText(string text)
     {
-        // 스폰
-        FloatingText floatingText = GetPool("FloatingText").Spawn();
-        // 초기화
-        floatingText.__Initialize();
-        // 텍스트 설정
-        floatingText.text = text;
-        // 부모 설정
-        floatingText.transform.SetParent(m_FloatingText_Panel.transform);
-        // 크기 설정
-        floatingText.transform.localScale = Vector3.one;
-        // 활성화 설정
-        floatingText.gameObject.SetActive(true);
-        // 관리 리스트에 추가
-        m_FloatingTextList.Add(floatingText);
-    }
-    public void SpawnFloatingText(string text, float time)
-    {
-        StartCoroutine(Spawn(text, time));
+        SpawnFloatingText(text, Vector2.one * 0.5f);
     }
     public void SpawnFloatingText(string text, Vector3 position)
     {
@@ -73,11 +55,15 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
         // 크기 설정
         floatingText.transform.localScale = Vector3.one;
         // 위치 설정
-        floatingText.transform.position = position;
+        floatingText.transform.position = (Vector2)Camera.main.ViewportToWorldPoint(position);
         // 활성화 설정
         floatingText.gameObject.SetActive(true);
         // 관리 리스트에 추가
         m_FloatingTextList.Add(floatingText);
+    }
+    public void SpawnFloatingText(string text, float time)
+    {
+        StartCoroutine(Spawn(text, time));
     }
     public void DespawnFloatingText(FloatingText floatingText)
     {
@@ -95,7 +81,7 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
     }
     public void OnExitPlayMode()
     {
-        
+
     }
     #endregion
 }

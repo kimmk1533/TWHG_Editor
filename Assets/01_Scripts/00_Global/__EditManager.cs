@@ -168,8 +168,7 @@ public class __EditManager : Singleton<__EditManager>
         get
         {
             Vector3 mousePos = Input.mousePosition;
-            Vector3 pos = Camera.main.ScreenToWorldPoint(mousePos);
-            pos.z = 0f;
+            Vector3 pos = (Vector2)Camera.main.ScreenToWorldPoint(mousePos);
             return pos;
         }
     }
@@ -1313,12 +1312,12 @@ public class __EditManager : Singleton<__EditManager>
         {
             if (!M_Player.playerActive)
             {
-                M_FloatingText.SpawnFloatingText("플레이어는 배치된 상태여야 합니다");
+                M_FloatingText.SpawnFloatingText("플레이어는 배치된 상태여야 합니다", new Vector3(0.5f, 0.3f));
                 return;
             }
             if (M_SafetyZone.finishZoneCount <= 0)
             {
-                M_FloatingText.SpawnFloatingText("완료 구역이 최소 1개 이상 있어야 합니다");
+                M_FloatingText.SpawnFloatingText("완료 구역이 최소 1개 이상 있어야 합니다", new Vector3(0.5f, 0.3f));
                 return;
             }
 

@@ -142,7 +142,7 @@ public class StageManager : Singleton<StageManager>
         {
             if (!m_CanSave)
             {
-                M_FloatingText.SpawnFloatingText("클리어 후에 저장이 가능합니다.");
+                M_FloatingText.SpawnFloatingText("클리어 후에 저장이 가능합니다.", new Vector2(0.5f, 0.5f));
                 return;
             }
 
