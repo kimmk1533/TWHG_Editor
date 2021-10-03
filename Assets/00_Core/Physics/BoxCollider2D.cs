@@ -90,17 +90,6 @@ namespace MyPhysics
 
             Color color = Gizmos.color;
 
-            #region Collider
-            Gizmos.color = Physics2D.colliderColor;
-
-            for (int i = 0; i < 4; ++i)
-            {
-                Vector2 from = this[i];
-                Vector2 to = this[(i + 1) % 4];
-
-                Gizmos.DrawLine(from, to);
-            }
-            #endregion
             #region BoundingBox
             Gizmos.color = Physics2D.boundingBoxColor;
 
@@ -124,6 +113,17 @@ namespace MyPhysics
             Gizmos.DrawLine(new Vector2(max.x, max.y), new Vector2(max.x, min.y));
             Gizmos.DrawLine(new Vector2(max.x, min.y), new Vector2(min.x, min.y));
             Gizmos.DrawLine(new Vector2(min.x, min.y), new Vector2(min.x, max.y));
+            #endregion
+            #region Collider
+            Gizmos.color = Physics2D.colliderColor;
+
+            for (int i = 0; i < 4; ++i)
+            {
+                Vector2 from = this[i];
+                Vector2 to = this[(i + 1) % 4];
+
+                Gizmos.DrawLine(from, to);
+            }
             #endregion
 
             Gizmos.color = color;

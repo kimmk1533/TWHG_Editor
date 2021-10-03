@@ -147,11 +147,6 @@ namespace MyPhysics
             return true; // 충돌
         }
 
-        // BoundingBox vs BoundingBox
-        public static bool BoundingBoxVSBoundingBoxCollision(Collider2D A, Collider2D B)
-        {
-            return false;
-        }
         // Circle vs Circle
         public static bool CircleVSCircleCollision(CircleCollider2D A, CircleCollider2D B)
         {
@@ -195,6 +190,7 @@ namespace MyPhysics
             float distanceSquared = Vector2.Dot(distance, distance);
             // 원의 반지름의 제곱보다 작은 경우 충돌 (=을 넣으면 접하는 순간도 충돌)
             return distanceSquared < B.radius * B.radius;
+            // 출처: https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection
 
             // 실패한 방법들
             #region https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331

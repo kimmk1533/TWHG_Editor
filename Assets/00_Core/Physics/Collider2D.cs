@@ -80,7 +80,7 @@ namespace MyPhysics
         #region 유니티 콜백 함수
         protected virtual void OnEnable()
         {
-            M_MyPhysics2D.myColliderList.Add(this);
+            M_MyPhysics2D.colliderList.Add(this);
 
             m_Bounds.center = (Vector2)transform.position + m_Offset;
         }
