@@ -66,7 +66,7 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
             {
                 // 승리
                 M_Stage.canSave = true;
-                M_FloatingText.SpawnFloatingText("클리어!");
+                M_FloatingText.SpawnFloatingText("클리어!", new Vector2(0.5f, 0.3f));
                 StartCoroutine(WaitAndExitPlayMode(0.5f));
             }
         }
@@ -86,7 +86,10 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
 
         m_Player.rigidBody2D.isKinematic = false;
         m_Player.rigidBody2D.drag = collider.GetComponent<IceZoneCollider>().iceZone.drag;
-        //m_Player.rigidBody2D.velocity = m_Player.rigidBody2D.force;
+        //if (m_Player.rigidBody2D.velocity.magnitude == 0f)
+        //{
+        //    m_Player.rigidBody2D.velocity += m_Player.rigidBody2D.force;
+        //}
     }
     #endregion
     #region TriggerExit
@@ -109,7 +112,7 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
         if (colliders.Length <= 0)
         {
             m_Player.rigidBody2D.useGravity = false;
-            m_Player.rigidBody2D.gravity = MyRigidBody2D.Gravity;
+            m_Player.rigidBody2D.gravity = MyPhysics.Physics2D.gravity;
         }
         else
         {

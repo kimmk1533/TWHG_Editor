@@ -212,7 +212,7 @@ public class __EditManager : Singleton<__EditManager>
             float gravity;
             if (!float.TryParse(m_GravityZone_InputField_Gravity.text, out gravity))
             {
-                gravity = MyRigidBody2D.Gravity;
+                gravity = MyPhysics.Physics2D.gravity;
             }
             return gravity;
         }
@@ -1551,7 +1551,7 @@ public class __EditManager : Singleton<__EditManager>
         float gravity;
         if (!float.TryParse(m_GravityZone_InputField_Gravity.text, out gravity))
         {
-            gravity = MyRigidBody2D.Gravity;
+            gravity = MyPhysics.Physics2D.gravity;
         }
         gravityZone.gravity = gravity;
     }

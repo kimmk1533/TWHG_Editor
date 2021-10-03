@@ -143,13 +143,13 @@ public class GravityZoneManager : ObjectManager<GravityZoneManager, GravityZone>
 
                     Vector3 spawnPoint = (Vector2)tile.transform.position;
 
-                    float gravity = MyRigidBody2D.Gravity;
+                    float gravity = MyPhysics.Physics2D.gravity;
                     if (reader.LoadToElement("Gravity"))
                     {
                         reader.ReadStartElement("Gravity");
                         if (!float.TryParse(reader.Value, out gravity))
                         {
-                            gravity = MyRigidBody2D.Gravity;
+                            gravity = MyPhysics.Physics2D.gravity;
                         }
                     }
 

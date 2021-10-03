@@ -102,7 +102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 241034461309389291}
   - component: {fileID: -3551264572288083603}
-  - component: {fileID: -7888459087031115826}
+  - component: {fileID: 5765518091448298496}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_IsSafe: 0
   m_CanMove: 0
   m_IsDie: 0
---- !u!114 &-7888459087031115826
+--- !u!114 &5765518091448298496
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -153,17 +153,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3268274380446500552}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1eacb7b1759e43439b0f7e348330562, type: 3}
+  m_Script: {fileID: 11500000, guid: 32c92401b24fc9143ba3ac71e6e9b2d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Mass: 1
   m_Drag: 0
   m_UseGravity: 0
-  m_Gravity: -9.8
+  m_Gravity: -9.81
   m_IsKinematic: 1
-  m_UseChildCollider: 1
-  m_Speed: 0
-  m_DragSpeed: 0
+  m_UseChildCollider: 0
   m_Velocity: {x: 0, y: 0}
 --- !u!1 &3345497635958674874
 GameObject:

@@ -12,7 +12,7 @@ public class StageManager : Singleton<StageManager>
     protected E_TileType[,] m_Stage;
 
     [SerializeField, ReadOnly(true)]
-    protected List<GameObject> m_ManagerList;
+    protected List<GameObject> m_SaveManagerList;
     protected List<ISaveHandler> m_SaveList;
     protected List<ILoadHandler> m_LoadList;
 
@@ -118,7 +118,7 @@ public class StageManager : Singleton<StageManager>
             m_LoadList = new List<ILoadHandler>();
         }
 
-        foreach (var item in m_ManagerList)
+        foreach (var item in m_SaveManagerList)
         {
             m_SaveList.Add(item.GetComponent<ISaveHandler>());
             m_LoadList.Add(item.GetComponent<ILoadHandler>());

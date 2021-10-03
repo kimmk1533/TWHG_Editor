@@ -967,7 +967,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99607bec2043fae48ba26c2043527534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LinkedElement: {fileID: 905907882}
 --- !u!114 &82705934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -989,6 +988,11 @@ MonoBehaviour:
   m_Speed: 0
   m_DragSpeed: 0
   m_Velocity: {x: 0, y: 0}
+  m_Acceleration: {x: 0, y: 0}
+  m_Force: {x: 0, y: 0}
+  m_CalculedDrag: {x: 0, y: 0}
+  m_Collider: {fileID: 0}
+  m_LayerMask: 0
 --- !u!1 &91266069
 GameObject:
   m_ObjectHideFlags: 0
@@ -4138,7 +4142,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99607bec2043fae48ba26c2043527534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LinkedElement: {fileID: 82705933}
 --- !u!114 &352276161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4160,6 +4163,11 @@ MonoBehaviour:
   m_Speed: 0
   m_DragSpeed: 0
   m_Velocity: {x: 0, y: 0}
+  m_Acceleration: {x: 0, y: 0}
+  m_Force: {x: 0, y: 0}
+  m_CalculedDrag: {x: 0, y: 0}
+  m_Collider: {fileID: 0}
+  m_LayerMask: 0
 --- !u!1 &352909573
 GameObject:
   m_ObjectHideFlags: 0
@@ -5429,7 +5437,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99607bec2043fae48ba26c2043527534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LinkedElement: {fileID: 1110261508}
 --- !u!114 &471906649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5451,6 +5458,11 @@ MonoBehaviour:
   m_Speed: 0
   m_DragSpeed: 0
   m_Velocity: {x: 0, y: 0}
+  m_Acceleration: {x: 0, y: 0}
+  m_Force: {x: 0, y: 0}
+  m_CalculedDrag: {x: 0, y: 0}
+  m_Collider: {fileID: 0}
+  m_LayerMask: 0
 --- !u!1 &476488985
 GameObject:
   m_ObjectHideFlags: 0
@@ -8155,8 +8167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c266b137dc9d584dbb8da53276b8c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ElementList: []
-  m_Mass: 10
 --- !u!1 &807075402
 GameObject:
   m_ObjectHideFlags: 0
@@ -9186,7 +9196,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99607bec2043fae48ba26c2043527534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LinkedElement: {fileID: 1404080531}
 --- !u!114 &905907883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9208,6 +9217,11 @@ MonoBehaviour:
   m_Speed: 0
   m_DragSpeed: 0
   m_Velocity: {x: 0, y: 0}
+  m_Acceleration: {x: 0, y: 0}
+  m_Force: {x: 0, y: 0}
+  m_CalculedDrag: {x: 0, y: 0}
+  m_Collider: {fileID: 0}
+  m_LayerMask: 0
 --- !u!1 &924052684
 GameObject:
   m_ObjectHideFlags: 0
@@ -11058,7 +11072,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99607bec2043fae48ba26c2043527534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LinkedElement: {fileID: 0}
 --- !u!114 &1110261509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11080,6 +11093,11 @@ MonoBehaviour:
   m_Speed: 0
   m_DragSpeed: 0
   m_Velocity: {x: 0, y: 0}
+  m_Acceleration: {x: 0, y: 0}
+  m_Force: {x: 0, y: 0}
+  m_CalculedDrag: {x: 0, y: 0}
+  m_Collider: {fileID: 0}
+  m_LayerMask: 0
 --- !u!1 &1116636058
 GameObject:
   m_ObjectHideFlags: 0
@@ -11714,7 +11732,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
-  m_ManagerList:
+  m_SaveManagerList:
   - {fileID: 1423210554}
   - {fileID: 106963848}
   - {fileID: 236755198}
@@ -13205,7 +13223,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1524445548}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.84999985
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -14872,7 +14890,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99607bec2043fae48ba26c2043527534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LinkedElement: {fileID: 471906648}
 --- !u!114 &1404080532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14894,6 +14911,11 @@ MonoBehaviour:
   m_Speed: 0
   m_DragSpeed: 0
   m_Velocity: {x: 0, y: 0}
+  m_Acceleration: {x: 0, y: 0}
+  m_Force: {x: 0, y: 0}
+  m_CalculedDrag: {x: 0, y: 0}
+  m_Collider: {fileID: 0}
+  m_LayerMask: 0
 --- !u!1 &1406250379
 GameObject:
   m_ObjectHideFlags: 0
@@ -20722,6 +20744,11 @@ MonoBehaviour:
   m_Speed: 0
   m_DragSpeed: 0
   m_Velocity: {x: 0, y: 0}
+  m_Acceleration: {x: 0, y: 0}
+  m_Force: {x: 0, y: 0}
+  m_CalculedDrag: {x: 0, y: 0}
+  m_Collider: {fileID: 0}
+  m_LayerMask: 0
 --- !u!212 &2130390198
 SpriteRenderer:
   m_ObjectHideFlags: 0
