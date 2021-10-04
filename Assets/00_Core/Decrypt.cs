@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using UnityEngine;
 
+// √‚√≥: https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=ekdlsk2124&logNo=220588249362
 public static class Decrypt
 {
     public static string DecryptData(string filepath)
