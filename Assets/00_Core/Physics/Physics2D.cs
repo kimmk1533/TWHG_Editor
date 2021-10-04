@@ -4,16 +4,18 @@ using UnityEngine;
 
 namespace MyPhysics
 {
-    public class Physics2D
+    public static class Physics2D
     {
-        protected static float m_Gravity = -9.81f;
-        protected static Color m_ColliderColor = new Color(145f / 255f, 244f / 255f, 139f / 255f, 192f / 255f);
-        protected static Color m_BoundingBoxColor = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+        private static Vector2 m_Gravity = new Vector2(0f, -9.81f);
+        private static Color m_ColliderColor = new Color(145f / 255f, 244f / 255f, 139f / 255f, 192f / 255f);
+        private static Color m_BoundingBoxColor = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
 
-        public static float gravity { get => m_Gravity; set => m_Gravity = value; }
+        public static Vector2 gravity { get => m_Gravity; set => m_Gravity = value; }
         public static Color colliderColor { get => m_ColliderColor; set => m_ColliderColor = value; }
         public static Color boundingBoxColor { get => m_BoundingBoxColor; set => m_BoundingBoxColor = value; }
 
+        #region 외부 함수
+        #region Collision Detection
         // Collision https://tt91.tistory.com/57
         // 사전 검사 (추후 다이나믹 AABB로 수정)
         public static bool FirstCheckCollision(Collider2D A, Collider2D B)
@@ -352,7 +354,90 @@ namespace MyPhysics
                 return BoundingBoxVSCircleCollision(A, B);
             }
 
-            return OBBCollision(A, B);
+            return false;
         }
+        #endregion
+        //UnityEngine.Physics2D
+        public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction)
+        {
+            RaycastHit2D hit_result = new RaycastHit2D();
+
+            return hit_result;
+        }
+        public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance)
+        {
+            RaycastHit2D hit_result = new RaycastHit2D();
+            
+            return hit_result;
+        }
+        public static Collider2D OverlapPoint(Vector2 point)
+        {
+            foreach (var item in Physics2DManager.colliderList)
+            {
+                if (!item.OverlapPoint(point))
+                {
+                    continue;
+                }
+
+                return item;
+            }
+
+            return null;
+        }
+        public static Collider2D OverlapPoint(Vector2 point, int layerMask)
+        {
+            foreach (var item in Physics2DManager.colliderList)
+            {
+                if ((layerMask & item.gameObject.layer) == 0 ||
+                    !item.OverlapPoint(point))
+                {
+                    continue;
+                }
+
+                return item;
+            }
+
+            return null;
+        }
+        public static Collider2D[] OverlapPointAll(Vector2 point)
+        {
+            List<Collider2D> colliders = new List<Collider2D>();
+
+            foreach (var item in Physics2DManager.colliderList)
+            {
+                if (!item.OverlapPoint(point))
+                {
+                    continue;
+                }
+
+                colliders.Add(item);
+            }
+
+            if (colliders.Count <= 0)
+                return null;
+
+            return colliders.ToArray();
+        }
+        public static Collider2D[] OverlapPointAll(Vector2 point, int layerMask)
+        {
+            List<Collider2D> colliders = new List<Collider2D>();
+
+            foreach (var item in Physics2DManager.colliderList)
+            {
+                if ((layerMask & item.gameObject.layer) == 0 ||
+                    !item.OverlapPoint(point))
+                {
+                    continue;
+                }
+
+                colliders.Add(item);
+            }
+
+            if (colliders.Count <= 0)
+                return null;
+
+            return colliders.ToArray();
+        }
+        #endregion
     }
 }
