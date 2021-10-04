@@ -8,6 +8,9 @@ public class CoinCollider : MonoBehaviour, IEraserableObject, IClickedObject
     [SerializeField, ReadOnly]
     protected Coin m_Coin;
 
+    #region 내부 컴포넌트
+    protected MyPhysics.CircleCollider2D m_Collider;
+    #endregion
     #region 내부 프로퍼티
     #region 매니져
     protected __EditManager M_Edit => __EditManager.Instance;
@@ -21,6 +24,11 @@ public class CoinCollider : MonoBehaviour, IEraserableObject, IClickedObject
     public void __Initialize(Coin coin)
     {
         m_Coin = coin;
+
+        if (null == m_Collider)
+        {
+            m_Collider = GetComponent<MyPhysics.CircleCollider2D>();
+        }
     }
 
     public void EraseObject()

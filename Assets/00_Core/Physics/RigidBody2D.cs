@@ -5,7 +5,7 @@ using UnityEngine;
 namespace MyPhysics
 {
     [DefaultExecutionOrder(1)]
-    public class RigidBody2D : MonoBehaviour
+    public class Rigidbody2D : MonoBehaviour
     {
         // 질량
         [SerializeField]
@@ -18,7 +18,7 @@ namespace MyPhysics
         protected bool m_UseGravity = false;
         // 가해지는 중력
         [SerializeField]
-        protected float m_Gravity = Physics2D.gravity;
+        protected Vector2 m_Gravity = Physics2D.gravity;
         // 물리 사용 여부
         [SerializeField]
         protected bool m_IsKinematic = false;
@@ -45,7 +45,7 @@ namespace MyPhysics
         public float mass { get => m_Mass; set => m_Mass = value; }
         public float drag { get => m_Drag; set => m_Drag = value; }
         public bool useGravity { get => m_UseGravity; set => m_UseGravity = value; }
-        public float gravity { get => m_Gravity; set => m_Gravity = value; }
+        public Vector2 gravity { get => m_Gravity; set => m_Gravity = value; }
         public bool isKinematic { get => m_IsKinematic; set => m_IsKinematic = value; }
         public Vector3 velocity { get => m_Velocity; set => m_Velocity = value; }
         public Vector3 force { get => m_Force; set => m_Force = value; }
@@ -79,7 +79,7 @@ namespace MyPhysics
             if (!m_UseGravity)
                 return;
 
-            Vector2 gravity = (Vector2.up * m_Gravity);
+            Vector2 gravity = m_Gravity;
 
             if (!m_IsKinematic)
             {

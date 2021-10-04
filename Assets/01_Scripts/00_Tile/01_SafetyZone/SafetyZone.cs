@@ -19,9 +19,7 @@ public class SafetyZone : MonoBehaviour
     #endregion
     #endregion
     #region 외부 프로퍼티
-    public Tile tile { get => m_Tile; }
-    public Vector3 SpawnPoint => transform.position;
-    public BoxCollider2D Collider => m_Collider.Collider;
+    public Tile tile => m_Tile;
 
     public int safetyZoneCount => m_SafetyZoneCount;
     public bool isFinishZone

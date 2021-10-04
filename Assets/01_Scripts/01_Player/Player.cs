@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     protected bool m_IsDie;
 
     #region 내부 컴포넌트
-    protected MyPhysics.RigidBody2D m_RigidBody;
+    protected MyPhysics.Rigidbody2D m_RigidBody;
     protected SpriteRenderer m_Renderer;
     protected PlayerAnimator m_Animator;
     protected PlayerCollider m_Collider;
@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
     #endregion
     #region 외부 프로퍼티
     public float speed { get => m_Speed; }
-    public MyPhysics.RigidBody2D rigidBody2D { get => m_RigidBody; }
+    public MyPhysics.Rigidbody2D rigidBody2D { get => m_RigidBody; }
     public new SpriteRenderer renderer { get => m_Renderer; }
     public bool isSafe { get => m_IsSafe; set => m_IsSafe = value; }
     public Vector3 spawnPos { get => m_SpawnPos; set => m_SpawnPos = value; }
@@ -135,7 +135,7 @@ public class Player : MonoBehaviour
 
         if (null == m_RigidBody)
         {
-            m_RigidBody = GetComponent<MyPhysics.RigidBody2D>();
+            m_RigidBody = GetComponent<MyPhysics.Rigidbody2D>();
             m_RigidBody.layerMask = LayerMask.GetMask("Wall");
         }
         if (null == m_Renderer)

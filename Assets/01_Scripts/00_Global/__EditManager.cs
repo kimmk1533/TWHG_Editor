@@ -134,7 +134,9 @@ public class __EditManager : Singleton<__EditManager>
     [SerializeField]
     protected GameObject m_GravityZone_Panel_Option;
     [SerializeField]
-    protected InputField m_GravityZone_InputField_Gravity;
+    protected InputField m_GravityZone_InputField_GravityX;
+    [SerializeField]
+    protected InputField m_GravityZone_InputField_GravityY;
     #endregion
     #region 얼음구역 옵션
     [Header("IceZone Option")]
@@ -205,14 +207,18 @@ public class __EditManager : Singleton<__EditManager>
             return color;
         }
     }
-    protected float gravityZone_Gravity
+    protected Vector2 gravityZone_Gravity
     {
         get
         {
-            float gravity;
-            if (!float.TryParse(m_GravityZone_InputField_Gravity.text, out gravity))
+            Vector2 gravity;
+            if (!float.TryParse(m_GravityZone_InputField_GravityX.text, out gravity.x))
             {
-                gravity = MyPhysics.Physics2D.gravity;
+                gravity.x = MyPhysics.Physics2D.gravity.x;
+            }
+            if (!float.TryParse(m_GravityZone_InputField_GravityY.text, out gravity.y))
+            {
+                gravity.y = MyPhysics.Physics2D.gravity.y;
             }
             return gravity;
         }
@@ -960,7 +966,7 @@ public class __EditManager : Singleton<__EditManager>
                     {
                         GravityZone gravityZone = m_ClickedObject.GetGameObject().GetComponent<GravityZone>();
 
-                        m_GravityZone_InputField_Gravity.text = gravityZone.gravity.ToString();
+                        m_GravityZone_InputField_GravityY.text = gravityZone.gravity.ToString();
                     }
                 }
                 break;
@@ -1119,7 +1125,7 @@ public class __EditManager : Singleton<__EditManager>
         });
         #endregion
         #region GravityZone
-        m_GravityZone_InputField_Gravity.onEndEdit.AddListener(item =>
+        m_GravityZone_InputField_GravityY.onEndEdit.AddListener(item =>
         {
             OnGravityZoneChangeGravity();
         });
@@ -1225,7 +1231,7 @@ public class __EditManager : Singleton<__EditManager>
             }
         });
 
-        m_GravityZone_InputField_Gravity.onEndEdit.AddListener(item =>
+        m_GravityZone_InputField_GravityY.onEndEdit.AddListener(item =>
         {
             if (M_Stage.canSave &&
                 null != m_ClickedObject)
@@ -1548,12 +1554,7 @@ public class __EditManager : Singleton<__EditManager>
             return;
 
         GravityZone gravityZone = m_ClickedObject.GetGameObject().GetComponent<GravityZone>();
-        float gravity;
-        if (!float.TryParse(m_GravityZone_InputField_Gravity.text, out gravity))
-        {
-            gravity = MyPhysics.Physics2D.gravity;
-        }
-        gravityZone.gravity = gravity;
+        gravityZone.gravity = gravityZone_Gravity;
     }
     #endregion
     #region IceZone

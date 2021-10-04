@@ -11,7 +11,7 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
     protected Dictionary<string, OnTrigger> m_TriggerExit;
 
     #region 내부 컴포넌트
-    protected BoxCollider2D m_Collider;
+    protected MyPhysics.BoxCollider2D m_Collider;
     #endregion
     #region 내부 프로퍼티
     #region 매니져
@@ -149,7 +149,7 @@ public class PlayerCollider : MonoBehaviour, IEraserableObject, IClickedObject
 
         if (null == m_Collider)
         {
-            m_Collider = GetComponent<BoxCollider2D>();
+            m_Collider = GetComponent<MyPhysics.BoxCollider2D>();
         }
     }
 

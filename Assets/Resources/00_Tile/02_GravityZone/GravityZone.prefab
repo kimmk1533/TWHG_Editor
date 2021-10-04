@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1462819770686810766}
   - component: {fileID: 2932670713749852749}
-  - component: {fileID: 6701946798776388649}
+  - component: {fileID: 3266865252879897807}
   m_Layer: 11
   m_Name: Collider
   m_TagString: GravityZone
@@ -44,32 +44,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b135200e6b28059419098f4b1f32a88d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!61 &6701946798776388649
-BoxCollider2D:
+--- !u!114 &3266865252879897807
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3231568711989013943}
   m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c42c33b99d608094cabff496d5074415, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
+  m_AttachedRigidbody: {fileID: 0}
+  m_Friction: 0.4
+  m_Bounciness: 0
+  m_Bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0.5, y: 0.5, z: 0}
   m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
 --- !u!1 &5734543707543437753
 GameObject:
   m_ObjectHideFlags: 0
@@ -114,3 +109,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea6adb9fa541e0f4fbc6b1e37156c90c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Gravity: 0

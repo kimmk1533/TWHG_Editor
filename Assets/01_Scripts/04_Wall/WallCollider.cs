@@ -6,9 +6,9 @@ using static WallManager;
 public class WallCollider : MonoBehaviour, IEraserableTile, IClickedObject
 {
     protected Wall m_Wall;
-    protected BoxCollider2D m_Collider;
 
     #region 내부 컴포넌트
+    protected MyPhysics.BoxCollider2D m_Collider;
     #endregion
     #region 내부 프로퍼티
     #region 매니져
@@ -20,8 +20,6 @@ public class WallCollider : MonoBehaviour, IEraserableTile, IClickedObject
     #region 외부 프로퍼티
     public Wall wall => m_Wall;
     #endregion
-    #region 내부 함수
-    #endregion
     #region 외부 함수
     public void __Initialize(Wall wall)
     {
@@ -29,7 +27,7 @@ public class WallCollider : MonoBehaviour, IEraserableTile, IClickedObject
 
         if (null == m_Collider)
         {
-            GetComponent<BoxCollider2D>();
+            m_Collider = GetComponent<MyPhysics.BoxCollider2D>();
         }
     }
     public void EraseTile(E_ObjectType currentType = E_ObjectType.None)

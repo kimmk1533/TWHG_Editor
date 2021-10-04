@@ -8,24 +8,30 @@ namespace MyPhysics
     public abstract class Collider2D : MonoBehaviour
     {
         protected E_ColliderType m_ColliderType;
-        //[SerializeField]
-        //protected bool m_IsTrigger;
+        [SerializeField]
+        protected bool m_IsTrigger;
         [SerializeField]
         protected Vector2 m_Offset;
-        protected RigidBody2D m_AttachedRigidbody;
+        [SerializeField, ReadOnly]
+        protected Rigidbody2D m_AttachedRigidbody;
+        // 마찰
+        [SerializeField, ReadOnly]
+        protected float m_Friction = 0.4f;
+        [SerializeField, ReadOnly]
+        protected float m_Bounciness;
+        // 밀도
+        protected float m_Density;
         [SerializeField, ReadOnly]
         protected Bounds m_Bounds;
 
-        #region 내부 프로퍼티
-        #region 매니저
-        protected Physics2DManager M_MyPhysics2D => Physics2DManager.Instance;
-        #endregion
-        #endregion
         #region 외부 프로퍼티
         public E_ColliderType type { get => m_ColliderType; }
-        //public bool isTrigger { get => m_IsTrigger; set => m_IsTrigger = value; }
+        public float bounciness { get => m_Bounciness; }
+        public float friction { get => m_Friction; }
+        public float density { get => m_Density; set => m_Density = value; }
+        public bool isTrigger { get => m_IsTrigger; set => m_IsTrigger = value; }
         public Vector2 offset { get => m_Offset; set => m_Offset = value; }
-        public RigidBody2D attachedRigidbody { get => m_AttachedRigidbody; set => m_AttachedRigidbody = value; }
+        public Rigidbody2D attachedRigidbody { get => m_AttachedRigidbody; set => m_AttachedRigidbody = value; }
         public Bounds bounds { get => m_Bounds; }
         public virtual Vector2 this[int index]
         {
@@ -80,16 +86,14 @@ namespace MyPhysics
         #region 유니티 콜백 함수
         protected virtual void OnEnable()
         {
-            M_MyPhysics2D.colliderList.Add(this);
+            Physics2DManager.colliderList.Add(this);
 
             m_Bounds.center = (Vector2)transform.position + m_Offset;
         }
-#if !UNITY_EDITOR
-    protected virtual void OnDisable()
-    {
-        M_MyPhysics2D.myColliderList.Remove(this);
-    }
-#endif
+        protected virtual void OnDisable()
+        {
+            Physics2DManager.colliderList.Remove(this);
+        }
         protected virtual void FixedUpdate()
         {
             m_Bounds.center = (Vector2)transform.position + m_Offset;

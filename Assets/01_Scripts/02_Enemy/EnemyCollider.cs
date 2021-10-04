@@ -7,7 +7,7 @@ public class EnemyCollider : MonoBehaviour, IEraserableObject, IClickedObject
     protected Enemy m_Enemy;
 
     #region 내부 컴포넌트
-    protected CircleCollider2D m_Collider;
+    protected MyPhysics.CircleCollider2D m_Collider;
     #endregion
     #region 내부 프로퍼티
     #region 매니져
@@ -18,8 +18,6 @@ public class EnemyCollider : MonoBehaviour, IEraserableObject, IClickedObject
     #region 외부 프로퍼티
     public Enemy enemy => m_Enemy;
     #endregion
-    #region 내부 함수
-    #endregion
     #region 외부 함수
     public void __Initialize(Enemy enemy)
     {
@@ -27,7 +25,7 @@ public class EnemyCollider : MonoBehaviour, IEraserableObject, IClickedObject
 
         if (null == m_Collider)
         {
-            m_Collider = GetComponent<CircleCollider2D>();
+            m_Collider = GetComponent<MyPhysics.CircleCollider2D>();
         }
     }
 

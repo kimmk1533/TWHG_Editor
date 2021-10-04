@@ -7,12 +7,12 @@ namespace MyPhysics
 {
     public class Physics2DManager : Singleton<Physics2DManager>
     {
-        protected List<Collider2D> m_ColliderList;
+        protected static List<Collider2D> m_ColliderList;
         protected List<KeyValuePair<Collider2D, Collider2D>> m_HitColliderList;
         protected event CollisionEventHandler m_OnCollisionEnter;
 
         #region 외부 프로퍼티
-        public List<Collider2D> colliderList => m_ColliderList;
+        public static List<Collider2D> colliderList => m_ColliderList;
         public event CollisionEventHandler onCollisionEnter
         {
             add => m_OnCollisionEnter += value;
@@ -45,7 +45,7 @@ namespace MyPhysics
                     if (Physics2D.TypeCollision(collider2D_A, collider2D_B))
                     {
                         m_HitColliderList.Add(new KeyValuePair<Collider2D, Collider2D>(collider2D_A, collider2D_B));
-                        Debug.Log("충돌");
+                        Debug.Log(collider2D_A + " 충돌 " + collider2D_B);
                     }
                 }
             }

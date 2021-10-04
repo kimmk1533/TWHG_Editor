@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7316894820734531580}
   - component: {fileID: 7316894820734531578}
-  - component: {fileID: 579650210012087257}
+  - component: {fileID: 6433443293721010150}
   m_Layer: 8
   m_Name: Collider
   m_TagString: Coin
@@ -45,21 +45,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Coin: {fileID: 0}
---- !u!58 &579650210012087257
-CircleCollider2D:
+--- !u!114 &6433443293721010150
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7316894820734531583}
   m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b6e3393cff42304d94f418902dee3a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
+  m_AttachedRigidbody: {fileID: 0}
+  m_Friction: 0.4
+  m_Bounciness: 0
+  m_Bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0.2, y: 0.2, z: 0}
   m_Radius: 0.2
 --- !u!1 &7316894820743003896
 GameObject:
@@ -130,7 +135,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1625272783
-  m_SortingLayer: 1
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: e6ebc2aa73dbccb43a34e38e61d6917d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

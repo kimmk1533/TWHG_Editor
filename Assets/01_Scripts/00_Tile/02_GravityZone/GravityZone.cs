@@ -7,14 +7,14 @@ public class GravityZone : MonoBehaviour
     protected Tile m_Tile;
 
     [SerializeField, ReadOnly]
-    protected float m_Gravity;
+    protected Vector2 m_Gravity;
 
     #region 내부 컴포넌트
     protected GravityZoneCollider m_Collider;
     #endregion
     #region 외부 프로퍼티
     public Tile tile { get => m_Tile; }
-    public float gravity { get => m_Gravity; set => m_Gravity = value; }
+    public Vector2 gravity { get => m_Gravity; set => m_Gravity = value; }
     #endregion
     #region 외부 함수
     public void __Initialize(Tile tile)

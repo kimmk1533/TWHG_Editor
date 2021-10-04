@@ -44,6 +44,7 @@ public class MemoryPool<T> : System.IDisposable where T : MonoBehaviour
             string[] strs = newItem.name.Split('(');
             newItem.name = strs[0];
             newItem.transform.SetParent(parent);
+            newItem.transform.position = new Vector3(-10000f, -10000f, -10000f);
             newItem.gameObject.SetActive(false);
             queue.Enqueue(newItem);
             despawnList.Add(newItem);
@@ -123,7 +124,7 @@ public class MemoryPool<T> : System.IDisposable where T : MonoBehaviour
 
         obj.gameObject.SetActive(false);
         obj.transform.SetParent(parent);
-        obj.transform.localPosition = Vector3.zero;
+        obj.transform.position = new Vector3(-10000f, -10000f, -10000f);
         queue.Enqueue(obj);
     }
 

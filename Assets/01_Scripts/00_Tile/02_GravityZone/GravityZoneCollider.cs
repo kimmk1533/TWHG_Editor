@@ -7,7 +7,7 @@ public class GravityZoneCollider : MonoBehaviour, IEraserableTile, IClickedObjec
     protected GravityZone m_GravityZone;
 
     #region 내부 컴포넌트
-    protected BoxCollider2D m_Collider;
+    protected MyPhysics.BoxCollider2D m_Collider;
     #endregion
     #region 내부 프로퍼티
     #region 매니저
@@ -21,6 +21,11 @@ public class GravityZoneCollider : MonoBehaviour, IEraserableTile, IClickedObjec
     public void __Initialize(GravityZone gravityZone)
     {
         m_GravityZone = gravityZone;
+
+        if (null == m_Collider)
+        {
+            m_Collider = GetComponent<MyPhysics.BoxCollider2D>();
+        }
     }
 
     public void EraseTile(E_ObjectType currentType = E_ObjectType.None)

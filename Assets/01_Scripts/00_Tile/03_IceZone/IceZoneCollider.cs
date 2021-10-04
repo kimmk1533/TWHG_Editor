@@ -7,7 +7,7 @@ public class IceZoneCollider : MonoBehaviour, IClickedObject, IEraserableTile
     protected IceZone m_IceZone;
 
     #region 내부 컴포넌트
-    protected BoxCollider2D m_Collider;
+    protected MyPhysics.BoxCollider2D m_Collider;
     #endregion
     #region 내부 프로퍼티 
     #region 매니저
@@ -24,7 +24,7 @@ public class IceZoneCollider : MonoBehaviour, IClickedObject, IEraserableTile
 
         if (null == m_Collider)
         {
-            m_Collider = GetComponentInChildren<BoxCollider2D>();
+            m_Collider = GetComponent<MyPhysics.BoxCollider2D>();
         }
     }
 
