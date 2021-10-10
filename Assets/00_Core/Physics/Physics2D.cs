@@ -9,6 +9,7 @@ namespace MyPhysics
         private static Vector2 m_Gravity = new Vector2(0f, -9.81f);
         private static Color m_ColliderColor = new Color(145f / 255f, 244f / 255f, 139f / 255f, 192f / 255f);
         private static Color m_BoundingBoxColor = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+        private static Dictionary<int, int> m_LayerCollisionMask = new Dictionary<int, int>();
 
         public static Vector2 gravity { get => m_Gravity; set => m_Gravity = value; }
         public static Color colliderColor { get => m_ColliderColor; set => m_ColliderColor = value; }
@@ -20,49 +21,59 @@ namespace MyPhysics
         // 사전 검사 (추후 다이나믹 AABB로 수정)
         public static bool FirstCheckCollision(Collider2D A, Collider2D B)
         {
-            Vector2 CenterDistance = B.bounds.center - A.bounds.center;
+            if ((m_LayerCollisionMask[A.gameObject.layer] & (1 << B.gameObject.layer)) == 0 ||
+                (m_LayerCollisionMask[B.gameObject.layer] & (1 << A.gameObject.layer)) == 0)
+                return false;
 
-            Vector2 A_min = new Vector2(float.MaxValue, float.MaxValue);
-            Vector2 A_max = new Vector2(float.MinValue, float.MinValue);
+            if (null == A.attachedRigidbody &&
+                null == B.attachedRigidbody)
+                return false;
 
-            Vector2 B_min = new Vector2(float.MaxValue, float.MaxValue);
-            Vector2 B_max = new Vector2(float.MinValue, float.MinValue);
+            return true;
 
-            for (int i = 0; i < 4; ++i)
-            {
-                if (A[i].x < A_min.x)
-                    A_min.x = A[i].x;
-                if (A[i].y < A_min.y)
-                    A_min.y = A[i].y;
+            //Vector2 CenterDistance = B.bounds.center - A.bounds.center;
 
-                if (A[i].x > A_max.x)
-                    A_max.x = A[i].x;
-                if (A[i].y > A_max.y)
-                    A_max.y = A[i].y;
+            //Vector2 A_min = new Vector2(float.MaxValue, float.MaxValue);
+            //Vector2 A_max = new Vector2(float.MinValue, float.MinValue);
 
-                if (B[i].x < B_min.x)
-                    B_min.x = B[i].x;
-                if (B[i].y < B_min.y)
-                    B_min.y = B[i].y;
+            //Vector2 B_min = new Vector2(float.MaxValue, float.MaxValue);
+            //Vector2 B_max = new Vector2(float.MinValue, float.MinValue);
 
-                if (B[i].x > B_max.x)
-                    B_max.x = B[i].x;
-                if (B[i].y > B_max.y)
-                    B_max.y = B[i].y;
-            }
+            //for (int i = 0; i < 4; ++i)
+            //{
+            //    if (A[i].x < A_min.x)
+            //        A_min.x = A[i].x;
+            //    if (A[i].y < A_min.y)
+            //        A_min.y = A[i].y;
 
-            Vector2 A_Extents = (A_max - A_min) * 0.5f;
-            Vector2 B_Extents = (B_max - B_min) * 0.5f;
-            Vector2 Distance = A_Extents + B_Extents;
+            //    if (A[i].x > A_max.x)
+            //        A_max.x = A[i].x;
+            //    if (A[i].y > A_max.y)
+            //        A_max.y = A[i].y;
 
-            if (Mathf.Abs(CenterDistance.x) <= Mathf.Abs(Distance.x) &&
-                Mathf.Abs(CenterDistance.y) <= Mathf.Abs(Distance.y))
-            {
+            //    if (B[i].x < B_min.x)
+            //        B_min.x = B[i].x;
+            //    if (B[i].y < B_min.y)
+            //        B_min.y = B[i].y;
 
-                return true;
-            }
+            //    if (B[i].x > B_max.x)
+            //        B_max.x = B[i].x;
+            //    if (B[i].y > B_max.y)
+            //        B_max.y = B[i].y;
+            //}
 
-            return false;
+            //Vector2 A_Extents = (A_max - A_min) * 0.5f;
+            //Vector2 B_Extents = (B_max - B_min) * 0.5f;
+            //Vector2 Distance = A_Extents + B_Extents;
+
+            //if (Mathf.Abs(CenterDistance.x) <= Mathf.Abs(Distance.x) &&
+            //    Mathf.Abs(CenterDistance.y) <= Mathf.Abs(Distance.y))
+            //{
+
+            //    return true;
+            //}
+
+            //return false;
         }
 
         // AABB (Axis Aligned Bounding Box)
@@ -356,6 +367,10 @@ namespace MyPhysics
 
             return false;
         }
+        public static void SetLayerCollisionMask(int layer, int layerMask)
+        {
+            m_LayerCollisionMask[layer] = layerMask;
+        }
         #endregion
         //UnityEngine.Physics2D
         public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction)
@@ -367,7 +382,7 @@ namespace MyPhysics
         public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance)
         {
             RaycastHit2D hit_result = new RaycastHit2D();
-            
+
             return hit_result;
         }
         public static Collider2D OverlapPoint(Vector2 point)
@@ -424,7 +439,7 @@ namespace MyPhysics
 
             foreach (var item in Physics2DManager.colliderList)
             {
-                if ((layerMask & item.gameObject.layer) == 0 ||
+                if ((layerMask & (1 << item.gameObject.layer)) == 0 ||
                     !item.OverlapPoint(point))
                 {
                     continue;
@@ -432,9 +447,6 @@ namespace MyPhysics
 
                 colliders.Add(item);
             }
-
-            if (colliders.Count <= 0)
-                return null;
 
             return colliders.ToArray();
         }

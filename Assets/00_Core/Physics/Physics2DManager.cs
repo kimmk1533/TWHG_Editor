@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace MyPhysics
 {
-    public class Physics2DManager : Singleton<Physics2DManager>
+    public sealed class Physics2DManager : Singleton<Physics2DManager>
     {
-        protected static List<Collider2D> m_ColliderList;
-        protected List<KeyValuePair<Collider2D, Collider2D>> m_HitColliderList;
-        protected event CollisionEventHandler m_OnCollisionEnter;
+        private static List<Collider2D> m_ColliderList;
+        private List<KeyValuePair<Collider2D, Collider2D>> m_HitColliderList;
+        private event CollisionEventHandler m_OnCollisionEnter;
 
         #region 외부 프로퍼티
         public static List<Collider2D> colliderList => m_ColliderList;
@@ -22,8 +22,17 @@ namespace MyPhysics
         #region 유니티 콜백 함수
         void Awake()
         {
+            DontDestroyOnLoad(gameObject);
+
             m_ColliderList = new List<Collider2D>();
             m_HitColliderList = new List<KeyValuePair<Collider2D, Collider2D>>();
+
+            for (E_ObjectType i = E_ObjectType.Player; i < E_ObjectType.Max; ++i)
+            {
+                Physics2D.SetLayerCollisionMask(LayerMask.NameToLayer(i.ToString()), -1);
+            }
+            Physics2D.SetLayerCollisionMask(LayerMask.NameToLayer("Player"), LayerMask.GetMask("Enemy", "Coin", "Wall", "SafetyZone", "GravityZone", "IceZone"));
+            Physics2D.SetLayerCollisionMask(LayerMask.NameToLayer("Wall"), LayerMask.GetMask("Enemy", "Coin"));
         }
 
         void FixedUpdate()
@@ -38,14 +47,13 @@ namespace MyPhysics
                 {
                     Collider2D collider2D_B = m_ColliderList[j];
 
-                    // 다이나믹 AABB 추가해야함
-                    //if (!Physics2D.FirstCheckCollision(collider2D_A, collider2D_B))
-                    //    continue;
+                    if (!Physics2D.FirstCheckCollision(collider2D_A, collider2D_B))
+                        continue;
 
                     if (Physics2D.TypeCollision(collider2D_A, collider2D_B))
                     {
                         m_HitColliderList.Add(new KeyValuePair<Collider2D, Collider2D>(collider2D_A, collider2D_B));
-                        Debug.Log(collider2D_A + " 충돌 " + collider2D_B);
+                        Debug.Log(collider2D_A.name + " 충돌 " + collider2D_B.name);
                     }
                 }
             }
