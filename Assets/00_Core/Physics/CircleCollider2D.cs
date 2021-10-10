@@ -92,12 +92,12 @@ namespace MyPhysics
 
             for (int angle = 0; angle < 360; ++angle)
             {
-                float from_x = center.x + Mathf.Cos(Mathf.Deg2Rad * angle) * scaledRadius;
-                float from_y = center.y + Mathf.Sin(Mathf.Deg2Rad * angle) * scaledRadius;
+                float from_x = center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + transform.eulerAngles.z)) * scaledRadius;
+                float from_y = center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + transform.eulerAngles.z)) * scaledRadius;
                 Vector2 from = new Vector2(from_x, from_y);
 
-                float to_x = center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + 1)) * scaledRadius;
-                float to_y = center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + 1)) * scaledRadius;
+                float to_x = center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + 1 + transform.eulerAngles.z)) * scaledRadius;
+                float to_y = center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + 1 + transform.eulerAngles.z)) * scaledRadius;
                 Vector2 to = new Vector2(to_x, to_y);
 
                 Gizmos.DrawLine(from, to);
