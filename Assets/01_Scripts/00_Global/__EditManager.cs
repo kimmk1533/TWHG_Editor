@@ -71,6 +71,7 @@ public class __EditManager : Singleton<__EditManager>
 
     #region 옵션
     protected GameObject m_Current_Panel_Option;
+    protected int m_AllObjectLayerMask;
 
     #region 선택한 오브젝트 옵션
     [Header("Selected Object Option")]
@@ -152,6 +153,8 @@ public class __EditManager : Singleton<__EditManager>
     protected ResourcesManager M_Resources => ResourcesManager.Instance;
     protected __GameManager M_Game => __GameManager.Instance;
     protected StageManager M_Stage => StageManager.Instance;
+    protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
+    protected UndoRedoManager M_UndoRedo => UndoRedoManager.Instance;
 
     protected PlayerManager M_Player => PlayerManager.Instance;
     protected EnemyManager M_Enemy => EnemyManager.Instance;
@@ -162,7 +165,6 @@ public class __EditManager : Singleton<__EditManager>
     protected SafetyZoneManager M_SafetyZone => SafetyZoneManager.Instance;
     protected GravityZoneManager M_GravityZone => GravityZoneManager.Instance;
     protected IceZoneManager M_IceZone => IceZoneManager.Instance;
-    protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
     #endregion
 
     protected Vector3 spawnPoint_Obj
@@ -258,6 +260,46 @@ public class __EditManager : Singleton<__EditManager>
     public CheckBox safetyZoneFinishZone { get => m_SafetyZone_CheckBox_FinishZone; }
     #endregion
     #region 내부 함수
+    protected void Erase(GameObject obj, GameObject ui_obj)
+    {
+        if (null != m_ClickedObject &&
+                obj?.GetComponent<IClickedObject>() == m_ClickedObject)
+        {
+            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
+            if (null != renderer)
+            {
+                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
+            }
+
+            m_ClickedObject = null;
+
+            SetSelectedUI(E_ObjectType.Erase);
+        }
+
+        IEraserableObject eraserableObject = obj?.GetComponent<IEraserableObject>();
+        if (null != eraserableObject)
+        {
+            eraserableObject.EraseObject();
+
+            M_Stage.canSave = false;
+        }
+        IEraserableTile eraserableTile = obj?.GetComponent<IEraserableTile>();
+        if (null != eraserableTile)
+        {
+            eraserableTile.EraseTile();
+
+            M_Stage.canSave = false;
+        }
+
+        Tile tile = ui_obj.GetComponent<Tile>();
+
+        if (null != tile)
+        {
+            tile.SetType(E_TileType.None);
+
+            M_Stage.canSave = false;
+        }
+    }
     protected void DrawInEditMode()
     {
         if (IsPointerOverUIObject())
@@ -288,49 +330,14 @@ public class __EditManager : Singleton<__EditManager>
             return;
         #endregion
 
-        GameObject obj = obj_hit.transform?.gameObject;
+        GameObject obj = MyPhysics.Physics2D.OverlapPoint(obj_ray.origin)?.gameObject;//obj_hit.transform?.gameObject;
         GameObject ui_obj = results[0].gameObject;
 
         #region Erase
-        if (IsRight)
+        if (IsRight ||
+            (IsLeft && m_SelectedType == E_ObjectType.Erase))
         {
-            if (null != m_ClickedObject &&
-                obj?.GetComponent<IClickedObject>() == m_ClickedObject)
-            {
-                SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
-                if (null != renderer)
-                {
-                    renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
-                }
-
-                m_ClickedObject = null;
-
-                SetSelectedUI(E_ObjectType.Erase);
-            }
-
-            IEraserableObject eraserableObject = obj?.GetComponent<IEraserableObject>();
-            if (null != eraserableObject)
-            {
-                eraserableObject.EraseObject();
-
-                M_Stage.canSave = false;
-            }
-            IEraserableTile eraserableTile = obj?.GetComponent<IEraserableTile>();
-            if (null != eraserableTile)
-            {
-                eraserableTile.EraseTile();
-
-                M_Stage.canSave = false;
-            }
-
-            Tile tile = ui_obj.GetComponent<Tile>();
-
-            if (null != tile)
-            {
-                tile.SetType(E_TileType.None);
-
-                M_Stage.canSave = false;
-            }
+            Erase(obj, ui_obj);
         }
         #endregion
 
@@ -344,32 +351,154 @@ public class __EditManager : Singleton<__EditManager>
                 switch (m_SelectedType)
                 {
                     case E_ObjectType.Player:
-                        // 플레이어 스폰
-                        Player player = M_Player.SpawnPlayer();
-                        // 위치 설정
-                        player.transform.position = spawnPoint_Obj;
+                        {
+                            UndoRedoArgs args = new UndoRedoArgs();
 
-                        M_Stage.canSave = false;
+                            #region Undo Variable
+                            // 이전 스폰 여부
+                            bool spawn = M_Player.playerActive;
+                            // 이전 위치
+                            Vector3 lastPos = M_Player.playerPos;
+
+                            // 이전 저장 가능 여부
+                            bool canSave = M_Stage.canSave;
+                            #endregion
+
+                            // 플레이어 스폰
+                            Player player = M_Player.SpawnPlayer();
+                            // 위치 설정
+                            player.transform.position = spawnPoint_Obj;
+
+                            M_Stage.canSave = false;
+
+                            #region Redo Variable
+                            // 현재 위치
+                            Vector3 curPos = spawnPoint_Obj;
+                            #endregion
+
+                            #region Undo Redo
+                            args.undo += () =>
+                            {
+                                player.gameObject.SetActive(spawn);
+                                player.transform.position = lastPos;
+
+                                M_Stage.canSave = canSave;
+                            };
+                            args.redo += () =>
+                            {
+                                player.gameObject.SetActive(true);
+                                player.transform.position = curPos;
+
+                                M_Stage.canSave = false;
+                            };
+
+                            M_UndoRedo.AddUndo(args);
+                            #endregion
+                        }
                         break;
                     case E_ObjectType.Enemy:
-                        // 적 스폰
-                        Enemy enemy = M_Enemy.SpawnEnemy();
-                        // 위치 설정
-                        enemy.transform.position = spawnPoint_Obj;
-                        // 적 타입 설정
-                        enemy.type = enemy_Type;
-                        // 적 이동 속도 설정
-                        enemy.speed = enemy_Speed;
+                        {
+                            UndoRedoArgs args = new UndoRedoArgs();
 
-                        M_Stage.canSave = false;
+                            #region Undo Variable
+                            // 이전 저장 가능 여부
+                            bool canSave = M_Stage.canSave;
+                            #endregion
+
+                            // 적 스폰
+                            Enemy enemy = M_Enemy.SpawnEnemy();
+                            // 위치 설정
+                            enemy.transform.position = spawnPoint_Obj;
+                            // 적 타입 설정
+                            enemy.type = enemy_Type;
+                            // 적 이동 속도 설정
+                            enemy.speed = enemy_Speed;
+
+                            M_Stage.canSave = false;
+
+                            args.objectValue = enemy.gameObject;
+
+                            #region Redo Variable
+                            // 현재 위치
+                            Vector3 curPos = spawnPoint_Obj;
+                            // 현재 적 타입
+                            E_EnemyType curType = enemy_Type;
+                            // 현재 적 이동 속도
+                            float curSpeed = enemy_Speed;
+                            #endregion
+
+                            #region Undo Redo
+                            args.undo += () =>
+                            {
+                                args.objectValue.GetComponentInChildren<EnemyCollider>().EraseObject();
+
+                                M_Stage.canSave = canSave;
+                            };
+                            args.redo += () =>
+                            {
+                                // 적 스폰
+                                Enemy enemy = M_Enemy.SpawnEnemy();
+                                // 위치 설정
+                                enemy.transform.position = curPos;
+                                // 적 타입 설정
+                                enemy.type = curType;
+                                // 적 이동 속도 설정
+                                enemy.speed = curSpeed;
+
+                                M_Stage.canSave = false;
+
+                                args.objectValue = enemy.gameObject;
+                            };
+
+                            M_UndoRedo.AddUndo(args);
+                            #endregion
+                        }
                         break;
                     case E_ObjectType.Coin:
-                        // 코인 스폰
-                        Coin coin = M_Coin.SpawnCoin();
-                        // 위치 설정
-                        coin.transform.position = spawnPoint_Obj;
+                        {
+                            UndoRedoArgs args = new UndoRedoArgs();
 
-                        M_Stage.canSave = false;
+                            #region Undo Variable
+                            // 이전 저장 가능 여부
+                            bool canSave = M_Stage.canSave;
+                            #endregion
+
+                            // 코인 스폰
+                            Coin coin = M_Coin.SpawnCoin();
+                            // 위치 설정
+                            coin.transform.position = spawnPoint_Obj;
+
+                            M_Stage.canSave = false;
+
+                            args.objectValue = coin.gameObject;
+
+                            #region Redo Variable
+                            // 현재 위치
+                            Vector3 curPos = spawnPoint_Obj;
+                            #endregion
+
+                            #region Undo Redo
+                            args.undo += () =>
+                            {
+                                args.objectValue.GetComponentInChildren<CoinCollider>().EraseObject();
+
+                                M_Stage.canSave = canSave;
+                            };
+                            args.redo += () =>
+                            {
+                                // 코인 스폰
+                                Coin coin = M_Coin.SpawnCoin();
+                                // 위치 설정
+                                coin.transform.position = curPos;
+
+                                M_Stage.canSave = false;
+
+                                args.objectValue = coin.gameObject;
+                            };
+
+                            M_UndoRedo.AddUndo(args);
+                            #endregion
+                        }
                         break;
                 }
             }
@@ -494,47 +623,6 @@ public class __EditManager : Singleton<__EditManager>
                         }
                     }
                     break;
-                case E_ObjectType.Erase:
-                    {
-                        if (null != m_ClickedObject &&
-                            obj?.GetComponent<IClickedObject>() == m_ClickedObject)
-                        {
-                            SpriteRenderer renderer = m_ClickedObject?.GetSpriteRenderer();
-                            if (null != renderer)
-                            {
-                                renderer.sortingLayerID = m_ClickedObjectSortingLayerID;
-                            }
-
-                            m_ClickedObject = null;
-
-                            SetSelectedUI(E_ObjectType.Erase);
-                        }
-
-                        IEraserableObject eraserableObject = obj?.GetComponent<IEraserableObject>();
-                        if (null != eraserableObject)
-                        {
-                            eraserableObject.EraseObject();
-
-                            M_Stage.canSave = false;
-                        }
-                        IEraserableTile eraserableTile = obj?.GetComponent<IEraserableTile>();
-                        if (null != eraserableTile)
-                        {
-                            eraserableTile.EraseTile();
-
-                            M_Stage.canSave = false;
-                        }
-
-                        Tile tile = ui_obj.GetComponent<Tile>();
-
-                        if (null != tile)
-                        {
-                            tile.SetType(E_TileType.None);
-
-                            M_Stage.canSave = false;
-                        }
-                    }
-                    break;
             }
         }
         #endregion
@@ -556,13 +644,8 @@ public class __EditManager : Singleton<__EditManager>
         #endregion
 
         Vector2 origin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        int layerMask = 0;
-        for (E_ObjectType i = E_ObjectType.Player; i < E_ObjectType.Max; ++i)
-        {
-            layerMask += 1 << LayerMask.NameToLayer(i.ToString());
-        }
 
-        Collider2D[] colliders = Physics2D.OverlapPointAll(origin, layerMask);
+        var colliders = MyPhysics.Physics2D.OverlapPointAll(origin, m_AllObjectLayerMask);
 
         #region 추후 인덱스 대신 Peek, Pop, Push로 변경
         //#region 빈 곳 클릭
@@ -690,7 +773,8 @@ public class __EditManager : Singleton<__EditManager>
 
         for (int i = 0; i < currentCount; ++i)
         {
-            if (m_CurrentClickedObjectList[i] == m_LastClickedObjectList[i])
+            if (i < m_LastClickedObjectList.Count &&
+                m_CurrentClickedObjectList[i] == m_LastClickedObjectList[i])
             {
                 if (m_ClickIndex <= i)
                 {
@@ -738,6 +822,7 @@ public class __EditManager : Singleton<__EditManager>
         }
         #endregion
     }
+
     protected void ChangeCursor()
     {
         if (IsPointerOverUIObject())
@@ -1075,6 +1160,12 @@ public class __EditManager : Singleton<__EditManager>
         m_Canvas_BG.GetComponent<RectTransform>().sizeDelta = size;
 
         m_IsClickUI = false;
+
+        m_AllObjectLayerMask = 0;
+        for (E_ObjectType i = E_ObjectType.Player; i < E_ObjectType.Max; ++i)
+        {
+            m_AllObjectLayerMask += 1 << LayerMask.NameToLayer(i.ToString());
+        }
 
         #region Enemy
         #region Type
@@ -1574,7 +1665,7 @@ public class __EditManager : Singleton<__EditManager>
     #endregion
     #endregion
     #region 유니티 콜백 함수
-    private void Update()
+    protected void Update()
     {
         if (m_IsEdit)
         {

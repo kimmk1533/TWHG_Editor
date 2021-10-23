@@ -716,7 +716,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &76015400
 GameObject:
@@ -979,20 +979,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1eacb7b1759e43439b0f7e348330562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mass: 1
-  m_Drag: 1
-  m_UseGravity: 0
-  m_Gravity: -9.8
-  m_IsKinematic: 0
-  m_UseChildCollider: 0
-  m_Speed: 0
-  m_DragSpeed: 0
-  m_Velocity: {x: 0, y: 0}
-  m_Acceleration: {x: 0, y: 0}
-  m_Force: {x: 0, y: 0}
-  m_CalculedDrag: {x: 0, y: 0}
-  m_Collider: {fileID: 0}
-  m_LayerMask: 0
 --- !u!1 &91266069
 GameObject:
   m_ObjectHideFlags: 0
@@ -1035,7 +1021,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &96867179
 GameObject:
@@ -1154,7 +1140,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &107995667
 GameObject:
@@ -1629,7 +1615,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &182082573
 GameObject:
@@ -2166,7 +2152,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &237163942
 GameObject:
@@ -2289,7 +2275,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &256612479
 GameObject:
@@ -3368,7 +3354,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 306908854}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1256445110}
+        m_TargetAssemblyTypeName: __SceneManager, Assembly-CSharp
+        m_MethodName: LoadMainMenuScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &306908854
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4118,20 +4116,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1eacb7b1759e43439b0f7e348330562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mass: 1
-  m_Drag: 1
-  m_UseGravity: 0
-  m_Gravity: -9.8
-  m_IsKinematic: 0
-  m_UseChildCollider: 0
-  m_Speed: 0
-  m_DragSpeed: 0
-  m_Velocity: {x: 0, y: 0}
-  m_Acceleration: {x: 0, y: 0}
-  m_Force: {x: 0, y: 0}
-  m_CalculedDrag: {x: 0, y: 0}
-  m_Collider: {fileID: 0}
-  m_LayerMask: 0
 --- !u!1 &352909573
 GameObject:
   m_ObjectHideFlags: 0
@@ -4162,7 +4146,7 @@ Transform:
   - {fileID: 1076067675}
   - {fileID: 1762384753}
   m_Father: {fileID: 0}
-  m_RootOrder: 25
+  m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &353282345
 GameObject:
@@ -5413,20 +5397,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1eacb7b1759e43439b0f7e348330562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mass: 1
-  m_Drag: 1
-  m_UseGravity: 0
-  m_Gravity: -9.8
-  m_IsKinematic: 0
-  m_UseChildCollider: 0
-  m_Speed: 0
-  m_DragSpeed: 0
-  m_Velocity: {x: 0, y: 0}
-  m_Acceleration: {x: 0, y: 0}
-  m_Force: {x: 0, y: 0}
-  m_CalculedDrag: {x: 0, y: 0}
-  m_Collider: {fileID: 0}
-  m_LayerMask: 0
 --- !u!1 &476488985
 GameObject:
   m_ObjectHideFlags: 0
@@ -7789,7 +7759,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0000038146973}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &747468147
@@ -9173,20 +9143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1eacb7b1759e43439b0f7e348330562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mass: 1
-  m_Drag: 1
-  m_UseGravity: 0
-  m_Gravity: -9.8
-  m_IsKinematic: 0
-  m_UseChildCollider: 0
-  m_Speed: 0
-  m_DragSpeed: 0
-  m_Velocity: {x: 0, y: 0}
-  m_Acceleration: {x: 0, y: 0}
-  m_Force: {x: 0, y: 0}
-  m_CalculedDrag: {x: 0, y: 0}
-  m_Collider: {fileID: 0}
-  m_LayerMask: 0
 --- !u!1 &924052684
 GameObject:
   m_ObjectHideFlags: 0
@@ -11192,20 +11148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1eacb7b1759e43439b0f7e348330562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mass: 1
-  m_Drag: 1
-  m_UseGravity: 0
-  m_Gravity: -9.8
-  m_IsKinematic: 0
-  m_UseChildCollider: 0
-  m_Speed: 0
-  m_DragSpeed: 0
-  m_Velocity: {x: 0, y: 0}
-  m_Acceleration: {x: 0, y: 0}
-  m_Force: {x: 0, y: 0}
-  m_CalculedDrag: {x: 0, y: 0}
-  m_Collider: {fileID: 0}
-  m_LayerMask: 0
 --- !u!1 &1115781514
 GameObject:
   m_ObjectHideFlags: 0
@@ -11313,7 +11255,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 24
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1118005021
 GameObject:
@@ -11887,7 +11829,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 20
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1152907724
 GameObject:
@@ -11919,6 +11861,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flag: 1
+  m_CanSave: 0
   m_SaveManagerList:
   - {fileID: 1423210554}
   - {fileID: 106963848}
@@ -12606,7 +12549,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 22
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1257087588
 GameObject:
@@ -15053,20 +14996,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1eacb7b1759e43439b0f7e348330562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mass: 1
-  m_Drag: 1
-  m_UseGravity: 0
-  m_Gravity: -9.8
-  m_IsKinematic: 0
-  m_UseChildCollider: 0
-  m_Speed: 0
-  m_DragSpeed: 0
-  m_Velocity: {x: 0, y: 0}
-  m_Acceleration: {x: 0, y: 0}
-  m_Force: {x: 0, y: 0}
-  m_CalculedDrag: {x: 0, y: 0}
-  m_Collider: {fileID: 0}
-  m_LayerMask: 0
 --- !u!1 &1406250379
 GameObject:
   m_ObjectHideFlags: 0
@@ -15342,7 +15271,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1426981884
 GameObject:
@@ -15827,7 +15756,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 21
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1481415774
 GameObject:
@@ -16604,7 +16533,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 23
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1599521859
 GameObject:
@@ -16650,7 +16579,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1600671202
 GameObject:
@@ -17404,6 +17333,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1685801643}
   m_CullTransparentMesh: 1
+--- !u!1 &1686296971
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1686296973}
+  - component: {fileID: 1686296972}
+  m_Layer: 0
+  m_Name: UndoRedoManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1686296972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686296971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e0e4098b41138b41bb01a054ef3282f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flag: 1
+  m_MaxCount: 30
+--- !u!4 &1686296973
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686296971}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1687340440
 GameObject:
   m_ObjectHideFlags: 0
@@ -17685,7 +17659,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 17
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1707667344
 GameObject:
@@ -18954,7 +18928,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 18
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1842205074
 GameObject:
@@ -19247,7 +19221,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1859152404
 GameObject:
@@ -21009,20 +20983,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1eacb7b1759e43439b0f7e348330562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mass: 1
-  m_Drag: 1
-  m_UseGravity: 1
-  m_Gravity: -9.81
-  m_IsKinematic: 0
-  m_UseChildCollider: 0
-  m_Speed: 0
-  m_DragSpeed: 0
-  m_Velocity: {x: 0, y: 0}
-  m_Acceleration: {x: 0, y: 0}
-  m_Force: {x: 0, y: 0}
-  m_CalculedDrag: {x: 0, y: 0}
-  m_Collider: {fileID: 0}
-  m_LayerMask: 0
 --- !u!212 &2130390198
 SpriteRenderer:
   m_ObjectHideFlags: 0
