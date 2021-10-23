@@ -11,6 +11,9 @@ public class StageManager : Singleton<StageManager>
 {
     protected E_TileType[,] m_Stage;
 
+    [SerializeField]
+    protected bool m_CanSave;
+
     [SerializeField, ReadOnly(true)]
     protected List<GameObject> m_SaveManagerList;
     protected List<ISaveHandler> m_SaveList;
@@ -19,7 +22,6 @@ public class StageManager : Singleton<StageManager>
     protected E_Type m_Type;
 
     protected string m_StageName;
-    protected bool m_CanSave;
     [SerializeField]
     protected GameObject m_SaveLoadPanel;
     [SerializeField]

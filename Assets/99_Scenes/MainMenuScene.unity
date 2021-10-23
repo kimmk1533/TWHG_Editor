@@ -135,7 +135,6 @@ GameObject:
   - component: {fileID: 93017374}
   - component: {fileID: 93017373}
   - component: {fileID: 93017372}
-  - component: {fileID: 93017371}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -143,18 +142,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!156049354 &93017371
-Grid:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 93017370}
-  m_Enabled: 1
-  m_CellSize: {x: 100, y: 100, z: 100}
-  m_CellGap: {x: 0, y: 0, z: 0}
-  m_CellLayout: 0
-  m_CellSwizzle: 0
 --- !u!114 &93017372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,7 +307,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 403449564}
         m_TargetAssemblyTypeName: __SceneManager, Assembly-CSharp
-        m_MethodName: LoadGameScene_Edit
+        m_MethodName: LoadGameScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
