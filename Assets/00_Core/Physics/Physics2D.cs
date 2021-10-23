@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static MyPhysics.Physics2DManager;
 
 namespace MyPhysics
 {
@@ -9,27 +10,39 @@ namespace MyPhysics
         private static Vector2 m_Gravity = new Vector2(0f, -9.81f);
         private static Color m_ColliderColor = new Color(145f / 255f, 244f / 255f, 139f / 255f, 192f / 255f);
         private static Color m_BoundingBoxColor = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
-        private static Dictionary<int, int> m_LayerCollisionMask = new Dictionary<int, int>();
 
         public static Vector2 gravity { get => m_Gravity; set => m_Gravity = value; }
         public static Color colliderColor { get => m_ColliderColor; set => m_ColliderColor = value; }
         public static Color boundingBoxColor { get => m_BoundingBoxColor; set => m_BoundingBoxColor = value; }
 
+        #region 내부 함수
+        private static bool CheckLayerMask(int layer, int layerMask)
+        {
+            return (layerMask & (1 << layer)) == 0;
+        }
+        #endregion
         #region 외부 함수
         #region Collision Detection
         // Collision https://tt91.tistory.com/57
-        // 사전 검사 (추후 다이나믹 AABB로 수정)
-        public static bool FirstCheckCollision(Collider2D A, Collider2D B)
+        // 사전 검사 (추후 다이나믹 AABB 추가)
+        public static bool First_Collision_Check(Collision2D collision)
         {
-            if ((m_LayerCollisionMask[A.gameObject.layer] & (1 << B.gameObject.layer)) == 0 ||
-                (m_LayerCollisionMask[B.gameObject.layer] & (1 << A.gameObject.layer)) == 0)
-                return false;
+            Collider2D A = collision.collider;
+            Collider2D B = collision.otherCollider;
 
-            if (null == A.attachedRigidbody &&
-                null == B.attachedRigidbody)
-                return false;
+            //if (AABB_Collision(collision))
+            {
+                if (UnityEngine.Physics2D.GetIgnoreLayerCollision(A.gameObject.layer, B.gameObject.layer))
+                    return false;
 
-            return true;
+                if (null == A.attachedRigidbody &&
+                    null == B.attachedRigidbody)
+                    return false;
+
+                return true;
+            }
+
+            return false;
 
             //Vector2 CenterDistance = B.bounds.center - A.bounds.center;
 
@@ -77,100 +90,178 @@ namespace MyPhysics
         }
 
         // AABB (Axis Aligned Bounding Box)
-        public static bool AABBCollision(Collider2D A, Collider2D B)
+        private static bool AABB_Collision(Collision2D collision)
         {
-            if (A.bounds.max.x < B.bounds.min.x || A.bounds.min.x > B.bounds.max.x) return false;
-            if (A.bounds.max.y < B.bounds.min.y || A.bounds.min.y > B.bounds.max.y) return false;
+            Collider2D A = collision.collider;
+            Collider2D B = collision.otherCollider;
+
+            Bounds bounds_A = A.GetBoundingBox();
+            Bounds bounds_B = B.GetBoundingBox();
+
+            Vector2 extents = bounds_A.extents + bounds_B.extents;
+            Vector2 distance = B.transform.position - A.transform.position;
+
+            float x_overlap = extents.x - Mathf.Abs(distance.x);
+            float y_overlap = extents.y - Mathf.Abs(distance.y);
+
+            if (x_overlap < 0 || y_overlap < 0)
+                return false;
 
             return true;
         }
         // OBB (Oriented Bounding Box)
-        public static bool OBBCollision(Collider2D A, Collider2D B)
+        // OBB vs OBB
+        private static bool OBB_Collision(ref Collision2D collision)
         {
-            // 기준이 될 각 변
-            Vector2[] edges = new Vector2[4];
-            // 기준이 될 벡터의 기울기
-            float[] m = new float[4];
-            // 기준이 될 벡터
-            Vector2[] normals = new Vector2[4];
-            // 기준이 될 축
-            Vector2[] axises = new Vector2[4];
+            Collider2D A = collision.collider;
+            Collider2D B = collision.otherCollider;
 
-            // 각 변 설정
-            edges[0] = A[2] - A[3];
-            edges[1] = A[1] - A[2];
-            edges[2] = B[2] - B[3];
-            edges[3] = B[1] - B[2];
+            Vector2 distance = B.transform.position - A.transform.position;
 
-            // 기준이 될 축 설정
+            Vector2[] axis = new Vector2[4]
+            {
+                A.GetUpVector(),
+                B.GetUpVector(),
+                A.GetRightVector(),
+                B.GetRightVector(),
+            };
+
             for (int i = 0; i < 4; ++i)
             {
-                // 수직인 벡터의 기울기 계산
-                if (edges[i].x == 0)
-                {
-                    normals[i] = Vector2.right;
-                }
-                else if (edges[i].y == 0)
-                {
-                    normals[i] = Vector2.up;
-                }
-                else
-                {
-                    m[i] = -1f / (edges[i].y / edges[i].x);
+                float sum = 0f;
+                Vector2 unit = axis[i].normalized;
 
-                    // 수직인 벡터 생성
-                    normals[i] = new Vector2(1f, m[i]);
-                }
-
-                // 축으로 설정
-                axises[i] = normals[i].normalized;
-            }
-
-            float min_A, max_A;
-            float min_B, max_B;
-
-            // OBB 체크
-            for (int i = 0; i < 4; ++i)
-            {
-                min_A = float.MaxValue;
-                max_A = float.MinValue;
-
-                min_B = float.MaxValue;
-                max_B = float.MinValue;
-
-                // SAT (Separating Axis Theorem)
-                // 분리축 검사
                 for (int j = 0; j < 4; ++j)
                 {
-                    float projection_A = Vector2.Dot(A[j], axises[i]);
-                    min_A = Mathf.Min(min_A, projection_A);
-                    max_A = Mathf.Max(max_A, projection_A);
-
-                    float projection_B = Vector2.Dot(B[j], axises[i]);
-                    min_B = Mathf.Min(min_B, projection_B);
-                    max_B = Mathf.Max(max_B, projection_B);
+                    sum += Mathf.Abs(Vector2.Dot(axis[j], unit));
                 }
 
-                // 분리축이 존재할 경우
-                if (max_A < min_B || min_A > max_B)
-                    return false; // 충돌 안 함
+                // 분리되어 있거나 접하는 경우
+                if (Mathf.Abs(Vector2.Dot(distance, unit)) >= sum)
+                    return false;
             }
 
-            // 분리축이 존재하지 않는 경우
-            return true; // 충돌
-        }
+            float x_overlap = A.GetRightVector().x + B.GetRightVector().x - Mathf.Abs(distance.x);
+            float y_overlap = A.GetUpVector().y + B.GetUpVector().y - Mathf.Abs(distance.y);
 
+            if (x_overlap < y_overlap)
+            {
+                if (distance.x < 0f)
+                    collision.normal = Vector2.left;
+                else
+                    collision.normal = Vector2.right;
+
+                collision.penetration = x_overlap;
+            }
+            else
+            {
+                if (distance.y < 0f)
+                    collision.normal = Vector2.down;
+                else
+                    collision.normal = Vector2.up;
+
+                collision.penetration = y_overlap;
+            }
+
+            return true;
+
+            {
+                //Collider2D A = collision.collider;
+                //Collider2D B = collision.otherCollider;
+
+                //// 기준이 될 각 변
+                //Vector2[] edges = new Vector2[4];
+                //// 기준이 될 벡터
+                //Vector2[] normals = new Vector2[4];
+                //// 기준이 될 축
+                //Vector2[] axises = new Vector2[4];
+
+                //// 각 변 설정
+                //edges[0] = A[2] - A[3];
+                //edges[1] = A[1] - A[2];
+                //edges[2] = B[2] - B[3];
+                //edges[3] = B[1] - B[2];
+
+                //// 기준이 될 축 설정
+                //for (int i = 0; i < 4; ++i)
+                //{
+                //    // 수직 벡터
+                //    normals[i] = new Vector2(edges[i].y, -edges[i].x);
+
+                //    // 축으로 설정
+                //    axises[i] = normals[i].normalized;
+                //}
+
+                //float min_A, max_A;
+                //float min_B, max_B;
+
+                //// OBB 체크
+                //for (int i = 0; i < 4; ++i)
+                //{
+                //    min_A = float.MaxValue;
+                //    max_A = float.MinValue;
+
+                //    min_B = float.MaxValue;
+                //    max_B = float.MinValue;
+
+                //    // SAT (Separating Axis Theorem)
+                //    // 분리축 검사
+                //    for (int j = 0; j < 4; ++j)
+                //    {
+                //        float projection_A = Vector2.Dot(A[j], axises[i]);
+                //        min_A = Mathf.Min(min_A, projection_A);
+                //        max_A = Mathf.Max(max_A, projection_A);
+
+                //        float projection_B = Vector2.Dot(B[j], axises[i]);
+                //        min_B = Mathf.Min(min_B, projection_B);
+                //        max_B = Mathf.Max(max_B, projection_B);
+                //    }
+
+                //    // 분리축이 존재할 경우
+                //    if (max_A < min_B || min_A > max_B)
+                //        return false; // 충돌 안 함
+                //}
+
+                //// 분리축이 존재하지 않는 경우
+                //return true; // 충돌
+            }
+        }
         // Circle vs Circle
-        public static bool CircleVSCircleCollision(CircleCollider2D A, CircleCollider2D B)
+        private static bool Circle_Collision(ref Collision2D collision)
         {
-            Vector2 AtoB = B.center - A.center;
-            float radius = A.radius + B.radius;
+            CircleCollider2D A = collision.collider as CircleCollider2D;
+            CircleCollider2D B = collision.otherCollider as CircleCollider2D;
 
-            return radius * radius > AtoB.sqrMagnitude;
+            Vector2 distance = B.center - A.center;
+            float radius = A.radius + B.radius;
+            float squardRadius = radius * radius;
+
+            if (squardRadius < distance.sqrMagnitude)
+                return false;
+
+            float d = distance.magnitude;
+
+            // 두 원이 겹치지 않은 경우
+            if (d != 0)
+            {
+                collision.penetration = squardRadius - d;
+                collision.normal = distance.normalized;
+                return true;
+            }
+            // 두 원이 겹친 경우
+            else
+            {
+                collision.penetration = A.radius;
+                collision.normal = Vector2.up;
+                return true;
+            }
         }
-        // BoundingBox vs Circle
-        public static bool BoundingBoxVSCircleCollision(Collider2D A, CircleCollider2D B)
+        // OBB vs Circle
+        private static bool OBB_vs_Circle_Collision(ref Collision2D collision)
         {
+            Collider2D A = collision.collider;
+            CircleCollider2D B = collision.otherCollider as CircleCollider2D;
+
             // 회전한 각도 구해서
             float theta = A.transform.eulerAngles.z * Mathf.Deg2Rad;
 
@@ -184,7 +275,7 @@ namespace MyPhysics
                 rotMat.m10 = -sin; rotMat.m11 = cos;
             }
 
-            // 충돌 검사하는 점들은 모두 회전 행렬을 곱하여 축 정렬시킴
+            // 충돌 검사하는 점들은 모두 회전 행렬을 곱하여 축 정렬
             Vector2 circleCenter = rotMat * B.center;
             Vector2[] vertices = new Vector2[4];
             for (int i = 0; i < 4; ++i)
@@ -192,7 +283,7 @@ namespace MyPhysics
                 vertices[i] = rotMat * A[i];
             }
 
-            // 원에서 사각형에 가장 가까운 점을 찾음
+            // 원에서 사각형에 가장 가까운 점 검색
             Vector2 closest = new Vector2();
             closest.x = Mathf.Clamp(circleCenter.x, vertices[0].x, vertices[1].x);
             closest.y = Mathf.Clamp(circleCenter.y, vertices[2].y, vertices[0].y);
@@ -336,52 +427,103 @@ namespace MyPhysics
             //}
             #endregion
         }
-        public static bool BoundingBoxVSCircleCollision(Collider2D A, Collider2D B)
-        {
-            if (A.type == Collider2D.E_ColliderType.Box && B.type == Collider2D.E_ColliderType.Circle)
-                return BoundingBoxVSCircleCollision(A, B as CircleCollider2D);
-            else if (A.type == Collider2D.E_ColliderType.Circle && B.type == Collider2D.E_ColliderType.Box)
-                return BoundingBoxVSCircleCollision(B, A as CircleCollider2D);
 
-            Debug.LogError("충돌 타입 잘못 들어옴");
-            return false;
-        }
-
-        public static bool TypeCollision(Collider2D A, Collider2D B)
+        // 타입별 충돌 체크
+        public static bool Type_Check_Collision(ref Collision2D collision)
         {
+            Collider2D A = collision.collider;
+            Collider2D B = collision.otherCollider;
+
             if (A.type == Collider2D.E_ColliderType.Box &&
                 B.type == Collider2D.E_ColliderType.Box)
             {
-                return OBBCollision(A, B);
+                return OBB_Collision(ref collision);
             }
             else if (A.type == Collider2D.E_ColliderType.Circle &&
                 B.type == Collider2D.E_ColliderType.Circle)
             {
-                return CircleVSCircleCollision(A as CircleCollider2D, B as CircleCollider2D);
+                return Circle_Collision(ref collision);
             }
             else if ((A.type == Collider2D.E_ColliderType.Box && B.type == Collider2D.E_ColliderType.Circle) ||
                 (A.type == Collider2D.E_ColliderType.Circle && B.type == Collider2D.E_ColliderType.Box))
             {
-                return BoundingBoxVSCircleCollision(A, B);
+                if (A.type == Collider2D.E_ColliderType.Circle &&
+                    B.type == Collider2D.E_ColliderType.Box)
+                {
+                    collision = new Collision2D(B, A);
+                }
+
+                return OBB_vs_Circle_Collision(ref collision);
             }
 
             return false;
-        }
-        public static void SetLayerCollisionMask(int layer, int layerMask)
-        {
-            m_LayerCollisionMask[layer] = layerMask;
         }
         #endregion
         //UnityEngine.Physics2D
         public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction)
         {
-            RaycastHit2D hit_result = new RaycastHit2D();
-
-            return hit_result;
+            return Raycast(origin, direction, float.MaxValue);
         }
         public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance)
         {
-            RaycastHit2D hit_result = new RaycastHit2D();
+            Vector2 dir_normal = direction.normalized;
+            Vector2 C = origin;
+            Vector2 D = origin + dir_normal * distance;
+
+            float minR = float.MaxValue;
+            Collider2D collider = null;
+            foreach (var item in Physics2DManager.colliderList)
+            {
+                float Ax = item.bounds.min.x, Bx = item.bounds.max.x;
+                float Ay = item.bounds.min.y, By = item.bounds.max.y;
+
+                float r_up = (Bx - Ax) * (C.y - Ay) - (C.x - Ax) * (By - Ay);
+                float r_down = (D.x - C.x) * (By - Ay) - (Bx - Ax) * (D.y - C.y);
+                float r = r_up / r_down;
+
+                if (minR > r)
+                {
+                    minR = r;
+                    collider = item;
+                }
+            }
+
+            RaycastHit2D hit_result = new RaycastHit2D(collider);
+            hit_result.point = minR * (D - C) + C;
+
+            return hit_result;
+        }
+        public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance, int layerMask)
+        {
+            Vector2 dir_normal = direction.normalized;
+            Vector2 C = origin;
+            Vector2 D = origin + dir_normal * distance;
+            float Cx = C.x, Dx = D.x;
+            float Cy = C.y, Dy = D.y;
+
+            float minR = float.MaxValue;
+            Collider2D collider = null;
+            foreach (var item in Physics2DManager.colliderList)
+            {
+                if (CheckLayerMask(item.gameObject.layer, layerMask))
+                    continue;
+
+                float Ax = item.bounds.min.x, Bx = item.bounds.max.x;
+                float Ay = item.bounds.min.y, By = item.bounds.max.y;
+
+                float r_up = (Bx - Ax) * (Cy - Ay) - (Cx - Ax) * (By - Ay);
+                float r_down = (Dx - Cx) * (By - Ay) - (Bx - Ax) * (Dy - Cy);
+                float r = r_up / r_down;
+
+                if (minR > r)
+                {
+                    minR = r;
+                    collider = item;
+                }
+            }
+
+            RaycastHit2D hit_result = new RaycastHit2D(collider);
+            hit_result.point = minR * (D - C) + C;
 
             return hit_result;
         }
@@ -403,7 +545,7 @@ namespace MyPhysics
         {
             foreach (var item in Physics2DManager.colliderList)
             {
-                if ((layerMask & item.gameObject.layer) == 0 ||
+                if (CheckLayerMask(item.gameObject.layer, layerMask) ||
                     !item.OverlapPoint(point))
                 {
                     continue;
@@ -439,7 +581,7 @@ namespace MyPhysics
 
             foreach (var item in Physics2DManager.colliderList)
             {
-                if ((layerMask & (1 << item.gameObject.layer)) == 0 ||
+                if (CheckLayerMask(item.gameObject.layer, layerMask) ||
                     !item.OverlapPoint(point))
                 {
                     continue;

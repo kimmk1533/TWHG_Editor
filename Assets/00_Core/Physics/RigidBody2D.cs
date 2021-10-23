@@ -47,8 +47,8 @@ namespace MyPhysics
         public bool useGravity { get => m_UseGravity; set => m_UseGravity = value; }
         public Vector2 gravity { get => m_Gravity; set => m_Gravity = value; }
         public bool isKinematic { get => m_IsKinematic; set => m_IsKinematic = value; }
-        public Vector3 velocity { get => m_Velocity; set => m_Velocity = value; }
-        public Vector3 force { get => m_Force; set => m_Force = value; }
+        public Vector2 velocity { get => m_Velocity; set => m_Velocity = value; }
+        public Vector2 force { get => m_Force; set => m_Force = value; }
         public int layerMask { get => m_LayerMask; set => m_LayerMask = value; }
         #endregion
         #region 내부 함수
@@ -58,7 +58,7 @@ namespace MyPhysics
                 return Vector2.zero;
 
             // 밀도
-            const float p = 1f;
+            float p = (null == m_Collider) ? 1f : m_Collider.density;
             // 면적
             const float A = 1f;
             // 속도의 속력
@@ -287,6 +287,7 @@ namespace MyPhysics
             if (!m_UseChildCollider)
             {
                 m_Collider = GetComponent<Collider2D>();
+                m_Collider.attachedRigidbody = this;
             }
             else
             {

@@ -60,12 +60,38 @@ namespace MyPhysics
             }
         }
         #endregion
+        #region 외부 함수
+        public override Bounds GetBoundingBox()
+        {
+            Bounds bounds = new Bounds();
+            
+            Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
+            Vector2 max = new Vector2(float.MinValue, float.MinValue);
 
+            for (int i = 0; i < 4; ++i)
+            {
+                Vector2 vertex = this[i];
+
+                if (vertex.x < min.x)
+                    min.x = vertex.x;
+                if (vertex.y < min.y)
+                    min.y = vertex.y;
+
+                if (vertex.x > max.x)
+                    max.x = vertex.x;
+                if (vertex.y > max.y)
+                    max.y = vertex.y;
+            }
+
+            bounds.SetMinMax(min, max);
+
+            return bounds;
+        }
+        #endregion
         #region 유니티 콜백 함수
         private void Awake()
         {
             m_ColliderType = E_ColliderType.Box;
-
             Vector2 center = (Vector2)transform.localPosition + m_Offset;
             m_Bounds = new Bounds(center, m_Size);
         }

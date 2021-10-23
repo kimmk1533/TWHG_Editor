@@ -45,12 +45,15 @@ namespace MyPhysics
 
             return m_Radius * m_Radius > Distance.sqrMagnitude;
         }
+        public override Bounds GetBoundingBox()
+        {
+            return m_Bounds;
+        }
         #endregion
         #region 유니티 콜백 함수
         private void Awake()
         {
             m_ColliderType = E_ColliderType.Circle;
-
             Vector2 center = (Vector2)transform.localPosition + m_Offset;
             Vector2 size = Vector2.one * scaledDiameter;
             m_Bounds = new Bounds(center, size);
@@ -63,13 +66,6 @@ namespace MyPhysics
             m_Bounds.size = size;
         }
 
-        protected override void FixedUpdate()
-        {
-            base.FixedUpdate();
-
-            Vector2 size = Vector2.one * scaledDiameter;
-            m_Bounds.size = size;
-        }
         protected override void OnDrawGizmosSelected()
         {
             base.OnDrawGizmosSelected();

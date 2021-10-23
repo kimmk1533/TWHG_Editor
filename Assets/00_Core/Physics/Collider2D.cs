@@ -82,6 +82,27 @@ namespace MyPhysics
             return m_Bounds.min.x <= point.x && point.x <= m_Bounds.max.x &&
                 m_Bounds.min.y <= point.y && point.y <= m_Bounds.max.y;
         }
+        public abstract Bounds GetBoundingBox();
+        public virtual Vector2 GetUpVector()
+        {
+            Vector2 result = new Vector2();//transform.position;
+            float rot = transform.eulerAngles.z + 90f;
+
+            result.x += m_Bounds.extents.y * Mathf.Cos(Mathf.Deg2Rad * rot);
+            result.y += m_Bounds.extents.y * Mathf.Sin(Mathf.Deg2Rad * rot);
+
+            return result;
+        }
+        public virtual Vector2 GetRightVector()
+        {
+            Vector2 result = new Vector2();
+            float rot = transform.eulerAngles.z;
+
+            result.x += m_Bounds.extents.x * Mathf.Cos(Mathf.Deg2Rad * rot);
+            result.y += m_Bounds.extents.x * Mathf.Sin(Mathf.Deg2Rad * rot);
+
+            return result;
+        }
         #endregion
         #region 유니티 콜백 함수
         protected virtual void OnEnable()
