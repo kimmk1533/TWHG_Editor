@@ -131,7 +131,7 @@ namespace MyPhysics
                 if (!rigidbody_B.isKinematic)
                     rigidbody_B.velocity += invMassB * frictionImpulse;
 
-                const float percent = 1f;
+                const float percent = 0.2f;
                 const float slop = 0.01f;
                 Vector2 correction = Mathf.Max(item.penetration - slop, 0f) / (invMassA + invMassB) * percent * item.normal;
 

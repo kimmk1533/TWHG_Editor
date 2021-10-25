@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static MyPhysics.Physics2DManager;
 
 namespace MyPhysics
 {
@@ -24,71 +23,22 @@ namespace MyPhysics
         #region 외부 함수
         #region Collision Detection
         // Collision https://tt91.tistory.com/57
+        // 출처: https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
         // 사전 검사 (추후 다이나믹 AABB 추가)
         public static bool First_Collision_Check(Collision2D collision)
         {
             Collider2D A = collision.collider;
             Collider2D B = collision.otherCollider;
 
-            //if (AABB_Collision(collision))
-            {
-                if (UnityEngine.Physics2D.GetIgnoreLayerCollision(A.gameObject.layer, B.gameObject.layer))
-                    return false;
+            if (UnityEngine.Physics2D.GetIgnoreLayerCollision(A.gameObject.layer, B.gameObject.layer))
+                return false;
 
-                if (null == A.attachedRigidbody &&
-                    null == B.attachedRigidbody)
-                    return false;
+            if (null == A.attachedRigidbody &&
+                null == B.attachedRigidbody)
+                return false;
 
-                return true;
-            }
-
-            return false;
-
-            //Vector2 CenterDistance = B.bounds.center - A.bounds.center;
-
-            //Vector2 A_min = new Vector2(float.MaxValue, float.MaxValue);
-            //Vector2 A_max = new Vector2(float.MinValue, float.MinValue);
-
-            //Vector2 B_min = new Vector2(float.MaxValue, float.MaxValue);
-            //Vector2 B_max = new Vector2(float.MinValue, float.MinValue);
-
-            //for (int i = 0; i < 4; ++i)
-            //{
-            //    if (A[i].x < A_min.x)
-            //        A_min.x = A[i].x;
-            //    if (A[i].y < A_min.y)
-            //        A_min.y = A[i].y;
-
-            //    if (A[i].x > A_max.x)
-            //        A_max.x = A[i].x;
-            //    if (A[i].y > A_max.y)
-            //        A_max.y = A[i].y;
-
-            //    if (B[i].x < B_min.x)
-            //        B_min.x = B[i].x;
-            //    if (B[i].y < B_min.y)
-            //        B_min.y = B[i].y;
-
-            //    if (B[i].x > B_max.x)
-            //        B_max.x = B[i].x;
-            //    if (B[i].y > B_max.y)
-            //        B_max.y = B[i].y;
-            //}
-
-            //Vector2 A_Extents = (A_max - A_min) * 0.5f;
-            //Vector2 B_Extents = (B_max - B_min) * 0.5f;
-            //Vector2 Distance = A_Extents + B_Extents;
-
-            //if (Mathf.Abs(CenterDistance.x) <= Mathf.Abs(Distance.x) &&
-            //    Mathf.Abs(CenterDistance.y) <= Mathf.Abs(Distance.y))
-            //{
-
-            //    return true;
-            //}
-
-            //return false;
+            return AABB_Collision(collision);
         }
-
         // AABB (Axis Aligned Bounding Box)
         private static bool AABB_Collision(Collision2D collision)
         {
@@ -109,6 +59,7 @@ namespace MyPhysics
 
             return true;
         }
+
         // OBB (Oriented Bounding Box)
         // OBB vs OBB
         private static bool OBB_Collision(ref Collision2D collision)
@@ -118,7 +69,7 @@ namespace MyPhysics
 
             Vector2 distance = B.transform.position - A.transform.position;
 
-            Vector2[] axis = new Vector2[4]
+            Vector2[] axises = new Vector2[4]
             {
                 A.GetUpVector(),
                 B.GetUpVector(),
@@ -129,11 +80,11 @@ namespace MyPhysics
             for (int i = 0; i < 4; ++i)
             {
                 float sum = 0f;
-                Vector2 unit = axis[i].normalized;
+                Vector2 unit = axises[i].normalized;
 
                 for (int j = 0; j < 4; ++j)
                 {
-                    sum += Mathf.Abs(Vector2.Dot(axis[j], unit));
+                    sum += Mathf.Abs(Vector2.Dot(axises[j], unit));
                 }
 
                 // 분리되어 있거나 접하는 경우
@@ -141,8 +92,13 @@ namespace MyPhysics
                     return false;
             }
 
-            float x_overlap = A.GetRightVector().x + B.GetRightVector().x - Mathf.Abs(distance.x);
-            float y_overlap = A.GetUpVector().y + B.GetUpVector().y - Mathf.Abs(distance.y);
+            Bounds bounds_A = A.GetBoundingBox();
+            Bounds bounds_B = B.GetBoundingBox();
+
+            Vector2 extents = bounds_A.extents + bounds_B.extents;
+
+            float x_overlap = extents.x - Mathf.Abs(distance.x);
+            float y_overlap = extents.y - Mathf.Abs(distance.y);
 
             if (x_overlap < y_overlap)
             {
@@ -236,7 +192,7 @@ namespace MyPhysics
             float radius = A.radius + B.radius;
             float squardRadius = radius * radius;
 
-            if (squardRadius < distance.sqrMagnitude)
+            if (squardRadius <= distance.sqrMagnitude)
                 return false;
 
             float d = distance.magnitude;
@@ -259,6 +215,7 @@ namespace MyPhysics
         // OBB vs Circle
         private static bool OBB_vs_Circle_Collision(ref Collision2D collision)
         {
+            // 출처: https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection
             Collider2D A = collision.collider;
             CircleCollider2D B = collision.otherCollider as CircleCollider2D;
 
@@ -276,25 +233,71 @@ namespace MyPhysics
             }
 
             // 충돌 검사하는 점들은 모두 회전 행렬을 곱하여 축 정렬
-            Vector2 circleCenter = rotMat * B.center;
             Vector2[] vertices = new Vector2[4];
             for (int i = 0; i < 4; ++i)
             {
                 vertices[i] = rotMat * A[i];
             }
 
+            Vector2 distance = B.transform.position - A.transform.position;
+            distance = rotMat * distance;
+
+            Vector2 extents = (vertices[1] - vertices[3]) * 0.5f;
+
             // 원에서 사각형에 가장 가까운 점 검색
             Vector2 closest = new Vector2();
-            closest.x = Mathf.Clamp(circleCenter.x, vertices[0].x, vertices[1].x);
-            closest.y = Mathf.Clamp(circleCenter.y, vertices[2].y, vertices[0].y);
+            closest.x = Mathf.Clamp(distance.x, -extents.x, extents.x);
+            closest.y = Mathf.Clamp(distance.y, -extents.y, extents.y);
+
+            bool inside = false;
+
+            if (distance == closest)
+            {
+                inside = true;
+
+                if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
+                {
+                    if (closest.x > 0f)
+                        closest.x = extents.x;
+                    else
+                        closest.x = -extents.x;
+                }
+                else
+                {
+                    if (closest.y > 0f)
+                        closest.y = extents.y;
+                    else
+                        closest.y = -extents.y;
+                }
+            }
+
+            rotMat.m01 = -rotMat.m01;
+            rotMat.m10 = -rotMat.m10;
+            distance = rotMat * distance;
+            closest = rotMat * closest;
 
             // 원과 가장 가까운 점과의 거리 계산
-            Vector2 distance = circleCenter - closest;
-            // 루트는 무거우므로 제곱하여 비교
-            float distanceSquared = Vector2.Dot(distance, distance);
-            // 원의 반지름의 제곱보다 작은 경우 충돌 (=을 넣으면 접하는 순간도 충돌)
-            return distanceSquared < B.radius * B.radius;
-            // 출처: https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection
+            Vector2 d_Closest = distance - closest;
+            // 루트는 무거우므로 제곱으로 비교
+            float d_Squared_Closest = d_Closest.sqrMagnitude;
+
+            if (d_Squared_Closest >= B.radius * B.radius && !inside)
+                return false;
+
+            float distance_Closest = d_Closest.magnitude;
+
+            if (inside)
+            {
+                collision.normal = -distance;
+            }
+            else
+            {
+                collision.normal = distance;
+            }
+            collision.penetration = B.radius - distance_Closest;
+
+            // 원의 반지름의 제곱보다 작은 경우 충돌
+            return true;
 
             // 실패한 방법들
             #region https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
