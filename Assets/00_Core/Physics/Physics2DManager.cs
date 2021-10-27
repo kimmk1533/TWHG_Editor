@@ -5,143 +5,156 @@ using UnityEngine;
 
 namespace MyPhysics
 {
-    public sealed class Physics2DManager : Singleton<Physics2DManager>
-    {
-        private static List<Collider2D> m_ColliderList = new List<Collider2D>();
-        private static List<Collision2D> m_HitColliderList = new List<Collision2D>();
+	public sealed class Physics2DManager : Singleton<Physics2DManager>
+	{
+		private static List<Collider2D> m_ColliderList = new List<Collider2D>();
 
-        #region 외부 프로퍼티
-        public static List<Collider2D> colliderList => m_ColliderList;
-        #endregion
-        #region 내부 함수
-        private float PythagoreanSolve(float A, float B)
-        {
-            return Mathf.Sqrt(A * A + B * B);
-        }
-        private float Cross(Vector2 a, Vector2 b)
-        {
-            return a.x * b.y - a.y * b.x;
-        }
-        private Vector2 Cross(Vector2 a, float s)
-        {
-            return new Vector2(s * a.y, -s * a.x);
-        }
-        private Vector2 Cross(float s, Vector2 a)
-        {
-            return new Vector2(-s * a.y, s * a.x);
-        }
-        #endregion
-        #region 유니티 콜백 함수
-        void Awake()
-        {
-            DontDestroyOnLoad(gameObject);
-        }
+		#region 외부 프로퍼티
+		public static List<Collider2D> colliderList => m_ColliderList;
+		#endregion
+		#region 내부 함수
+		private float PythagoreanSolve(float A, float B)
+		{
+			return Mathf.Sqrt(A * A + B * B);
+		}
+		// 추후 회전 추가
+		private void ResolveCollision(Collision2D collision)
+		{
+			#region Rigidbody
+			Rigidbody2D A = collision.rigidbody;
+			Rigidbody2D B = collision.otherRigidbody;
 
-        private void FixedUpdate()
-        {
-            m_HitColliderList.Clear();
+			if (null == A)
+			{
+				A = new Rigidbody2D();
+				A.type = Rigidbody2D.E_BodyType.Static;
+			}
+			if (null == B)
+			{
+				B = new Rigidbody2D();
+				B.type = Rigidbody2D.E_BodyType.Static;
+			}
+			#endregion
+			#region Calculate
+			#region Impulse
+			Vector2 rv = B.velocity - A.velocity;
 
-            #region 충돌 체크
-            for (int i = 0; i < m_ColliderList.Count; ++i)
-            {
-                Collider2D collider2D_A = m_ColliderList[i];
+			float velAlongNormal = Vector2.Dot(rv, collision.normal);
 
-                for (int j = i + 1; j < m_ColliderList.Count; ++j)
-                {
-                    Collider2D collider2D_B = m_ColliderList[j];
+			if (velAlongNormal > 0.0000001f)
+				return;
 
-                    Collision2D collision = new Collision2D(collider2D_A, collider2D_B);
+			float e = Mathf.Min(collision.collider.bounciness, collision.otherCollider.bounciness);
 
-                    if (!Physics2D.First_Collision_Check(collision))
-                        continue;
+			float invMassA = 1f / A.mass;
+			float invMassB = 1f / B.mass;
 
-                    if (Physics2D.Type_Check_Collision(ref collision))
-                    {
-                        //if (collision.collider.isTrigger ||
-                        //    collision.otherCollider.isTrigger)
-                        //    continue;
+			float j = (-(1f + e) * velAlongNormal) / (invMassA + invMassB);
 
-                        m_HitColliderList.Add(collision);
-                        Debug.Log("충돌\n" +
-                            collider2D_A.transform.parent.name + ": " + collider2D_A.type + "\n" +
-                            collider2D_B.transform.parent.name + ": " + collider2D_B.type);
-                    }
-                }
-            }
-            #endregion
+			Vector2 impulse = j * collision.normal;
+			#endregion
+			#region Friction
+			Vector2 tangent = rv - velAlongNormal * collision.normal;
+			tangent.Normalize();
 
-            #region 충돌 처리
-            foreach (var item in m_HitColliderList)
-            {
-                Rigidbody2D rigidbody_A = item.rigidbody;
-                Rigidbody2D rigidbody_B = item.otherRigidbody;
+			float jt = (-Vector2.Dot(rv, tangent)) / (invMassA + invMassB);
 
-                if (null == rigidbody_A)
-                {
-                    rigidbody_A = new Rigidbody2D();
-                }
-                if (null == rigidbody_B)
-                {
-                    rigidbody_B = new Rigidbody2D();
-                }
+			float frictionA = collision.collider.friction;
+			float frictionB = collision.otherCollider.friction;
+			float mu = PythagoreanSolve(frictionA, frictionB);
 
-                Vector2 rv = rigidbody_B.velocity - rigidbody_A.velocity;
+			Vector2 frictionImpulse;
 
-                float velAlongNormal = Vector2.Dot(rv, item.normal);
+			if (Mathf.Abs(jt) < j * mu)
+			{
+				frictionImpulse = tangent * jt;
+			}
+			else
+			{
+				frictionImpulse = tangent * (-j * mu);
+			}
+			#endregion
+			#region Interpolation
+			const float percent = 0.2f;
+			const float slop = 0.01f;
+			Vector2 correction = Mathf.Max(collision.penetration - slop, 0f) / (invMassA + invMassB) * percent * collision.normal;
+			#endregion
+			#endregion
+			#region Apply
+			if (null != A)
+			{
+				switch (A.type)
+				{
+					case Rigidbody2D.E_BodyType.Dynamic:
+						// Impulse + Friction
+						A.velocity -= invMassA * (impulse + frictionImpulse);
+						// Interpolation
+						A.transform.localPosition -= (Vector3)(invMassA * correction);
+						break;
+					case Rigidbody2D.E_BodyType.Kinematic:
+						// Interpolation
+						A.transform.localPosition -= (Vector3)(collision.penetration * correction.normalized);
+						break;
+				}
+			}
+			if (null != B)
+			{
+				switch (B.type)
+				{
+					case Rigidbody2D.E_BodyType.Dynamic:
+						// Impulse + Friction
+						B.velocity += invMassB * (impulse + frictionImpulse);
+						// Interpolation
+						B.transform.localPosition += (Vector3)(invMassB * correction);
+						break;
+					case Rigidbody2D.E_BodyType.Kinematic:
+						// Interpolation
+						B.transform.localPosition += (Vector3)(collision.penetration * correction.normalized);
+						break;
+				}
+			}
+			#endregion
+		}
+		#endregion
+		#region 유니티 콜백 함수
+		void Awake()
+		{
+			DontDestroyOnLoad(gameObject);
+		}
 
-                if (velAlongNormal > 0.0000001f)
-                    return;
+		private void FixedUpdate()
+		{
+			#region 충돌
+			for (int i = 0; i < m_ColliderList.Count; ++i)
+			{
+				Collider2D A = m_ColliderList[i];
 
-                float e = Mathf.Min(item.collider.bounciness, item.otherCollider.bounciness);
+				for (int j = i + 1; j < m_ColliderList.Count; ++j)
+				{
+					Collider2D B = m_ColliderList[j];
 
-                float invMassA = 1f / rigidbody_A.mass;
-                float invMassB = 1f / rigidbody_B.mass;
+					Collision2D collision = new Collision2D(A, B);
 
-                float j = -(1f + e) * velAlongNormal;
-                j /= invMassA + invMassB;
+					if (!Physics2D.PreCollisionTest(collision))
+						continue;
 
-                Vector2 impulse = j * item.normal;
-                if (!rigidbody_A.isKinematic)
-                    rigidbody_A.velocity -= invMassA * impulse;
-                if (!rigidbody_B.isKinematic)
-                    rigidbody_B.velocity += invMassB * impulse;
+					if (Physics2D.CollisionTestByType(ref collision))
+					{
+						//if (A.isTrigger || B.isTrigger)
+						//	m_TriggerHitColliderList.Add(collision);
+						//else
+						//	m_HitColliderList.Add(collision);
 
-                Vector2 tangent = rv - Vector2.Dot(rv, item.normal) * item.normal;
-                tangent.Normalize();
+						ResolveCollision(collision);
 
-                float jt = (-Vector2.Dot(rv, tangent)) / (invMassA + invMassB);
-
-                float frictionA = item.collider.friction;
-                float frictionB = item.otherCollider.friction;
-                float mu = PythagoreanSolve(frictionA, frictionB);
-
-                Vector2 frictionImpulse;
-
-                if (Mathf.Abs(jt) < j * mu)
-                {
-                    frictionImpulse = tangent * jt;
-                }
-                else
-                {
-                    frictionImpulse = tangent * (-j * mu);
-                }
-
-                if (!rigidbody_A.isKinematic)
-                    rigidbody_A.velocity -= invMassA * frictionImpulse;
-                if (!rigidbody_B.isKinematic)
-                    rigidbody_B.velocity += invMassB * frictionImpulse;
-
-                const float percent = 0.2f;
-                const float slop = 0.01f;
-                Vector2 correction = Mathf.Max(item.penetration - slop, 0f) / (invMassA + invMassB) * percent * item.normal;
-
-                if (null != rigidbody_A && !rigidbody_A.isKinematic)
-                    rigidbody_A.transform.localPosition -= invMassA * (Vector3)correction;
-                if (null != rigidbody_B && !rigidbody_B.isKinematic)
-                    rigidbody_B.transform.localPosition += invMassB * (Vector3)correction;
-            }
-            #endregion
-        }
-        #endregion
-    }
+						Debug.Log("충돌\n" +
+							A.transform.parent.name + ": " + A.type + "\n" +
+							B.transform.parent.name + ": " + B.type);
+					}
+				}
+			}
+			#endregion
+		}
+		#endregion
+	}
 }

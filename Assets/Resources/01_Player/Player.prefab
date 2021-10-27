@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c42c33b99d608094cabff496d5074415, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Offset: {x: 0, y: 0}
   m_AttachedRigidbody: {fileID: 0}
   m_Friction: 0.4
@@ -129,11 +129,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32c92401b24fc9143ba3ac71e6e9b2d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BodyType: 1
   m_Mass: 1
   m_Drag: 0
   m_UseGravity: 0
   m_Gravity: {x: 0, y: -9.81}
-  m_IsKinematic: 1
   m_UseChildCollider: 1
   m_Velocity: {x: 0, y: 0}
 --- !u!1 &3345497635958674874

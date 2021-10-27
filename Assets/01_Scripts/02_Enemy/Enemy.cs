@@ -159,8 +159,12 @@ public class Enemy : MonoBehaviour
 
     public void AddWayPoint()
     {
+        AddWayPoint(Vector3.zero);
+    }
+    public void AddWayPoint(Vector3 pos)
+    {
         EnemyGizmo wayPoint = M_EnemyGizmo.SpawnGizmo();
-        wayPoint.transform.position = Vector3.zero;
+        wayPoint.transform.position = pos;
 
         wayPoint.index = m_WayPointList.Count;
         wayPoint.text.text = (wayPoint.index + 1).ToString();

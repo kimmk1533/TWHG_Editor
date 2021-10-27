@@ -5,216 +5,216 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField]
-    protected float m_Speed;
+	[SerializeField]
+	protected float m_Speed;
 
-    [SerializeField, ReadOnly]
-    protected Vector3 m_InitPos;
-    [SerializeField]
-    protected Vector3 m_SpawnPos;
-    [SerializeField]
-    protected bool m_IsSafe;
-    [SerializeField]
-    protected bool m_CanMove;
-    [SerializeField]
-    protected bool m_IsDie;
+	[SerializeField, ReadOnly]
+	protected Vector3 m_InitPos;
+	[SerializeField]
+	protected Vector3 m_SpawnPos;
+	[SerializeField]
+	protected bool m_IsSafe;
+	[SerializeField]
+	protected bool m_CanMove;
+	[SerializeField]
+	protected bool m_IsDie;
 
-    #region 내부 컴포넌트
-    protected MyPhysics.Rigidbody2D m_RigidBody;
-    protected SpriteRenderer m_Renderer;
-    protected PlayerAnimator m_Animator;
-    protected PlayerCollider m_Collider;
-    #endregion
-    #region 내부 프로퍼티
-    #region 매니져
-    protected __GameManager M_Game => __GameManager.Instance;
-    protected __EditManager M_Edit => __EditManager.Instance;
-    protected PlayerManager M_Player => PlayerManager.Instance;
-    #endregion
+	#region 내부 컴포넌트
+	protected MyPhysics.Rigidbody2D m_RigidBody;
+	protected SpriteRenderer m_Renderer;
+	protected PlayerAnimator m_Animator;
+	protected PlayerCollider m_Collider;
+	#endregion
+	#region 내부 프로퍼티
+	#region 매니져
+	protected __GameManager M_Game => __GameManager.Instance;
+	protected __EditManager M_Edit => __EditManager.Instance;
+	protected PlayerManager M_Player => PlayerManager.Instance;
+	#endregion
 
-    protected bool canMove => !M_Edit.isEditMode && m_CanMove;
-    protected Vector2 size => m_Collider.size;
-    protected Vector2 halfSize => size * 0.5f;
-    #endregion
-    #region 외부 프로퍼티
-    public float speed { get => m_Speed; }
-    public MyPhysics.Rigidbody2D rigidBody2D { get => m_RigidBody; }
-    public new SpriteRenderer renderer { get => m_Renderer; }
-    public bool isSafe { get => m_IsSafe; set => m_IsSafe = value; }
-    public Vector3 spawnPos { get => m_SpawnPos; set => m_SpawnPos = value; }
-    #endregion
-    #region 내부 함수
-    void Move()
-    {
-        if (Input.anyKey)
-        {
-            float halfSize = (transform.lossyScale.x + transform.lossyScale.y) * 0.5f * 0.5f;
-            float rayAdjust = halfSize - 0.05f;
+	protected bool canMove => !M_Edit.isEditMode && m_CanMove;
+	protected Vector2 size => m_Collider.size;
+	protected Vector2 halfSize => size * 0.5f;
+	#endregion
+	#region 외부 프로퍼티
+	public float speed { get => m_Speed; }
+	public MyPhysics.Rigidbody2D rigidBody2D { get => m_RigidBody; }
+	public new SpriteRenderer renderer { get => m_Renderer; }
+	public bool isSafe { get => m_IsSafe; set => m_IsSafe = value; }
+	public Vector3 spawnPos { get => m_SpawnPos; set => m_SpawnPos = value; }
+	#endregion
+	#region 내부 함수
+	void Move()
+	{
+		if (Input.anyKey)
+		{
+			float halfSize = (transform.lossyScale.x + transform.lossyScale.y) * 0.5f * 0.5f;
+			float rayAdjust = halfSize - 0.05f;
 
-            float xDir = Input.GetAxisRaw("Horizontal");
-            float yDir = Input.GetAxisRaw("Vertical");
+			float xDir = Input.GetAxisRaw("Horizontal");
+			float yDir = Input.GetAxisRaw("Vertical");
 
-            Vector2 xVec = new Vector2(xDir, 0f);
-            Vector2 yVec = new Vector2(0f, yDir);
+			Vector2 xVec = new Vector2(xDir, 0f);
+			Vector2 yVec = new Vector2(0f, yDir);
 
-            int layer = 1 << LayerMask.NameToLayer("Wall");
+			int layer = 1 << LayerMask.NameToLayer("Wall");
 
-            Vector2 pos = transform.position;
+			Vector2 pos = transform.position;
 
-            RaycastHit2D[] raycastHits = new RaycastHit2D[4];
+			RaycastHit2D[] raycastHits = new RaycastHit2D[4];
 
-            float xMove = m_Speed * Time.deltaTime;
-            float yMove = m_Speed * Time.deltaTime;
+			float xMove = m_Speed * Time.deltaTime;
+			float yMove = m_Speed * Time.deltaTime;
 
-            raycastHits[0] = Physics2D.Raycast(pos + yVec * halfSize + (Vector2.right * rayAdjust), yVec, yMove, layer);
-            raycastHits[1] = Physics2D.Raycast(pos + yVec * halfSize + (Vector2.left * rayAdjust), yVec, yMove, layer);
-            raycastHits[2] = Physics2D.Raycast(pos + xVec * halfSize + (Vector2.up * rayAdjust), xVec, xMove, layer);
-            raycastHits[3] = Physics2D.Raycast(pos + xVec * halfSize + (Vector2.down * rayAdjust), xVec, xMove, layer);
+			raycastHits[0] = Physics2D.Raycast(pos + yVec * halfSize + (Vector2.right * rayAdjust), yVec, yMove, layer);
+			raycastHits[1] = Physics2D.Raycast(pos + yVec * halfSize + (Vector2.left * rayAdjust), yVec, yMove, layer);
+			raycastHits[2] = Physics2D.Raycast(pos + xVec * halfSize + (Vector2.up * rayAdjust), xVec, xMove, layer);
+			raycastHits[3] = Physics2D.Raycast(pos + xVec * halfSize + (Vector2.down * rayAdjust), xVec, xMove, layer);
 
-            // 상, 하
-            if (raycastHits[0].transform != null)
-            {
-                if (raycastHits[0].distance <= yMove)
-                {
-                    yMove = raycastHits[0].distance;
-                }
-            }
-            if (raycastHits[1].transform != null)
-            {
-                if (raycastHits[1].distance <= yMove)
-                {
-                    yMove = raycastHits[1].distance;
-                }
-            }
-            if (raycastHits[2].transform != null)
-            {
-                if (raycastHits[2].distance <= xMove)
-                {
-                    xMove = raycastHits[2].distance;
-                }
-            }
-            if (raycastHits[3].transform != null)
-            {
-                if (raycastHits[3].distance <= xMove)
-                {
-                    xMove = raycastHits[3].distance;
-                }
-            }
+			// 상, 하
+			if (raycastHits[0].transform != null)
+			{
+				if (raycastHits[0].distance <= yMove)
+				{
+					yMove = raycastHits[0].distance;
+				}
+			}
+			if (raycastHits[1].transform != null)
+			{
+				if (raycastHits[1].distance <= yMove)
+				{
+					yMove = raycastHits[1].distance;
+				}
+			}
+			if (raycastHits[2].transform != null)
+			{
+				if (raycastHits[2].distance <= xMove)
+				{
+					xMove = raycastHits[2].distance;
+				}
+			}
+			if (raycastHits[3].transform != null)
+			{
+				if (raycastHits[3].distance <= xMove)
+				{
+					xMove = raycastHits[3].distance;
+				}
+			}
 
-            Vector2 temp = new Vector2(xDir * xMove, yDir * yMove);
+			Vector2 temp = new Vector2(xDir * xMove, yDir * yMove);
 
-            transform.Translate(temp);
-        }
-    }
-    void ClampPos()
-    {
-        // 뷰포트 기준 좌측 하단의 좌표를 월드좌표로 변환 (최솟값)
-        Vector2 min = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
-        // 뷰포트 기준 우측 상단의 좌표를 월드좌표로 변환 (최댓값)
-        Vector2 max = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
-        // 플레이어 월드좌표
-        Vector2 PlayerPos = transform.position;
+			transform.Translate(temp);
+		}
+	}
+	void ClampPos()
+	{
+		// 뷰포트 기준 좌측 하단의 좌표를 월드좌표로 변환 (최솟값)
+		Vector2 min = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
+		// 뷰포트 기준 우측 상단의 좌표를 월드좌표로 변환 (최댓값)
+		Vector2 max = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
+		// 플레이어 월드좌표
+		Vector2 PlayerPos = transform.position;
 
-        // 플레이어의 월드좌표를 자신의 사이즈까지 고려하여 화면에 맞게 변환 
-        PlayerPos.x = Mathf.Clamp(PlayerPos.x, min.x + 0.5f, max.x - 0.5f);
-        PlayerPos.y = Mathf.Clamp(PlayerPos.y, min.y + 0.5f, max.y - 0.5f);
+		// 플레이어의 월드좌표를 자신의 사이즈까지 고려하여 화면에 맞게 변환 
+		PlayerPos.x = Mathf.Clamp(PlayerPos.x, min.x + 0.5f, max.x - 0.5f);
+		PlayerPos.y = Mathf.Clamp(PlayerPos.y, min.y + 0.5f, max.y - 0.5f);
 
-        // 제한한 위치로 이동
-        transform.position = PlayerPos;
-    }
-    #endregion
-    #region 외부 함수
-    public void __Initialize()
-    {
-        #region 이벤트 링크
-        M_Game.OnEnterPlayMode += OnPlayEnter;
-        M_Game.OnExitPlayMode += OnPlayExit;
+		// 제한한 위치로 이동
+		transform.position = PlayerPos;
+	}
+	#endregion
+	#region 외부 함수
+	public void __Initialize()
+	{
+		#region 이벤트 링크
+		M_Game.OnEnterPlayMode += OnPlayEnter;
+		M_Game.OnExitPlayMode += OnPlayExit;
 
-        M_Player.OnPlayerRespawn += Respawn;
-        #endregion
+		M_Player.OnPlayerRespawn += Respawn;
+		#endregion
 
-        if (null == m_RigidBody)
-        {
-            m_RigidBody = GetComponent<MyPhysics.Rigidbody2D>();
-            m_RigidBody.layerMask = LayerMask.GetMask("Wall");
-        }
-        if (null == m_Renderer)
-        {
-            m_Renderer = GetComponentInChildren<SpriteRenderer>();
-        }
-        if (null == m_Animator)
-        {
-            m_Animator = GetComponentInChildren<PlayerAnimator>();
-            m_Animator.__Initialize(this);
-        }
-        if (null == m_Collider)
-        {
-            m_Collider = GetComponentInChildren<PlayerCollider>();
-            m_Collider.__Initialize(this);
-        }
+		if (null == m_RigidBody)
+		{
+			m_RigidBody = GetComponent<MyPhysics.Rigidbody2D>();
+			m_RigidBody.layerMask = LayerMask.GetMask("Wall");
+		}
+		if (null == m_Renderer)
+		{
+			m_Renderer = GetComponentInChildren<SpriteRenderer>();
+		}
+		if (null == m_Animator)
+		{
+			m_Animator = GetComponentInChildren<PlayerAnimator>();
+			m_Animator.__Initialize(this);
+		}
+		if (null == m_Collider)
+		{
+			m_Collider = GetComponentInChildren<PlayerCollider>();
+			m_Collider.__Initialize(this);
+		}
 
-        m_CanMove = M_Edit.isEditMode;
+		m_CanMove = M_Edit.isEditMode;
 
-        gameObject.SetActive(false);
-    }
+		gameObject.SetActive(false);
+	}
 
-    public void Death()
-    {
-        if (m_IsDie)
-            return;
+	public void Death()
+	{
+		if (m_IsDie)
+			return;
 
-        m_CanMove = false;
-        m_IsDie = true;
-        m_Animator.Death();
-    }
-    public void Respawn()
-    {
-        if (M_Edit.isEditMode)
-        {
-            transform.position = m_InitPos;
-        }
-        else
-        {
-            transform.position = m_SpawnPos;
-        }
+		m_CanMove = false;
+		m_IsDie = true;
+		m_Animator.Death();
+	}
+	public void Respawn()
+	{
+		if (M_Edit.isEditMode)
+		{
+			transform.position = m_InitPos;
+		}
+		else
+		{
+			transform.position = m_SpawnPos;
+		}
 
-        gameObject.SetActive(true);
-        m_IsDie = false;
-        m_CanMove = true;
-    }
-    #endregion
-    #region 이벤트 함수
-    public void OnPlayEnter()
-    {
-        m_InitPos = transform.position;
-        gameObject.SetActive(true);
-    }
-    public void OnPlayExit()
-    {
-        transform.position = m_InitPos;
-        m_RigidBody.useGravity = false;
-        m_RigidBody.isKinematic = true;
-        m_RigidBody.drag = 0f;
-        m_RigidBody.velocity = Vector3.zero;
-        m_RigidBody.force = Vector3.zero;
-    }
-    #endregion
-    #region 유니티 콜백 함수
-    protected void FixedUpdate()
-    {
-        if (canMove)
-        {
-            Vector2 force = Vector2.zero;
+		gameObject.SetActive(true);
+		m_IsDie = false;
+		m_CanMove = true;
+	}
+	#endregion
+	#region 이벤트 함수
+	public void OnPlayEnter()
+	{
+		m_InitPos = transform.position;
+		gameObject.SetActive(true);
+	}
+	public void OnPlayExit()
+	{
+		transform.position = m_InitPos;
+		m_RigidBody.useGravity = false;
+		m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Kinematic;
+		m_RigidBody.drag = 0f;
+		m_RigidBody.velocity = Vector3.zero;
+		m_RigidBody.force = Vector3.zero;
+	}
+	#endregion
+	#region 유니티 콜백 함수
+	protected void FixedUpdate()
+	{
+		if (canMove)
+		{
+			Vector2 force = Vector2.zero;
 
-            force += Vector2.right * Input.GetAxisRaw("Horizontal") * m_Speed;
-            force += Vector2.up * Input.GetAxisRaw("Vertical") * m_Speed;
+			force += Vector2.right * Input.GetAxisRaw("Horizontal") * m_Speed;
+			force += Vector2.up * Input.GetAxisRaw("Vertical") * m_Speed;
 
-            m_RigidBody.AddForce(force);
-        }
-    }
-    /*protected void LateUpdate()
-    {
-        ClampPos();
-    }*/
-    #endregion
+			m_RigidBody.AddForce(force);
+		}
+	}
+	/*protected void LateUpdate()
+	{
+		ClampPos();
+	}*/
+	#endregion
 }

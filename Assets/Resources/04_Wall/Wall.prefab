@@ -381,8 +381,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c42c33b99d608094cabff496d5074415, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Offset: {x: 0, y: 0}
+  m_AttachedRigidbody: {fileID: 0}
+  m_Friction: 0.4
+  m_Bounciness: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0.5, y: 0.5, z: 0}
