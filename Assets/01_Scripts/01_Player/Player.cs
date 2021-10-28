@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IEraserableObject, IClickedObject
 {
 	[SerializeField]
 	protected float m_Speed;
-
 	[SerializeField, ReadOnly]
 	protected Vector3 m_InitPos;
 	[SerializeField]
@@ -15,36 +14,30 @@ public class Player : MonoBehaviour
 	[SerializeField]
 	protected bool m_IsSafe;
 	[SerializeField]
-	protected bool m_CanMove;
-	[SerializeField]
 	protected bool m_IsDie;
 
 	#region 내부 컴포넌트
-	protected MyPhysics.Rigidbody2D m_RigidBody;
 	protected SpriteRenderer m_Renderer;
 	protected PlayerAnimator m_Animator;
-	protected PlayerCollider m_Collider;
+	protected MyPhysics.BoxCollider2D m_Collider;
+	protected MyPhysics.Rigidbody2D m_RigidBody;
 	#endregion
 	#region 내부 프로퍼티
 	#region 매니져
 	protected __GameManager M_Game => __GameManager.Instance;
 	protected __EditManager M_Edit => __EditManager.Instance;
+	protected StageManager M_Stage => StageManager.Instance;
+	protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
+	protected UndoRedoManager M_UndoRedo => UndoRedoManager.Instance;
+
 	protected PlayerManager M_Player => PlayerManager.Instance;
+	protected CoinManager M_Coin => CoinManager.Instance;
 	#endregion
 
-	protected bool canMove => !M_Edit.isEditMode && m_CanMove;
-	protected Vector2 size => m_Collider.size;
-	protected Vector2 halfSize => size * 0.5f;
-	#endregion
-	#region 외부 프로퍼티
-	public float speed { get => m_Speed; }
-	public MyPhysics.Rigidbody2D rigidBody2D { get => m_RigidBody; }
-	public new SpriteRenderer renderer { get => m_Renderer; }
-	public bool isSafe { get => m_IsSafe; set => m_IsSafe = value; }
-	public Vector3 spawnPos { get => m_SpawnPos; set => m_SpawnPos = value; }
+	protected bool canMove => !M_Edit.isEditMode && !m_IsDie;
 	#endregion
 	#region 내부 함수
-	void Move()
+	private void Move()
 	{
 		if (Input.anyKey)
 		{
@@ -106,7 +99,7 @@ public class Player : MonoBehaviour
 			transform.Translate(temp);
 		}
 	}
-	void ClampPos()
+	private	void ClampPos()
 	{
 		// 뷰포트 기준 좌측 하단의 좌표를 월드좌표로 변환 (최솟값)
 		Vector2 min = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
@@ -122,22 +115,153 @@ public class Player : MonoBehaviour
 		// 제한한 위치로 이동
 		transform.position = PlayerPos;
 	}
+	private void Death()
+	{
+		if (m_IsDie)
+			return;
+
+		m_IsDie = true;
+		m_Animator.Death();
+	}
+
+	private void OnCollision2DEnter(MyPhysics.Collider2D collider)
+	{
+		switch (collider.tag)
+		{
+			case "Enemy":
+				CollisionEnterEnemy(collider);
+				break;
+			case "SafetyZone":
+				CollisionEnterSafetyZone(collider);
+				break;
+			case "GravityZone":
+				CollisionEnterGravityZone(collider);
+				break;
+			case "IceZone":
+				CollisionEnterIceZone(collider);
+				break;
+		}
+	}
+	private void OnCollision2DExit(MyPhysics.Collider2D collider)
+	{
+		switch (collider.tag)
+		{
+			case "SafetyZone":
+				CollisionExitSafetyZone(collider);
+				break;
+			case "GravityZone":
+				CollisionExitGravityZone(collider);
+				break;
+			case "IceZone":
+				CollisionExitIceZone(collider);
+				break;
+		}
+	}
+
+	#region CollisionEnter
+	protected void CollisionEnterEnemy(MyPhysics.Collider2D collider)
+	{
+		if (M_Edit.isEditMode)
+			return;
+
+		if (!m_IsSafe)
+		{
+			Death();
+		}
+	}
+	protected void CollisionEnterSafetyZone(MyPhysics.Collider2D collider)
+	{
+		m_IsSafe = true;
+		m_SpawnPos = collider.transform.position;
+
+		if (M_Edit.isPlayMode)
+		{
+			bool isFinishZone = collider.GetComponent<SafetyZoneCollider>().isFinishZone;
+
+			if (isFinishZone && !M_Coin.IsLeftCoin)
+			{
+				// 승리
+				M_Stage.canSave = true;
+				M_FloatingText.SpawnFloatingText("클리어!", new Vector2(0.5f, 0.3f));
+				M_Game.ExitPlayMode(0.5f);
+			}
+		}
+	}
+	protected void CollisionEnterGravityZone(MyPhysics.Collider2D collider)
+	{
+		if (M_Edit.isEditMode)
+			return;
+
+		m_RigidBody.useGravity = true;
+		m_RigidBody.gravity = collider.GetComponent<GravityZoneCollider>().gravityZone.gravity;
+	}
+	protected void CollisionEnterIceZone(MyPhysics.Collider2D collider)
+	{
+		if (M_Edit.isEditMode)
+			return;
+
+		m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Dynamic;
+		m_RigidBody.drag = collider.GetComponent<IceZoneCollider>().iceZone.drag;
+		//if (m_RigidBody.velocity.magnitude == 0f)
+		//{
+		//    m_RigidBody.velocity += m_Player.rigidBody2D.force;
+		//}
+	}
+	#endregion
+	#region CollisionExit
+	protected void CollisionExitSafetyZone(MyPhysics.Collider2D collider)
+	{
+		//int layerMask = LayerMask.GetMask("SafetyZone");
+		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
+		//if (colliders.Length <= 0)
+		//{
+		//	m_IsSafe = false;
+		//}
+	}
+	protected void CollisionExitGravityZone(MyPhysics.Collider2D collider)
+	{
+		if (M_Edit.isEditMode)
+			return;
+
+		//int layerMask = LayerMask.GetMask("GravityZone");
+		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
+		//if (colliders.Length <= 0)
+		//{
+		//	m_RigidBody.useGravity = false;
+		//	m_RigidBody.gravity = MyPhysics.Physics2D.gravity;
+		//}
+		//else
+		//{
+		//	m_RigidBody.gravity = colliders[0].GetComponent<GravityZoneCollider>().gravityZone.gravity;
+		//}
+	}
+	protected void CollisionExitIceZone(MyPhysics.Collider2D collider)
+	{
+		if (M_Edit.isEditMode)
+			return;
+
+		//int layerMask = LayerMask.GetMask("IceZone");
+		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
+		//if (colliders.Length <= 0)
+		//{
+		//	m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Kinematic;
+		//	m_RigidBody.drag = 1f;
+		//}
+		//else
+		//{
+		//	m_RigidBody.drag = collider.GetComponent<IceZoneCollider>().iceZone.drag;
+		//}
+	}
+	#endregion
 	#endregion
 	#region 외부 함수
 	public void __Initialize()
 	{
 		#region 이벤트 링크
-		M_Game.OnEnterPlayMode += OnPlayEnter;
-		M_Game.OnExitPlayMode += OnPlayExit;
-
-		M_Player.OnPlayerRespawn += Respawn;
+		M_Player.onPlayerRespawn += Respawn;
 		#endregion
 
-		if (null == m_RigidBody)
-		{
-			m_RigidBody = GetComponent<MyPhysics.Rigidbody2D>();
-			m_RigidBody.layerMask = LayerMask.GetMask("Wall");
-		}
+		#region 내부 컴포넌트
 		if (null == m_Renderer)
 		{
 			m_Renderer = GetComponentInChildren<SpriteRenderer>();
@@ -149,25 +273,65 @@ public class Player : MonoBehaviour
 		}
 		if (null == m_Collider)
 		{
-			m_Collider = GetComponentInChildren<PlayerCollider>();
-			m_Collider.__Initialize(this);
+			m_Collider = GetComponent<MyPhysics.BoxCollider2D>();
+			// 마찰 설정
+			m_Collider.friction = 0f;
+			// 탄성 설정
+			m_Collider.bounciness = 0f;
+			m_Collider.onCollisionEnter2D += OnCollision2DEnter;
+			m_Collider.onCollisionExit2D += OnCollision2DExit;
 		}
+		if (null == m_RigidBody)
+		{
+			m_RigidBody = GetComponent<MyPhysics.Rigidbody2D>();
+			m_RigidBody.layerMask = LayerMask.GetMask("Wall");
+		}
+		#endregion
 
-		m_CanMove = M_Edit.isEditMode;
+		m_IsDie = false;
 
 		gameObject.SetActive(false);
 	}
-
-	public void Death()
+	#endregion
+	#region 이벤트 함수
+	public void OnPlayModeEnter()
 	{
-		if (m_IsDie)
-			return;
+		m_InitPos = transform.position;
 
-		m_CanMove = false;
-		m_IsDie = true;
-		m_Animator.Death();
+		m_Animator.OnPlayModeEnter();
+
+		//int layerMask = LayerMask.GetMask("Enemy", "Coin", "GravityZone");
+		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
+		//foreach (var item in colliders)
+		//{
+		//	if (item.CompareTag("Enemy"))
+		//	{
+		//		TriggerEnterEnemy(item);
+		//	}
+		//	if (item.CompareTag("Coin"))
+		//	{
+		//		TriggerEnterCoin(item);
+		//	}
+		//	if (item.CompareTag("GravityZone"))
+		//	{
+		//		TriggerEnterGravityZone(item);
+		//	}
+		//}
 	}
-	public void Respawn()
+	public void OnPlayModeExit()
+	{
+		m_Animator.OnPlayModeExit();
+
+		transform.position = m_InitPos;
+
+		m_RigidBody.useGravity = false;
+		m_RigidBody.gravity = MyPhysics.Physics2D.gravity;
+		m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Kinematic;
+		m_RigidBody.drag = 0f;
+		m_RigidBody.velocity = Vector3.zero;
+		m_RigidBody.force = Vector3.zero;
+	}
+	private void Respawn()
 	{
 		if (M_Edit.isEditMode)
 		{
@@ -180,23 +344,37 @@ public class Player : MonoBehaviour
 
 		gameObject.SetActive(true);
 		m_IsDie = false;
-		m_CanMove = true;
 	}
 	#endregion
-	#region 이벤트 함수
-	public void OnPlayEnter()
+	#region 인터페이스 함수
+	public void EraseObject()
 	{
-		m_InitPos = transform.position;
-		gameObject.SetActive(true);
+		UndoRedoArgs args = new UndoRedoArgs();
+
+		args.undo += () =>
+		{
+			gameObject.SetActive(true);
+		};
+		args.redo += () =>
+		{
+			gameObject.SetActive(false);
+		};
+
+		M_UndoRedo.AddUndoRedoArgs(args);
+
+		gameObject.SetActive(false);
 	}
-	public void OnPlayExit()
+	public SpriteRenderer GetSpriteRenderer()
 	{
-		transform.position = m_InitPos;
-		m_RigidBody.useGravity = false;
-		m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Kinematic;
-		m_RigidBody.drag = 0f;
-		m_RigidBody.velocity = Vector3.zero;
-		m_RigidBody.force = Vector3.zero;
+		return m_Renderer;
+	}
+	public GameObject GetGameObject()
+	{
+		return gameObject;
+	}
+	public E_ObjectType GetObjectType()
+	{
+		return E_ObjectType.Player;
 	}
 	#endregion
 	#region 유니티 콜백 함수

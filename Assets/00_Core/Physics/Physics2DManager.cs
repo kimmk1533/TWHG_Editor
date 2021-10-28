@@ -8,10 +8,9 @@ namespace MyPhysics
 	public sealed class Physics2DManager : Singleton<Physics2DManager>
 	{
 		private static List<Collider2D> m_ColliderList = new List<Collider2D>();
+
 		private static List<CollisionEventArgs> m_HitColliderList = new List<CollisionEventArgs>();
 		private static List<CollisionEventArgs> m_OldHitColliderList = new List<CollisionEventArgs>();
-		private static List<CollisionEventArgs> m_TriggerHitColliderList = new List<CollisionEventArgs>();
-		private static List<CollisionEventArgs> m_OldTriggerHitColliderList = new List<CollisionEventArgs>();
 
 		#region 외부 프로퍼티
 		public static List<Collider2D> colliderList => m_ColliderList;
@@ -40,16 +39,9 @@ namespace MyPhysics
 
 					if (Physics2D.CollisionTestByType(ref collision))
 					{
-						if (A.isTrigger || B.isTrigger)
-							m_TriggerHitColliderList.Add(new CollisionEventArgs(collision));
-						else
-							m_HitColliderList.Add(new CollisionEventArgs(collision));
+						m_HitColliderList.Add(new CollisionEventArgs(collision));
 
 						ResolveCollision(collision);
-
-						Debug.Log("충돌\n" +
-							A.transform.parent.name + ": " + A.type + "\n" +
-							B.transform.parent.name + ": " + B.type);
 					}
 				}
 			}
@@ -57,6 +49,9 @@ namespace MyPhysics
 		// 충돌 해결(추후 회전 추가)
 		private void ResolveCollision(Collision2D collision)
 		{
+			if (collision.collider.isTrigger || collision.otherCollider.isTrigger)
+				return;
+
 			#region Rigidbody
 			Rigidbody2D A = collision.rigidbody;
 			Rigidbody2D B = collision.otherRigidbody;
@@ -154,48 +149,74 @@ namespace MyPhysics
 		}
 		#endregion
 		#region 유니티 콜백 함수
-		void Awake()
+		private void Awake()
 		{
 			DontDestroyOnLoad(gameObject);
 		}
-
 		private void FixedUpdate()
 		{
-			#region 충돌
-			m_TriggerHitColliderList.Clear();
+			m_HitColliderList.Clear();
 
 			CollisionTest();
 
-			// Enter, Stay
-			foreach (var item in m_TriggerHitColliderList)
+			// Enter, Stay Event
+			foreach (var item in m_HitColliderList)
 			{
-				// Trigger Enter Event
-				if (!m_OldTriggerHitColliderList.Contains(item))
+				#region Enter Event
+				if (!m_OldHitColliderList.Contains(item))
 				{
-					item.A.onTriggerEnter2D?.Invoke(item.B);
-					item.B.onTriggerEnter2D?.Invoke(item.A);
-					Debug.Log("TriggerEnter2D");
-				}
+					Debug.Log("Collision Enter2D [ " + item.A + ", " + item.B + " ]");
 
-				// Trigger Stay Event
-				item.A.onTriggerStay2D?.Invoke(item.B);
-				item.B.onTriggerStay2D?.Invoke(item.A);
+					if (item.A.isTrigger)
+						item.A.onTriggerEnter2D?.Invoke(item.B);
+					else
+						item.A.onCollisionEnter2D?.Invoke(item.B);
+
+					if (item.B.isTrigger)
+						item.B.onTriggerEnter2D?.Invoke(item.A);
+					else
+						item.B.onCollisionEnter2D?.Invoke(item.A);
+				}
+				#endregion
+
+				#region Stay Event
+				Debug.Log("Collision Stay2D [ " + item.A + ", " + item.B + " ]");
+
+				if (item.A.isTrigger)
+					item.A.onTriggerStay2D?.Invoke(item.B);
+				else
+					item.A.onCollisionStay2D?.Invoke(item.B);
+
+				if (item.B.isTrigger)
+					item.B.onTriggerStay2D?.Invoke(item.A);
+				else
+					item.B.onCollisionStay2D?.Invoke(item.A);
+				#endregion
 			}
 
-			// Exit
-			foreach (var item in m_OldTriggerHitColliderList)
+			// Exit Event
+			foreach (var item in m_OldHitColliderList)
 			{
-				if (!m_TriggerHitColliderList.Contains(item))
+				#region Exit Event
+				if (!m_HitColliderList.Contains(item))
 				{
-					item.A.onTriggerExit2D?.Invoke(item.B);
-					item.B.onTriggerExit2D?.Invoke(item.A);
-					Debug.Log("TriggerExit2D");
+					Debug.Log("Collision Exit2D [ " + item.A + ", " + item.B + " ]");
+
+					if (item.A.isTrigger)
+						item.A.onTriggerExit2D?.Invoke(item.B);
+					else
+						item.A.onCollisionExit2D?.Invoke(item.B);
+
+					if (item.B.isTrigger)
+						item.B.onTriggerExit2D?.Invoke(item.A);
+					else
+						item.B.onCollisionExit2D?.Invoke(item.A);
 				}
+				#endregion
 			}
 
-			m_OldTriggerHitColliderList.Clear();
-			m_OldTriggerHitColliderList.AddRange(m_TriggerHitColliderList);
-			#endregion
+			m_OldHitColliderList.Clear();
+			m_OldHitColliderList.AddRange(m_HitColliderList);
 		}
 		#endregion
 

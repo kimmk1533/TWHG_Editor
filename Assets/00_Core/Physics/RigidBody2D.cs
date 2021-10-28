@@ -23,12 +23,10 @@ namespace MyPhysics
 		// 가해지는 중력
 		[SerializeField]
 		protected Vector2 m_Gravity = Physics2D.gravity;
-		// 콜라이더 자식 감지 여부
-		[SerializeField]
-		protected bool m_UseChildCollider = false;
 
 		#region 내부 정보
-		[Space(15)]
+		[Header("Infos")]
+		[Space(5)]
 		// 속도
 		[SerializeField, ReadOnly]
 		protected Vector2 m_Velocity;
@@ -163,16 +161,8 @@ namespace MyPhysics
 		#region 유니티 콜백 함수
 		void Awake()
 		{
-			if (!m_UseChildCollider)
-			{
-				m_Collider = GetComponent<Collider2D>();
-				m_Collider.attachedRigidbody = this;
-			}
-			else
-			{
-				m_Collider = GetComponentInChildren<Collider2D>();
-				m_Collider.attachedRigidbody = this;
-			}
+			m_Collider = GetComponent<Collider2D>();
+			m_Collider.attachedRigidbody = this;
 		}
 		void FixedUpdate()
 		{

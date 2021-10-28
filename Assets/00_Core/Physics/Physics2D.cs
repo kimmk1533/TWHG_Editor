@@ -51,6 +51,8 @@ namespace MyPhysics
 		// OBB vs OBB
 		private static bool CollisionTest_OBB_OBB(ref Collision2D collision)
 		{
+			// 출처: https://justicehui.github.io/other-algorithm/2018/06/23/OBB/
+			// 출처: https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
 			Collider2D A = collision.collider;
 			Collider2D B = collision.otherCollider;
 

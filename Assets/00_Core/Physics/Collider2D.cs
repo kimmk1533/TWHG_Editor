@@ -35,8 +35,11 @@ namespace MyPhysics
 
 		#region 외부 프로퍼티
 		public E_ColliderType type { get => m_ColliderType; }
+		// 탄성
 		public float bounciness { get => m_Bounciness; set => m_Bounciness = value; }
+		// 마찰
 		public float friction { get => m_Friction; set => m_Friction = value; }
+		// 밀도
 		public float density { get => m_Density; set => m_Density = value; }
 		public bool isTrigger { get => m_IsTrigger; set => m_IsTrigger = value; }
 		public Vector2 offset { get => m_Offset; set => m_Offset = value; }

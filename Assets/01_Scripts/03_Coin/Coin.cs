@@ -11,11 +11,9 @@ public class Coin : MonoBehaviour, IEraserableObject, IClickedObject
 	#region 내부 프로퍼티
 	#region 매니져
 	protected __EditManager M_Edit => __EditManager.Instance;
+
 	protected CoinManager M_Coin => CoinManager.Instance;
 	#endregion
-	#endregion
-	#region 외부 프로퍼티
-	public new SpriteRenderer renderer { get => m_Renderer; }
 	#endregion
 	#region 내부 함수
 	private void OnTrigger2DEnter(MyPhysics.Collider2D collider)
@@ -24,6 +22,8 @@ public class Coin : MonoBehaviour, IEraserableObject, IClickedObject
 		{
 			if (collider.CompareTag("Player"))
 			{
+				gameObject.SetActive(false);
+
 				--M_Coin.CoinCount;
 			}
 		}
@@ -34,7 +34,7 @@ public class Coin : MonoBehaviour, IEraserableObject, IClickedObject
 	{
 		if (null == m_Renderer)
 		{
-			m_Renderer = GetComponentInChildren<SpriteRenderer>();
+			m_Renderer = transform.Find("Renderer").GetComponent<SpriteRenderer>();
 		}
 		if (null == m_Collider)
 		{
@@ -48,6 +48,16 @@ public class Coin : MonoBehaviour, IEraserableObject, IClickedObject
 	}
 
 	#endregion
+	#region 이벤트 함수
+	public void OnPlayModeEnter()
+	{
+
+	}
+	public void OnPlayModeExit()
+	{
+
+	}
+	#endregion
 	#region 인터페이스 함수
 	public void EraseObject()
 	{
@@ -55,7 +65,7 @@ public class Coin : MonoBehaviour, IEraserableObject, IClickedObject
 	}
 	public SpriteRenderer GetSpriteRenderer()
 	{
-		return renderer;
+		return m_Renderer;
 	}
 	public GameObject GetGameObject()
 	{
