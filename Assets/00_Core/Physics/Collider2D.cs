@@ -17,12 +17,21 @@ namespace MyPhysics
 		// 마찰
 		[SerializeField, ReadOnly]
 		protected float m_Friction = 0.4f;
+		// 탄성
 		[SerializeField, ReadOnly]
-		protected float m_Bounciness;
+		protected float m_Bounciness = 0f;
 		// 밀도
 		protected float m_Density;
 		[SerializeField, ReadOnly]
 		protected Bounds m_Bounds;
+
+		public delegate void CollisionEventHandler(Collider2D otherCollider);
+		protected CollisionEventHandler m_OnCollisionEnter2D;
+		protected CollisionEventHandler m_OnCollisionStay2D;
+		protected CollisionEventHandler m_OnCollisionExit2D;
+		protected CollisionEventHandler m_OnTriggerEnter2D;
+		protected CollisionEventHandler m_OnTriggerStay2D;
+		protected CollisionEventHandler m_OnTriggerExit2D;
 
 		#region 외부 프로퍼티
 		public E_ColliderType type { get => m_ColliderType; }
@@ -75,6 +84,13 @@ namespace MyPhysics
 				return center + result;
 			}
 		}
+
+		public CollisionEventHandler onCollisionEnter2D { get => m_OnCollisionEnter2D; set => m_OnCollisionEnter2D = value; }
+		public CollisionEventHandler onCollisionStay2D { get => m_OnCollisionStay2D; set => m_OnCollisionStay2D = value; }
+		public CollisionEventHandler onCollisionExit2D { get => m_OnCollisionExit2D; set => m_OnCollisionExit2D = value; }
+		public CollisionEventHandler onTriggerEnter2D { get => m_OnTriggerEnter2D; set => m_OnTriggerEnter2D = value; }
+		public CollisionEventHandler onTriggerStay2D { get => m_OnTriggerStay2D; set => m_OnTriggerStay2D = value; }
+		public CollisionEventHandler onTriggerExit2D { get => m_OnTriggerExit2D; set => m_OnTriggerExit2D = value; }
 		#endregion
 		#region 외부 함수
 		public virtual bool OverlapPoint(Vector2 point)

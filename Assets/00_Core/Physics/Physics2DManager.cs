@@ -8,16 +8,53 @@ namespace MyPhysics
 	public sealed class Physics2DManager : Singleton<Physics2DManager>
 	{
 		private static List<Collider2D> m_ColliderList = new List<Collider2D>();
+		private static List<CollisionEventArgs> m_HitColliderList = new List<CollisionEventArgs>();
+		private static List<CollisionEventArgs> m_OldHitColliderList = new List<CollisionEventArgs>();
+		private static List<CollisionEventArgs> m_TriggerHitColliderList = new List<CollisionEventArgs>();
+		private static List<CollisionEventArgs> m_OldTriggerHitColliderList = new List<CollisionEventArgs>();
 
 		#region 외부 프로퍼티
 		public static List<Collider2D> colliderList => m_ColliderList;
 		#endregion
 		#region 내부 함수
+		// 피타고라스 정리
 		private float PythagoreanSolve(float A, float B)
 		{
 			return Mathf.Sqrt(A * A + B * B);
 		}
-		// 추후 회전 추가
+		// 충돌 검사
+		private void CollisionTest()
+		{
+			for (int i = 0; i < m_ColliderList.Count; ++i)
+			{
+				Collider2D A = m_ColliderList[i];
+
+				for (int j = i + 1; j < m_ColliderList.Count; ++j)
+				{
+					Collider2D B = m_ColliderList[j];
+
+					Collision2D collision = new Collision2D(A, B);
+
+					if (!Physics2D.PreCollisionTest(collision))
+						continue;
+
+					if (Physics2D.CollisionTestByType(ref collision))
+					{
+						if (A.isTrigger || B.isTrigger)
+							m_TriggerHitColliderList.Add(new CollisionEventArgs(collision));
+						else
+							m_HitColliderList.Add(new CollisionEventArgs(collision));
+
+						ResolveCollision(collision);
+
+						Debug.Log("충돌\n" +
+							A.transform.parent.name + ": " + A.type + "\n" +
+							B.transform.parent.name + ": " + B.type);
+					}
+				}
+			}
+		}
+		// 충돌 해결(추후 회전 추가)
 		private void ResolveCollision(Collision2D collision)
 		{
 			#region Rigidbody
@@ -125,36 +162,53 @@ namespace MyPhysics
 		private void FixedUpdate()
 		{
 			#region 충돌
-			for (int i = 0; i < m_ColliderList.Count; ++i)
+			m_TriggerHitColliderList.Clear();
+
+			CollisionTest();
+
+			// Enter, Stay
+			foreach (var item in m_TriggerHitColliderList)
 			{
-				Collider2D A = m_ColliderList[i];
-
-				for (int j = i + 1; j < m_ColliderList.Count; ++j)
+				// Trigger Enter Event
+				if (!m_OldTriggerHitColliderList.Contains(item))
 				{
-					Collider2D B = m_ColliderList[j];
+					item.A.onTriggerEnter2D?.Invoke(item.B);
+					item.B.onTriggerEnter2D?.Invoke(item.A);
+					Debug.Log("TriggerEnter2D");
+				}
 
-					Collision2D collision = new Collision2D(A, B);
+				// Trigger Stay Event
+				item.A.onTriggerStay2D?.Invoke(item.B);
+				item.B.onTriggerStay2D?.Invoke(item.A);
+			}
 
-					if (!Physics2D.PreCollisionTest(collision))
-						continue;
-
-					if (Physics2D.CollisionTestByType(ref collision))
-					{
-						//if (A.isTrigger || B.isTrigger)
-						//	m_TriggerHitColliderList.Add(collision);
-						//else
-						//	m_HitColliderList.Add(collision);
-
-						ResolveCollision(collision);
-
-						Debug.Log("충돌\n" +
-							A.transform.parent.name + ": " + A.type + "\n" +
-							B.transform.parent.name + ": " + B.type);
-					}
+			// Exit
+			foreach (var item in m_OldTriggerHitColliderList)
+			{
+				if (!m_TriggerHitColliderList.Contains(item))
+				{
+					item.A.onTriggerExit2D?.Invoke(item.B);
+					item.B.onTriggerExit2D?.Invoke(item.A);
+					Debug.Log("TriggerExit2D");
 				}
 			}
+
+			m_OldTriggerHitColliderList.Clear();
+			m_OldTriggerHitColliderList.AddRange(m_TriggerHitColliderList);
 			#endregion
 		}
 		#endregion
+
+		private struct CollisionEventArgs
+		{
+			public Collider2D A;
+			public Collider2D B;
+
+			public CollisionEventArgs(Collision2D collision)
+			{
+				A = collision.collider;
+				B = collision.otherCollider;
+			}
+		}
 	}
 }
