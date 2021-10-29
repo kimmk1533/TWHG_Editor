@@ -1227,6 +1227,10 @@ public class __EditManager : Singleton<__EditManager>
 		});
 		#endregion
 		#region GravityZone
+		m_GravityZone_InputField_GravityX.onEndEdit.AddListener(item =>
+		{
+			OnGravityZoneChangeGravity();
+		});
 		m_GravityZone_InputField_GravityY.onEndEdit.AddListener(item =>
 		{
 			OnGravityZoneChangeGravity();

@@ -50,7 +50,6 @@ MonoBehaviour:
   m_InitPos: {x: 0, y: 0, z: 0}
   m_SpawnPos: {x: 0, y: 0, z: 0}
   m_IsSafe: 0
-  m_CanMove: 0
   m_IsDie: 0
 --- !u!114 &4841331838287917193
 MonoBehaviour:

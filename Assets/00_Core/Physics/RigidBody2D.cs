@@ -30,6 +30,8 @@ namespace MyPhysics
 		// 속도
 		[SerializeField, ReadOnly]
 		protected Vector2 m_Velocity;
+		protected float m_Rotation;
+		protected Vector2 m_Position;
 		// 힘 (작용)
 		protected Vector2 m_Force;
 		// 저항 (반작용)
@@ -49,6 +51,36 @@ namespace MyPhysics
 		public Vector2 velocity { get => m_Velocity; set => m_Velocity = value; }
 		public Vector2 force { get => m_Force; set => m_Force = value; }
 		public int layerMask { get => m_LayerMask; set => m_LayerMask = value; }
+		public float rotation
+		{
+			get => m_Rotation;
+			set
+			{
+				m_Rotation = value;
+
+				if (null != this)
+				{
+					Vector3 rot = transform.eulerAngles;
+					rot.z = m_Rotation;
+					transform.eulerAngles = rot;
+				}
+			}
+		}
+		public Vector2 position
+		{
+			get => m_Position;
+			set
+			{
+				m_Position = value;
+
+				if (null != this)
+				{
+					Vector3 pos = m_Position;
+					pos.z = transform.position.z;
+					transform.position = pos;
+				}
+			}
+		}
 		#endregion
 		#region 내부 함수
 		protected Vector2 CalculateDrag(Vector2 force)
@@ -202,6 +234,9 @@ namespace MyPhysics
 		{
 			#region 초기화
 			m_Force = Vector2.zero;
+
+			m_Rotation = transform.eulerAngles.z;
+			m_Position = transform.position;
 			#endregion
 		}
 		#endregion

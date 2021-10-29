@@ -37,7 +37,11 @@ namespace MyPhysics
 			Bounds bounds_B = B.GetBoundingBox();
 
 			Vector2 extents = bounds_A.extents + bounds_B.extents;
-			Vector2 distance = B.transform.position - A.transform.position;
+
+			Vector2 pos_A = (Vector2)A.bounds.center + A.offset;
+			Vector2 pos_B = (Vector2)B.bounds.center + B.offset;
+
+			Vector2 distance = pos_B - pos_A;
 
 			float x_overlap = extents.x - Mathf.Abs(distance.x);
 			float y_overlap = extents.y - Mathf.Abs(distance.y);
@@ -56,7 +60,10 @@ namespace MyPhysics
 			Collider2D A = collision.collider;
 			Collider2D B = collision.otherCollider;
 
-			Vector2 distance = B.transform.position - A.transform.position;
+			Vector2 pos_A = (Vector2)A.bounds.center + A.offset;
+			Vector2 pos_B = (Vector2)B.bounds.center + B.offset;
+
+			Vector2 distance = pos_B - pos_A;
 
 			Vector2[] axises = new Vector2[4]
 			{
@@ -116,7 +123,11 @@ namespace MyPhysics
 			CircleCollider2D A = collision.collider as CircleCollider2D;
 			CircleCollider2D B = collision.otherCollider as CircleCollider2D;
 
-			Vector2 distance = B.center - A.center;
+			Vector2 pos_A = (Vector2)A.bounds.center + A.offset;
+			Vector2 pos_B = (Vector2)B.bounds.center + B.offset;
+
+			Vector2 distance = pos_B - pos_A;
+
 			float radius = A.radius + B.radius;
 			float squardRadius = radius * radius;
 
@@ -147,7 +158,8 @@ namespace MyPhysics
 			Collider2D A = collision.collider;
 			CircleCollider2D B = collision.otherCollider as CircleCollider2D;
 
-			float theta = A.transform.eulerAngles.z * Mathf.Deg2Rad;
+			float theta = (null != A.attachedRigidbody) ? A.attachedRigidbody.rotation * Mathf.Deg2Rad :
+						((null != A) ? A.transform.eulerAngles.z * Mathf.Deg2Rad : 0f);
 
 			Matrix4x4 rotMat = Matrix4x4.identity;
 			if (theta != 0f)
@@ -164,7 +176,11 @@ namespace MyPhysics
 				vertices[i] = rotMat * A[i];
 			}
 
-			Vector2 distance = B.transform.position - A.transform.position;
+			Vector2 pos_A = (Vector2)A.bounds.center + A.offset;
+			Vector2 pos_B = (Vector2)B.bounds.center + B.offset;
+
+			Vector2 distance = pos_B - pos_A;
+
 			distance = rotMat * distance;
 
 			Vector2 extents = (vertices[1] - vertices[3]) * 0.5f;
@@ -239,7 +255,6 @@ namespace MyPhysics
 
 			return CollisionTest_AABB_AABB(collision);
 		}
-
 		// 타입별 충돌 검사
 		public static bool CollisionTestByType(ref Collision2D collision)
 		{
@@ -270,9 +285,9 @@ namespace MyPhysics
 
 			return false;
 		}
-		#endregion
-		#region Raycast
+
 		//UnityEngine.Physics2D
+		#region Raycast
 		public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction)
 		{
 			return Raycast(origin, direction, float.MaxValue);
@@ -313,6 +328,118 @@ namespace MyPhysics
 			RaycastHit2D hit2D = new RaycastHit2D();
 			//hit2D.
 			return hit2D;
+		}
+		#endregion
+		#region OverlapBox
+		public static Collider2D OverlapBox(Vector2 point, Vector2 size, float angle)
+		{
+			GameObject tempObj = new GameObject("temp");
+			BoxCollider2D collider = tempObj.AddComponent<BoxCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.attachedRigidbody.rotation = angle;
+			collider.center = point;
+			collider.size = size;
+
+			foreach (var item in Physics2DManager.colliderList)
+			{
+				Collision2D collision = new Collision2D(item, collider);
+
+				if (CollisionTestByType(ref collision))
+				{
+					GameObject.DestroyImmediate(tempObj);
+
+					return item;
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return null;
+		}
+		public static Collider2D OverlapBox(Vector2 point, Vector2 size, float angle, int layerMask)
+		{
+			GameObject tempObj = new GameObject("temp");
+			BoxCollider2D collider = tempObj.AddComponent<BoxCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.attachedRigidbody.rotation = angle;
+			collider.center = point;
+			collider.size = size;
+
+			foreach (var item in Physics2DManager.colliderList)
+			{
+				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
+					continue;
+
+				Collision2D collision = new Collision2D(item, collider);
+
+				if (CollisionTestByType(ref collision))
+				{
+					GameObject.DestroyImmediate(tempObj);
+
+					return item;
+				}
+			}
+			
+			GameObject.DestroyImmediate(tempObj);
+
+			return null;
+		}
+		public static Collider2D[] OverlapBoxAll(Vector2 point, Vector2 size, float angle)
+		{
+			List<Collider2D> colliders = new List<Collider2D>();
+
+			GameObject tempObj = new GameObject("temp");
+			BoxCollider2D collider = tempObj.AddComponent<BoxCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.attachedRigidbody.rotation = angle;
+			collider.center = point;
+			collider.size = size;
+
+			foreach (var item in Physics2DManager.colliderList)
+			{
+				Collision2D collision = new Collision2D(item, collider);
+
+				if (CollisionTestByType(ref collision))
+				{
+					colliders.Add(item);
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return colliders.ToArray();
+		}
+		public static Collider2D[] OverlapBoxAll(Vector2 point, Vector2 size, float angle, int layerMask)
+		{
+			List<Collider2D> colliders = new List<Collider2D>();
+
+			GameObject tempObj = new GameObject("temp");
+			BoxCollider2D collider = tempObj.AddComponent<BoxCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.attachedRigidbody.rotation = angle;
+			collider.center = point;
+			collider.size = size;
+
+			foreach (var item in Physics2DManager.colliderList)
+			{
+				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
+					continue;
+
+				Collision2D collision = new Collision2D(item, collider);
+
+				if (CollisionTestByType(ref collision))
+				{
+					colliders.Add(item);
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return colliders.ToArray();
 		}
 		#endregion
 		#region OverlapPoint
@@ -374,6 +501,7 @@ namespace MyPhysics
 
 			return colliders.ToArray();
 		}
+		#endregion
 		#endregion
 		#endregion
 	}

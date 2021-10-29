@@ -98,7 +98,7 @@ public class Player : MonoBehaviour, IClickerableObject, IEraserableObject
 			transform.Translate(temp);
 		}
 	}
-	private	void ClampPos()
+	private void ClampPos()
 	{
 		// 뷰포트 기준 좌측 하단의 좌표를 월드좌표로 변환 (최솟값)
 		Vector2 min = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
@@ -211,46 +211,55 @@ public class Player : MonoBehaviour, IClickerableObject, IEraserableObject
 
 	private void CollisionExitSafetyZone(MyPhysics.Collider2D collider)
 	{
-		//int layerMask = LayerMask.GetMask("SafetyZone");
-		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
-		//if (colliders.Length <= 0)
-		//{
-		//	m_IsSafe = false;
-		//}
+		Vector2 point = m_Collider.center;
+		Vector2 size = m_Collider.size;
+		float rot = transform.eulerAngles.z;
+		int layerMask = LayerMask.GetMask("SafetyZone");
+		MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(point, size, rot, layerMask);
+		if (colliders.Length <= 0)
+		{
+			m_IsSafe = false;
+		}
 	}
 	private void CollisionExitGravityZone(MyPhysics.Collider2D collider)
 	{
 		if (M_Edit.isEditMode)
 			return;
 
-		//int layerMask = LayerMask.GetMask("GravityZone");
-		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
-		//if (colliders.Length <= 0)
-		//{
-		//	m_RigidBody.useGravity = false;
-		//	m_RigidBody.gravity = MyPhysics.Physics2D.gravity;
-		//}
-		//else
-		//{
-		//	m_RigidBody.gravity = colliders[0].GetComponent<GravityZoneCollider>().gravityZone.gravity;
-		//}
+		Vector2 point = m_Collider.center;
+		Vector2 size = m_Collider.size;
+		float rot = transform.eulerAngles.z;
+		int layerMask = LayerMask.GetMask("GravityZone");
+		MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(point, size, rot, layerMask);
+		if (colliders.Length > 0)
+		{
+			m_RigidBody.gravity = colliders[0].GetComponent<GravityZone>().gravity;
+		}
+		else
+		{
+			m_RigidBody.useGravity = false;
+			m_RigidBody.gravity = MyPhysics.Physics2D.gravity;
+		}
 	}
 	private void CollisionExitIceZone(MyPhysics.Collider2D collider)
 	{
 		if (M_Edit.isEditMode)
 			return;
 
-		//int layerMask = LayerMask.GetMask("IceZone");
-		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
-		//if (colliders.Length <= 0)
-		//{
-		//	m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Kinematic;
-		//	m_RigidBody.drag = 1f;
-		//}
-		//else
-		//{
-		//	m_RigidBody.drag = collider.GetComponent<IceZoneCollider>().iceZone.drag;
-		//}
+		Vector2 point = m_Collider.center;
+		Vector2 size = m_Collider.size;
+		float rot = transform.eulerAngles.z;
+		int layerMask = LayerMask.GetMask("IceZone");
+		MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(point, size, rot, layerMask);
+		if (colliders.Length > 0)
+		{
+			m_RigidBody.drag = collider.GetComponent<IceZone>().friction;
+		}
+		else
+		{
+			m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Kinematic;
+			m_RigidBody.drag = 1f;
+		}
 	}
 	#endregion
 	#endregion
@@ -300,23 +309,12 @@ public class Player : MonoBehaviour, IClickerableObject, IEraserableObject
 
 		m_Animator.OnPlayModeEnter();
 
-		//int layerMask = LayerMask.GetMask("Enemy", "Coin", "GravityZone");
-		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
-		//foreach (var item in colliders)
-		//{
-		//	if (item.CompareTag("Enemy"))
-		//	{
-		//		TriggerEnterEnemy(item);
-		//	}
-		//	if (item.CompareTag("Coin"))
-		//	{
-		//		TriggerEnterCoin(item);
-		//	}
-		//	if (item.CompareTag("GravityZone"))
-		//	{
-		//		TriggerEnterGravityZone(item);
-		//	}
-		//}
+		int layerMask = LayerMask.GetMask("Enemy", "Coin", "GravityZone");
+		MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(m_Collider.center, m_Collider.size, 0f, layerMask);
+		foreach (var item in colliders)
+		{
+			OnCollision2DEnter(item);
+		}
 	}
 	public void OnPlayModeExit()
 	{

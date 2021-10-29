@@ -16,7 +16,19 @@ namespace MyPhysics
             get => m_Size;
             set { m_Bounds.size = m_Size = value; }
         }
-        public Vector2 center => m_Bounds.center;
+        public Vector2 center
+        {
+            get => m_Bounds.center;
+            set
+            {
+                m_Bounds.center = value;
+
+                if (null != this)
+				{
+                    transform.position = value - m_Offset;
+				}
+            }
+        }
         public override Vector2 this[int index]
         {
             get
@@ -24,7 +36,8 @@ namespace MyPhysics
                 Vector2 min = -m_Bounds.extents;
                 Vector2 max = m_Bounds.extents;
 
-                float theta = -transform.eulerAngles.z * Mathf.Deg2Rad;
+                float theta = (null != m_AttachedRigidbody) ? -m_AttachedRigidbody.rotation * Mathf.Deg2Rad :
+                        ((null != this) ? -transform.eulerAngles.z * Mathf.Deg2Rad : 0f);
                 float cos = Mathf.Cos(theta);
                 float sin = Mathf.Sin(theta);
 
@@ -53,15 +66,48 @@ namespace MyPhysics
                         break;
                 }
 
-                Vector2 center = m_Bounds.center;
+                Vector2 center = (Vector2)m_Bounds.center + m_Offset;
                 Vector2 result = rotMat * rotVec;
 
                 return center + result;
             }
         }
-        #endregion
-        #region 외부 함수
-        public override Bounds GetBoundingBox()
+		#endregion
+		#region 외부 함수
+		public override bool OverlapPoint(Vector2 point)
+        {
+            float theta = transform.eulerAngles.z * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(theta);
+            float sin = Mathf.Sin(theta);
+
+            Matrix4x4 rotMat = new Matrix4x4();
+            rotMat.m00 = cos; rotMat.m01 = -sin;
+            rotMat.m10 = sin; rotMat.m11 = cos;
+
+            Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
+            Vector2 max = new Vector2(float.MinValue, float.MinValue);
+
+            for (int i = 0; i < 4; ++i)
+            {
+                Vector2 vertex = rotMat * this[i];
+
+                if (vertex.x < min.x)
+                    min.x = vertex.x;
+                if (vertex.y < min.y)
+                    min.y = vertex.y;
+
+                if (vertex.x > max.x)
+                    max.x = vertex.x;
+                if (vertex.y > max.y)
+                    max.y = vertex.y;
+            }
+
+            Vector2 rotPoint = rotMat * point;
+
+            return min.x <= rotPoint.x && rotPoint.x <= max.x &&
+                min.y <= rotPoint.y && rotPoint.y <= max.y;
+        }
+		public override Bounds GetBoundingBox()
         {
             Bounds bounds = new Bounds();
             
@@ -124,15 +170,17 @@ namespace MyPhysics
 
             for (int i = 0; i < 4; ++i)
             {
-                if (this[i].x < min.x)
-                    min.x = this[i].x;
-                if (this[i].y < min.y)
-                    min.y = this[i].y;
+                Vector2 vertex = this[i];
 
-                if (this[i].x > max.x)
-                    max.x = this[i].x;
-                if (this[i].y > max.y)
-                    max.y = this[i].y;
+                if (vertex.x < min.x)
+                    min.x = vertex.x;
+                if (vertex.y < min.y)
+                    min.y = vertex.y;
+
+                if (vertex.x > max.x)
+                    max.x = vertex.x;
+                if (vertex.y > max.y)
+                    max.y = vertex.y;
             }
 
             Gizmos.DrawLine(new Vector2(min.x, max.y), new Vector2(max.x, max.y));
@@ -143,10 +191,15 @@ namespace MyPhysics
             #region Collider
             Gizmos.color = Physics2D.colliderColor;
 
+            Vector2[] vertexs = new Vector2[4]
+            {
+                this[0], this[1], this[2], this[3]
+            };
+
             for (int i = 0; i < 4; ++i)
             {
-                Vector2 from = this[i];
-                Vector2 to = this[(i + 1) % 4];
+                Vector2 from = vertexs[i];
+                Vector2 to = vertexs[(i + 1) % 4];
 
                 Gizmos.DrawLine(from, to);
             }

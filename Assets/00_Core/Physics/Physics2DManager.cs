@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace MyPhysics
 {
+	[DefaultExecutionOrder(100)]
 	public sealed class Physics2DManager : Singleton<Physics2DManager>
 	{
 		private static List<Collider2D> m_ColliderList = new List<Collider2D>();
@@ -151,6 +152,7 @@ namespace MyPhysics
 		#region 유니티 콜백 함수
 		private void Awake()
 		{
+			gameObject.hideFlags = HideFlags.HideInHierarchy;
 			DontDestroyOnLoad(gameObject);
 		}
 		private void FixedUpdate()
@@ -165,7 +167,7 @@ namespace MyPhysics
 				#region Enter Event
 				if (!m_OldHitColliderList.Contains(item))
 				{
-					Debug.Log("Collision Enter2D [ " + item.A + ", " + item.B + " ]");
+					//Debug.Log("Collision Enter2D [ " + item.A + ", " + item.B + " ]");
 
 					if (item.A.isTrigger)
 						item.A.onTriggerEnter2D?.Invoke(item.B);
@@ -180,7 +182,7 @@ namespace MyPhysics
 				#endregion
 
 				#region Stay Event
-				Debug.Log("Collision Stay2D [ " + item.A + ", " + item.B + " ]");
+				//Debug.Log("Collision Stay2D [ " + item.A + ", " + item.B + " ]");
 
 				if (item.A.isTrigger)
 					item.A.onTriggerStay2D?.Invoke(item.B);
@@ -200,7 +202,7 @@ namespace MyPhysics
 				#region Exit Event
 				if (!m_HitColliderList.Contains(item))
 				{
-					Debug.Log("Collision Exit2D [ " + item.A + ", " + item.B + " ]");
+					//Debug.Log("Collision Exit2D [ " + item.A + ", " + item.B + " ]");
 
 					if (item.A.isTrigger)
 						item.A.onTriggerExit2D?.Invoke(item.B);

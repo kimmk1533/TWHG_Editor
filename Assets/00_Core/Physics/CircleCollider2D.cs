@@ -25,13 +25,14 @@ namespace MyPhysics
                 m_Bounds.size = Vector2.one * scaledDiameter;
             }
         }
-        public Vector2 center => m_Bounds.center;
         public override Vector2 this[int angle]
         {
             get
             {
-                float x = center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + transform.eulerAngles.z)) * scaledRadius;
-                float y = center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + transform.eulerAngles.z)) * scaledRadius;
+                float rot = (null != m_AttachedRigidbody) ? m_AttachedRigidbody.rotation :
+                        ((null != this) ? transform.eulerAngles.z : 0f);
+                float x = m_Bounds.center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + rot)) * scaledRadius;
+                float y = m_Bounds.center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + rot)) * scaledRadius;
                 Vector2 max = new Vector2(x, y);
 
                 return max;
@@ -88,17 +89,17 @@ namespace MyPhysics
 
             for (int angle = 0; angle < 360; ++angle)
             {
-                float from_x = center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + transform.eulerAngles.z)) * scaledRadius;
-                float from_y = center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + transform.eulerAngles.z)) * scaledRadius;
+                float from_x = m_Bounds.center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + transform.eulerAngles.z)) * scaledRadius;
+                float from_y = m_Bounds.center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + transform.eulerAngles.z)) * scaledRadius;
                 Vector2 from = new Vector2(from_x, from_y);
 
-                float to_x = center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + 1 + transform.eulerAngles.z)) * scaledRadius;
-                float to_y = center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + 1 + transform.eulerAngles.z)) * scaledRadius;
+                float to_x = m_Bounds.center.x + Mathf.Cos(Mathf.Deg2Rad * (angle + 1 + transform.eulerAngles.z)) * scaledRadius;
+                float to_y = m_Bounds.center.y + Mathf.Sin(Mathf.Deg2Rad * (angle + 1 + transform.eulerAngles.z)) * scaledRadius;
                 Vector2 to = new Vector2(to_x, to_y);
 
                 Gizmos.DrawLine(from, to);
             }
-            Gizmos.DrawLine(center, this[0]);
+            Gizmos.DrawLine(m_Bounds.center, GetRightVector().normalized * scaledRadius);
             #endregion
 
             Gizmos.color = color;

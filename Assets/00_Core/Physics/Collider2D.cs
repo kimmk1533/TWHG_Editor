@@ -52,7 +52,8 @@ namespace MyPhysics
 				Vector2 min = -m_Bounds.extents;
 				Vector2 max = m_Bounds.extents;
 
-				float theta = -transform.eulerAngles.z * Mathf.Deg2Rad;
+				float theta = (null != m_AttachedRigidbody) ? m_AttachedRigidbody.rotation * Mathf.Deg2Rad :
+						((null != this) ? transform.eulerAngles.z * Mathf.Deg2Rad : 0f);
 				float cos = Mathf.Cos(theta);
 				float sin = Mathf.Sin(theta);
 
@@ -105,7 +106,9 @@ namespace MyPhysics
 		public virtual Vector2 GetUpVector()
 		{
 			Vector2 result = new Vector2();//transform.position;
-			float rot = transform.eulerAngles.z + 90f;
+
+			float rot = ((null != m_AttachedRigidbody) ? m_AttachedRigidbody.rotation :
+					((null != this) ? transform.eulerAngles.z : 0f)) + 90f;
 
 			result.x += m_Bounds.extents.y * Mathf.Cos(Mathf.Deg2Rad * rot);
 			result.y += m_Bounds.extents.y * Mathf.Sin(Mathf.Deg2Rad * rot);
@@ -115,7 +118,8 @@ namespace MyPhysics
 		public virtual Vector2 GetRightVector()
 		{
 			Vector2 result = new Vector2();
-			float rot = transform.eulerAngles.z;
+			float rot = (null != m_AttachedRigidbody) ? m_AttachedRigidbody.rotation :
+					((null != this) ? transform.eulerAngles.z : 0f);
 
 			result.x += m_Bounds.extents.x * Mathf.Cos(Mathf.Deg2Rad * rot);
 			result.y += m_Bounds.extents.x * Mathf.Sin(Mathf.Deg2Rad * rot);
