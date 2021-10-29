@@ -72,8 +72,6 @@ public class CoinManager : ObjectManager<CoinManager, Coin>, ISaveHandler, ILoad
 		Coin coin = GetPool("Coin").Spawn();
 		// 초기화
 		coin.__Initialize();
-		// 활성화
-		coin.gameObject.SetActive(true);
 		// 관리 리스트에 추가
 		m_CoinList.Add(coin);
 
@@ -82,7 +80,6 @@ public class CoinManager : ObjectManager<CoinManager, Coin>, ISaveHandler, ILoad
 	// 코인 디스폰 함수
 	public void DespawnCoin(Coin coin)
 	{
-		coin.__Finalize();
 		// 관리 리스트에서 제거
 		m_CoinList.Remove(coin);
 		// 디스폰
@@ -122,7 +119,7 @@ public class CoinManager : ObjectManager<CoinManager, Coin>, ISaveHandler, ILoad
 	}
 	#endregion
 	#region 인터페이스 함수
-	public void Save(XmlWriter writer)
+	public void SaveData(XmlWriter writer)
 	{
 		// 주석
 		writer.WriteComment("코인");
@@ -160,7 +157,7 @@ public class CoinManager : ObjectManager<CoinManager, Coin>, ISaveHandler, ILoad
 		// 코인 리스트 끝
 		writer.WriteEndElement();
 	}
-	public void Load(XmlReader reader)
+	public void LoadData(XmlReader reader)
 	{
 		if (reader.LoadToElement("CoinList"))
 		{

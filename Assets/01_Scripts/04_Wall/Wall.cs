@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static WallManager;
 
-public class Wall : MonoBehaviour, IEraserableTile, IClickedObject
+public class Wall : MonoBehaviour, IClickerableObject, IEraserableTile
 {
 	protected Tile m_Tile;
 	[SerializeField, ReadOnly]
@@ -107,17 +107,17 @@ public class Wall : MonoBehaviour, IEraserableTile, IClickedObject
 			M_Wall.DespawnWall(this);
 		}
 	}
-	public SpriteRenderer GetSpriteRenderer()
+	public E_ObjectType GetObjectType()
 	{
-		return null;
+		return E_ObjectType.Wall;
 	}
 	public GameObject GetGameObject()
 	{
 		return gameObject;
 	}
-	public E_ObjectType GetObjectType()
+	public Renderer GetRenderer()
 	{
-		return E_ObjectType.Wall;
+		return null;
 	}
 	#endregion
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour, IEraserableObject, IClickedObject
+public class Enemy : MonoBehaviour, IClickerableObject, IEraserableObject
 {
 	[SerializeField]
 	protected E_EnemyType m_Type;
@@ -32,7 +32,6 @@ public class Enemy : MonoBehaviour, IEraserableObject, IClickedObject
 	#region 내부 프로퍼티
 	#region 매니져
 	protected __EditManager M_Edit => __EditManager.Instance;
-	protected UndoRedoManager M_UndoRedo => UndoRedoManager.Instance;
 
 	protected EnemyManager M_Enemy => EnemyManager.Instance;
 	protected EnemyGizmoManager M_EnemyGizmo => EnemyGizmoManager.Instance;
@@ -212,55 +211,6 @@ public class Enemy : MonoBehaviour, IEraserableObject, IClickedObject
 	#region 인터페이스 함수
 	public void EraseObject()
 	{
-		UndoRedoArgs args = new UndoRedoArgs();
-
-		#region Undo Variable
-		// 위치
-		Vector3 lastPos = transform.position;
-		// 타입
-		E_EnemyType lastType = m_Type;
-		// 이동 속도
-		float lastSpeed = m_Speed;
-		// 웨이포인트
-		List<EnemyGizmo> wayPointList = new List<EnemyGizmo>();
-		foreach (var item in wayPointList)
-		{
-			EnemyGizmo wayPoint = M_EnemyGizmo.SpawnGizmo();
-			wayPoint.transform.position = item.transform.position;
-
-			wayPoint.index = item.index;
-			wayPoint.text.text = (wayPoint.index + 1).ToString();
-			wayPointList.Add(wayPoint);
-		}
-		// 회전 중심점
-		Vector3 lastCenterPos = m_Center.transform.position;
-		#endregion
-
-		args.undo += () =>
-		{
-			// 적 스폰
-			Enemy enemy = M_Enemy.SpawnEnemy();
-			// 위치 설정
-			enemy.transform.position = lastPos;
-			// 적 타입 설정
-			enemy.type = lastType;
-			// 적 이동 속도 설정
-			enemy.speed = lastSpeed;
-
-			// 적 웨이 포인트 리스트 설정
-			enemy.wayPointList = wayPointList;
-			// 적 회전 중심점 설정
-			enemy.center.transform.position = lastCenterPos;
-
-			args.objectValue = enemy.gameObject;
-		};
-		args.redo += () =>
-		{
-			args.objectValue.GetComponent<Enemy>().EraseObject();
-		};
-
-		M_UndoRedo.AddUndoRedoArgs(args);
-
 		for (int i = 0; i < wayPointList.Count; ++i)
 		{
 			M_EnemyGizmo.DespawnGizmo(wayPointList[i]);
@@ -268,17 +218,17 @@ public class Enemy : MonoBehaviour, IEraserableObject, IClickedObject
 
 		M_Enemy.DespawnEnemy(this);
 	}
-	public SpriteRenderer GetSpriteRenderer()
+	public E_ObjectType GetObjectType()
 	{
-		return m_Renderer;
+		return E_ObjectType.Enemy;
 	}
 	public GameObject GetGameObject()
 	{
 		return gameObject;
 	}
-	public E_ObjectType GetObjectType()
+	public Renderer GetRenderer()
 	{
-		return E_ObjectType.Enemy;
+		return m_Renderer;
 	}
 	#endregion
 	#region 유니티 콜백 함수

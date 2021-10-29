@@ -21,7 +21,7 @@ namespace MyPhysics
 		[SerializeField, ReadOnly]
 		protected float m_Bounciness = 0f;
 		// 밀도
-		protected float m_Density;
+		protected float m_Density = 1f;
 		[SerializeField, ReadOnly]
 		protected Bounds m_Bounds;
 

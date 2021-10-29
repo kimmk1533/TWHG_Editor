@@ -2,19 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler))]
 public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingText>
 {
 	protected List<FloatingText> m_FloatingTextList;
 
-	[SerializeField]
-	protected GameObject m_FloatingText_Panel;
-
 	#region 내부 함수
 	IEnumerator Spawn(string text, float time)
 	{
-		yield return new WaitForSeconds(time);
+		if (time > 0f)
+		{
+			yield return new WaitForSeconds(time);
+		}
 
-		SpawnFloatingText(text);
+		SpawnFloatingText(text, Vector2.one * 0.5f);
+	}
+	IEnumerator Spawn(string text, float time, Vector2 position)
+	{
+		if (time > 0f)
+		{
+			yield return new WaitForSeconds(time);
+		}
+
+		SpawnFloatingText(text, position);
 	}
 	#endregion
 	#region 외부 함수
@@ -42,7 +52,7 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
 	{
 		SpawnFloatingText(text, Vector2.one * 0.5f);
 	}
-	public void SpawnFloatingText(string text, Vector3 position)
+	public void SpawnFloatingText(string text, Vector2 position)
 	{
 		// 스폰
 		FloatingText floatingText = GetPool("FloatingText").Spawn();
@@ -50,12 +60,8 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
 		floatingText.__Initialize();
 		// 텍스트 설정
 		floatingText.text = text;
-		// 부모 설정
-		floatingText.transform.SetParent(m_FloatingText_Panel.transform);
-		// 크기 설정
-		floatingText.transform.localScale = Vector3.one;
 		// 위치 설정
-		floatingText.transform.position = (Vector2)Camera.main.ViewportToWorldPoint(position);
+		floatingText.transform.position = Camera.main.ViewportToScreenPoint(position);
 		// 활성화 설정
 		floatingText.gameObject.SetActive(true);
 		// 관리 리스트에 추가
@@ -65,21 +71,28 @@ public class FloatingTextManager : ObjectManager<FloatingTextManager, FloatingTe
 	{
 		StartCoroutine(Spawn(text, time));
 	}
+	public void SpawnFloatingText(string text, float time, Vector2 position)
+	{
+		StartCoroutine(Spawn(text, time, position));
+	}
 	public void DespawnFloatingText(FloatingText floatingText)
 	{
+		// 관리 리스트에서 제거
 		m_FloatingTextList.Remove(floatingText);
+		// 디스폰
 		GetPool("FloatingText").DeSpawn(floatingText);
 	}
 	#endregion
 	#region 이벤트 함수
-	public void OnEnterPlayMode()
+	private void OnEnterPlayMode()
 	{
-		for (int i = 0; i < m_FloatingTextList.Count; i++)
+		int count = m_FloatingTextList.Count;
+		for (int i = 0; i < count; i++)
 		{
 			DespawnFloatingText(m_FloatingTextList[0]);
 		}
 	}
-	public void OnExitPlayMode()
+	private void OnExitPlayMode()
 	{
 
 	}

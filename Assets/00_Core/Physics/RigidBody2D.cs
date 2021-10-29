@@ -173,6 +173,7 @@ namespace MyPhysics
 			{
 				m_Velocity = Vector2.zero;
 			}
+
 			#region 테스트 이동
 			//Vector2 force = Vector2.zero;
 

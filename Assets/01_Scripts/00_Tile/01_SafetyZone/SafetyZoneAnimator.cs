@@ -25,9 +25,6 @@ public class SafetyZoneAnimator : MonoBehaviour
 	{
 		m_SafetyZone = safetyZone;
 
-		M_Game.onPlayModeEnter += OnPlayEnter;
-		M_Game.onPlayModeExit += OnPlayExit;
-
 		if (null == m_Animator)
 		{
 			m_Animator = GetComponent<Animator>();
@@ -35,16 +32,16 @@ public class SafetyZoneAnimator : MonoBehaviour
 		if (null == m_Text)
 		{
 			m_Text = transform.GetComponentInChildren<TextMeshPro>();
+			m_Text.text = m_SafetyZone.safetyZoneCount.ToString();
 		}
-		m_Text.text = m_SafetyZone.safetyZoneCount.ToString();
 	}
 	#endregion
 	#region 이벤트 함수
-	public void OnPlayEnter()
+	public void OnPlayModeEnter()
 	{
 		m_Animator.SetTrigger("GameStart");
 	}
-	public void OnPlayExit()
+	public void OnPlayModeExit()
 	{
 		m_Animator.SetTrigger("GameEnd");
 	}

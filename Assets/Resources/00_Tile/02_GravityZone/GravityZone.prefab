@@ -1,70 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3231568711989013943
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1462819770686810766}
-  - component: {fileID: 2932670713749852749}
-  - component: {fileID: 3266865252879897807}
-  m_Layer: 11
-  m_Name: Collider
-  m_TagString: GravityZone
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1462819770686810766
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3231568711989013943}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2163713847053292767}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2932670713749852749
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3231568711989013943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b135200e6b28059419098f4b1f32a88d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3266865252879897807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3231568711989013943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c42c33b99d608094cabff496d5074415, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IsTrigger: 1
-  m_Offset: {x: 0, y: 0}
-  m_AttachedRigidbody: {fileID: 0}
-  m_Friction: 0.4
-  m_Bounciness: 0
-  m_Bounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0.5, y: 0.5, z: 0}
-  m_Size: {x: 1, y: 1}
 --- !u!1 &5734543707543437753
 GameObject:
   m_ObjectHideFlags: 0
@@ -75,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2163713847053292767}
   - component: {fileID: 6291350721938560191}
+  - component: {fileID: 9205505087319216276}
   m_Layer: 11
   m_Name: GravityZone
   m_TagString: GravityZone
@@ -92,8 +28,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1462819770686810766}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -109,4 +44,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea6adb9fa541e0f4fbc6b1e37156c90c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Gravity: 0
+  m_Gravity: {x: 0, y: 0}
+--- !u!114 &9205505087319216276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5734543707543437753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c42c33b99d608094cabff496d5074415, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsTrigger: 1
+  m_Offset: {x: 0, y: 0}
+  m_AttachedRigidbody: {fileID: 0}
+  m_Friction: 0.4
+  m_Bounciness: 0
+  m_Bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0.5, y: 0.5, z: 0}
+  m_Size: {x: 1, y: 1}

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour, IEraserableObject, IClickedObject
+public class Player : MonoBehaviour, IClickerableObject, IEraserableObject
 {
 	[SerializeField]
 	protected float m_Speed;
@@ -28,7 +28,6 @@ public class Player : MonoBehaviour, IEraserableObject, IClickedObject
 	protected __EditManager M_Edit => __EditManager.Instance;
 	protected StageManager M_Stage => StageManager.Instance;
 	protected FloatingTextManager M_FloatingText => FloatingTextManager.Instance;
-	protected UndoRedoManager M_UndoRedo => UndoRedoManager.Instance;
 
 	protected PlayerManager M_Player => PlayerManager.Instance;
 	protected CoinManager M_Coin => CoinManager.Instance;
@@ -124,6 +123,7 @@ public class Player : MonoBehaviour, IEraserableObject, IClickedObject
 		m_Animator.Death();
 	}
 
+	#region CollisionEnter
 	private void OnCollision2DEnter(MyPhysics.Collider2D collider)
 	{
 		switch (collider.tag)
@@ -142,6 +142,57 @@ public class Player : MonoBehaviour, IEraserableObject, IClickedObject
 				break;
 		}
 	}
+
+	private void CollisionEnterEnemy(MyPhysics.Collider2D collider)
+	{
+		if (M_Edit.isEditMode)
+			return;
+
+		if (!m_IsSafe)
+		{
+			Death();
+		}
+	}
+	private void CollisionEnterSafetyZone(MyPhysics.Collider2D collider)
+	{
+		m_IsSafe = true;
+		m_SpawnPos = collider.transform.position;
+
+		if (M_Edit.isPlayMode)
+		{
+			bool isFinishZone = collider.GetComponent<SafetyZone>().isFinishZone;
+
+			if (isFinishZone && !M_Coin.IsLeftCoin)
+			{
+				// 승리
+				M_Stage.canSave = true;
+				M_FloatingText.SpawnFloatingText("클리어!", new Vector2(0.5f, 0.3f));
+				M_Game.ExitPlayMode(0.5f);
+			}
+		}
+	}
+	private void CollisionEnterGravityZone(MyPhysics.Collider2D collider)
+	{
+		if (M_Edit.isEditMode)
+			return;
+
+		m_RigidBody.useGravity = true;
+		m_RigidBody.gravity = collider.GetComponent<GravityZone>().gravity;
+	}
+	private void CollisionEnterIceZone(MyPhysics.Collider2D collider)
+	{
+		if (M_Edit.isEditMode)
+			return;
+
+		m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Dynamic;
+		m_RigidBody.drag = collider.GetComponent<IceZone>().friction;
+		//if (m_RigidBody.velocity.magnitude == 0f)
+		//{
+		//    m_RigidBody.velocity += m_Player.rigidBody2D.force;
+		//}
+	}
+	#endregion
+	#region CollisionExit
 	private void OnCollision2DExit(MyPhysics.Collider2D collider)
 	{
 		switch (collider.tag)
@@ -158,58 +209,7 @@ public class Player : MonoBehaviour, IEraserableObject, IClickedObject
 		}
 	}
 
-	#region CollisionEnter
-	protected void CollisionEnterEnemy(MyPhysics.Collider2D collider)
-	{
-		if (M_Edit.isEditMode)
-			return;
-
-		if (!m_IsSafe)
-		{
-			Death();
-		}
-	}
-	protected void CollisionEnterSafetyZone(MyPhysics.Collider2D collider)
-	{
-		m_IsSafe = true;
-		m_SpawnPos = collider.transform.position;
-
-		if (M_Edit.isPlayMode)
-		{
-			bool isFinishZone = collider.GetComponent<SafetyZoneCollider>().isFinishZone;
-
-			if (isFinishZone && !M_Coin.IsLeftCoin)
-			{
-				// 승리
-				M_Stage.canSave = true;
-				M_FloatingText.SpawnFloatingText("클리어!", new Vector2(0.5f, 0.3f));
-				M_Game.ExitPlayMode(0.5f);
-			}
-		}
-	}
-	protected void CollisionEnterGravityZone(MyPhysics.Collider2D collider)
-	{
-		if (M_Edit.isEditMode)
-			return;
-
-		m_RigidBody.useGravity = true;
-		m_RigidBody.gravity = collider.GetComponent<GravityZoneCollider>().gravityZone.gravity;
-	}
-	protected void CollisionEnterIceZone(MyPhysics.Collider2D collider)
-	{
-		if (M_Edit.isEditMode)
-			return;
-
-		m_RigidBody.type = MyPhysics.Rigidbody2D.E_BodyType.Dynamic;
-		m_RigidBody.drag = collider.GetComponent<IceZoneCollider>().iceZone.drag;
-		//if (m_RigidBody.velocity.magnitude == 0f)
-		//{
-		//    m_RigidBody.velocity += m_Player.rigidBody2D.force;
-		//}
-	}
-	#endregion
-	#region CollisionExit
-	protected void CollisionExitSafetyZone(MyPhysics.Collider2D collider)
+	private void CollisionExitSafetyZone(MyPhysics.Collider2D collider)
 	{
 		//int layerMask = LayerMask.GetMask("SafetyZone");
 		//MyPhysics.Collider2D[] colliders = MyPhysics.Physics2D.OverlapBoxAll(transform.position, size, 0f, layerMask);
@@ -218,7 +218,7 @@ public class Player : MonoBehaviour, IEraserableObject, IClickedObject
 		//	m_IsSafe = false;
 		//}
 	}
-	protected void CollisionExitGravityZone(MyPhysics.Collider2D collider)
+	private void CollisionExitGravityZone(MyPhysics.Collider2D collider)
 	{
 		if (M_Edit.isEditMode)
 			return;
@@ -235,7 +235,7 @@ public class Player : MonoBehaviour, IEraserableObject, IClickedObject
 		//	m_RigidBody.gravity = colliders[0].GetComponent<GravityZoneCollider>().gravityZone.gravity;
 		//}
 	}
-	protected void CollisionExitIceZone(MyPhysics.Collider2D collider)
+	private void CollisionExitIceZone(MyPhysics.Collider2D collider)
 	{
 		if (M_Edit.isEditMode)
 			return;
@@ -349,32 +349,19 @@ public class Player : MonoBehaviour, IEraserableObject, IClickedObject
 	#region 인터페이스 함수
 	public void EraseObject()
 	{
-		UndoRedoArgs args = new UndoRedoArgs();
-
-		args.undo += () =>
-		{
-			gameObject.SetActive(true);
-		};
-		args.redo += () =>
-		{
-			gameObject.SetActive(false);
-		};
-
-		M_UndoRedo.AddUndoRedoArgs(args);
-
 		gameObject.SetActive(false);
 	}
-	public SpriteRenderer GetSpriteRenderer()
+	public E_ObjectType GetObjectType()
 	{
-		return m_Renderer;
+		return E_ObjectType.Player;
 	}
 	public GameObject GetGameObject()
 	{
 		return gameObject;
 	}
-	public E_ObjectType GetObjectType()
+	public Renderer GetRenderer()
 	{
-		return E_ObjectType.Player;
+		return m_Renderer;
 	}
 	#endregion
 	#region 유니티 콜백 함수

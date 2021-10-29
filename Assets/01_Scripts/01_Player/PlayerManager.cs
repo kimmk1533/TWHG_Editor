@@ -73,7 +73,7 @@ public class PlayerManager : Singleton<PlayerManager>, ISaveHandler, ILoadHandle
 		return m_Player;
 	}
 
-	public void Save(XmlWriter writer)
+	public void SaveData(XmlWriter writer)
 	{
 		// 주석
 		writer.WriteComment("플레이어");
@@ -100,7 +100,7 @@ public class PlayerManager : Singleton<PlayerManager>, ISaveHandler, ILoadHandle
 		// 플레이어 끝
 		writer.WriteEndElement();
 	}
-	public void Load(XmlReader reader)
+	public void LoadData(XmlReader reader)
 	{
 		if (reader.LoadToElement("Player"))
 		{

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coin : MonoBehaviour, IEraserableObject, IClickedObject
+public class Coin : MonoBehaviour, IClickerableObject, IEraserableObject
 {
 	#region 내부 컴포넌트
 	protected SpriteRenderer m_Renderer;
@@ -42,10 +42,6 @@ public class Coin : MonoBehaviour, IEraserableObject, IClickedObject
 			m_Collider.onTriggerEnter2D += OnTrigger2DEnter;
 		}
 	}
-	public void __Finalize()
-	{
-
-	}
 
 	#endregion
 	#region 이벤트 함수
@@ -63,17 +59,18 @@ public class Coin : MonoBehaviour, IEraserableObject, IClickedObject
 	{
 		M_Coin.DespawnCoin(this);
 	}
-	public SpriteRenderer GetSpriteRenderer()
+
+	public E_ObjectType GetObjectType()
 	{
-		return m_Renderer;
+		return E_ObjectType.Coin;
 	}
 	public GameObject GetGameObject()
 	{
 		return gameObject;
 	}
-	public E_ObjectType GetObjectType()
+	public Renderer GetRenderer()
 	{
-		return E_ObjectType.Coin;
+		return m_Renderer;
 	}
 	#endregion
 }

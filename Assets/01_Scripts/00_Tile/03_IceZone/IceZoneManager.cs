@@ -13,12 +13,6 @@ public class IceZoneManager : ObjectManager<IceZoneManager, IceZone>, ISaveHandl
 	protected TileManager M_Tile => TileManager.Instance;
 	#endregion
 	#endregion
-	#region 내부 프로퍼티
-	#endregion
-	#region 외부 프로퍼티
-	#endregion
-	#region 내부 함수
-	#endregion
 	#region 외부 함수
 	public override void __Initialize()
 	{
@@ -59,7 +53,7 @@ public class IceZoneManager : ObjectManager<IceZoneManager, IceZone>, ISaveHandl
 		GetPool("IceZone").DeSpawn(iceZone);
 	}
 
-	public void Save(XmlWriter writer)
+	public void SaveData(XmlWriter writer)
 	{
 		// 주석
 		writer.WriteComment("얼음구역");
@@ -92,7 +86,7 @@ public class IceZoneManager : ObjectManager<IceZoneManager, IceZone>, ISaveHandl
 			// 얼음구역 저항 시작
 			writer.WriteStartElement("Drag");
 			// 얼음구역 저항 입력
-			writer.WriteValue(iceZone.drag);
+			writer.WriteValue(iceZone.friction);
 			// 얼음구역 저항 끝
 			writer.WriteEndElement();
 			#endregion
@@ -105,7 +99,7 @@ public class IceZoneManager : ObjectManager<IceZoneManager, IceZone>, ISaveHandl
 		// 얼음구역 리스트 끝
 		writer.WriteEndElement();
 	}
-	public void Load(XmlReader reader)
+	public void LoadData(XmlReader reader)
 	{
 		if (reader.LoadToElement("IceZoneList"))
 		{
@@ -158,7 +152,7 @@ public class IceZoneManager : ObjectManager<IceZoneManager, IceZone>, ISaveHandl
 					// 초기화
 					iceZone.__Initialize(tile);
 					// 저항 설정
-					iceZone.drag = drag;
+					iceZone.friction = drag;
 					// 활성화
 					iceZone.gameObject.SetActive(true);
 				}

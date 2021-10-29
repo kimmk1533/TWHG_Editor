@@ -108,6 +108,7 @@ public class MemoryPool<T> : System.IDisposable where T : MonoBehaviour
         if (queue.Count > 0)
         {
             T item = queue.Dequeue();
+            item.gameObject.SetActive(true);
             return item;
         }
 

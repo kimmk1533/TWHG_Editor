@@ -70,7 +70,7 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
 		GetPool("Wall").DeSpawn(wall);
 	}
 
-	public void Save(XmlWriter writer)
+	public void SaveData(XmlWriter writer)
 	{
 		// 주석
 		writer.WriteComment("벽");
@@ -116,7 +116,7 @@ public class WallManager : ObjectManager<WallManager, Wall>, ISaveHandler, ILoad
 		// 벽 리스트 끝
 		writer.WriteEndElement();
 	}
-	public void Load(XmlReader reader)
+	public void LoadData(XmlReader reader)
 	{
 		if (reader.LoadToElement("WallList"))
 		{

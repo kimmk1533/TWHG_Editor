@@ -32,16 +32,20 @@ public class EnemyManager : ObjectManager<EnemyManager, Enemy>, ISaveHandler, IL
 
 	public Enemy SpawnEnemy()
 	{
+		// 스폰
 		Enemy enemy = GetPool("Enemy").Spawn();
+		// 초기화
 		enemy.__Initialize();
-		enemy.gameObject.SetActive(true);
+		// 관리 리스트에 추가
 		m_EnemyList.Add(enemy);
 
 		return enemy;
 	}
 	public void DespawnEnemy(Enemy enemy)
 	{
+		// 관리 리스트에서 제거
 		m_EnemyList.Remove(enemy);
+		// 디스폰
 		GetPool("Enemy").DeSpawn(enemy);
 	}
 	#endregion
@@ -62,7 +66,7 @@ public class EnemyManager : ObjectManager<EnemyManager, Enemy>, ISaveHandler, IL
 	}
 	#endregion
 	#region 인터페이스 함수
-	public void Save(XmlWriter writer)
+	public void SaveData(XmlWriter writer)
 	{
 		// 주석
 		writer.WriteComment("적");
@@ -168,7 +172,7 @@ public class EnemyManager : ObjectManager<EnemyManager, Enemy>, ISaveHandler, IL
 		// 적 리스트 끝
 		writer.WriteEndElement();
 	}
-	public void Load(XmlReader reader)
+	public void LoadData(XmlReader reader)
 	{
 		if (reader.LoadToElement("EnemyList"))
 		{

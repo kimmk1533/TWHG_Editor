@@ -225,7 +225,7 @@ public class StageManager : Singleton<StageManager>
 
 			foreach (var item in m_SaveList)
 			{
-				item?.Save(writer);
+				item?.SaveData(writer);
 			}
 
 			// 루트 끝
@@ -266,7 +266,7 @@ public class StageManager : Singleton<StageManager>
 		{
 			foreach (var item in m_LoadList)
 			{
-				item?.Load(reader);
+				item?.LoadData(reader);
 			}
 
 			M_FloatingText.SpawnFloatingText("불러오기 완료");

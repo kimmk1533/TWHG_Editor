@@ -11,17 +11,19 @@ public interface IEraserableTile
 {
 	void EraseTile(E_ObjectType currentType = E_ObjectType.None);
 }
-public interface IClickedObject
+public interface IClickerableObject
 {
-	SpriteRenderer GetSpriteRenderer();
-	GameObject GetGameObject();
 	E_ObjectType GetObjectType();
+	GameObject GetGameObject();
+	Renderer GetRenderer();
+
+	T GetComponent<T>();
 }
 public interface ISaveHandler
 {
-	void Save(XmlWriter writer);
+	void SaveData(XmlWriter writer);
 }
 public interface ILoadHandler
 {
-	void Load(XmlReader reader);
+	void LoadData(XmlReader reader);
 }
