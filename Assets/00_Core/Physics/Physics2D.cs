@@ -11,6 +11,9 @@ namespace MyPhysics
 		private static Color m_ColliderColor = new Color(145f / 255f, 244f / 255f, 139f / 255f, 192f / 255f);
 		private static Color m_BoundingBoxColor = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
 
+		#region 내부 프로퍼티
+		private static List<Collider2D> colliderList => Physics2DManager.colliderList;
+		#endregion
 		#region 외부 프로퍼티
 		public static Vector2 gravity { get => m_Gravity; set => m_Gravity = value; }
 		public static Color colliderColor { get => m_ColliderColor; set => m_ColliderColor = value; }
@@ -236,6 +239,52 @@ namespace MyPhysics
 
 			return true;
 		}
+		#region Raycast
+		private static RaycastHit2D RaycastTest_OBB(Collider2D collider, Vector2 origin, Vector2 direction)
+		{
+			Vector2 center = collider.bounds.center;
+			Vector2 extends = collider.bounds.extents;
+			Vector2 delta = center - origin;
+
+			Vector2[] axes = new Vector2[2]
+			{
+				collider.GetRightVector().normalized,
+				collider.GetUpVector().normalized
+			};
+
+			float tMin = 0f, tMax = float.MaxValue;
+			for (int i = 0; i < 2; ++i)
+			{
+				Vector2 axis = axes[i];
+
+				float nomLen = Vector2.Dot(axis, delta);
+				float denomLen = Vector2.Dot(direction, axis);
+
+				float tmp, min, max;
+				if (Mathf.Abs(denomLen) > 0.00001f)
+				{
+					min = (nomLen - extends[i]) / denomLen;
+					max = (nomLen + extends[i]) / denomLen;
+
+					if (min > max) { tmp = min; min = max; max = tmp; }
+					if (min > tMin) tMin = min;
+					if (max < tMax) tMax = max;
+
+					if (tMax < tMin) return new RaycastHit2D();
+				}
+				else if (-nomLen - extends[i] > 0f || -nomLen + extends[i] < 0f)
+				{
+					return new RaycastHit2D();
+				}
+			}
+
+			RaycastHit2D hit2D = new RaycastHit2D(collider);
+			hit2D.distance = tMin;
+			hit2D.point = origin + direction.normalized * tMin;
+			hit2D.normal = new Vector2(hit2D.point.y, -hit2D.point.x).normalized;
+			return hit2D;
+		}
+		#endregion
 		#endregion
 		#endregion
 		#region 외부 함수
@@ -286,7 +335,6 @@ namespace MyPhysics
 			return false;
 		}
 
-		//UnityEngine.Physics2D
 		#region Raycast
 		public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction)
 		{
@@ -294,40 +342,125 @@ namespace MyPhysics
 		}
 		public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance)
 		{
-			Vector2 dir_normal = direction.normalized;
-			Vector2 C = origin;
-			Vector2 D = origin + dir_normal * distance;
-
-			float minR = float.MaxValue;
 			Collider2D collider = null;
-			foreach (var item in Physics2DManager.colliderList)
+			RaycastHit2D data = new RaycastHit2D();
+			data.distance = float.MaxValue;
+
+			foreach (var item in colliderList)
 			{
-				float Ax = item.bounds.min.x, Bx = item.bounds.max.x;
-				float Ay = item.bounds.min.y, By = item.bounds.max.y;
+				RaycastHit2D hit = RaycastTest_OBB(item, origin, direction);
 
-				float r_up = (Bx - Ax) * (C.y - Ay) - (C.x - Ax) * (By - Ay);
-				float r_down = (D.x - C.x) * (By - Ay) - (Bx - Ax) * (D.y - C.y);
-				float r = r_up / r_down;
+				if (!hit)
+					continue;
 
-				if (minR > r)
+				if (hit.distance <= distance &&
+					hit.distance < data.distance)
 				{
-					minR = r;
-					collider = item;
+					collider = hit.collider;
+					data.distance = hit.distance;
+					data.point = hit.point;
+					data.normal = hit.normal;
 				}
 			}
 
-			RaycastHit2D hit_result = new RaycastHit2D(collider);
-			hit_result.point = minR * (D - C) + C;
+			if (data.distance == float.MaxValue)
+				data.distance = 0f;
 
-			return hit_result;
+			RaycastHit2D hit2D = new RaycastHit2D(collider);
+			hit2D.distance = data.distance;
+			hit2D.point = data.point;
+			hit2D.normal = data.normal;
+
+			return hit2D;
+		}
+		public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, int layerMask)
+		{
+			return Raycast(origin, direction, float.MaxValue, layerMask);
 		}
 		public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance, int layerMask)
 		{
+			Collider2D collider = null;
+			RaycastHit2D data = new RaycastHit2D();
+			data.distance = float.MaxValue;
 
+			foreach (var item in colliderList)
+			{
+				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
+					continue;
 
-			RaycastHit2D hit2D = new RaycastHit2D();
-			//hit2D.
+				RaycastHit2D hit = RaycastTest_OBB(item, origin, direction);
+
+				if (!hit)
+					continue;
+
+				if (hit.distance <= distance &&
+					hit.distance < data.distance)
+				{
+					collider = hit.collider;
+					data.distance = hit.distance;
+					data.point = hit.point;
+					data.normal = hit.normal;
+				}
+			}
+
+			if (data.distance == float.MaxValue)
+				data.distance = 0f;
+
+			RaycastHit2D hit2D = new RaycastHit2D(collider);
+			hit2D.distance = data.distance;
+			hit2D.point = data.point;
+			hit2D.normal = data.normal;
+
 			return hit2D;
+		}
+		public static RaycastHit2D[] RaycastAll(Vector2 origin, Vector2 direction)
+		{
+			return RaycastAll(origin, direction, float.MaxValue);
+		}
+		public static RaycastHit2D[] RaycastAll(Vector2 origin, Vector2 direction, float distance)
+		{
+			List<RaycastHit2D> hit2Ds = new List<RaycastHit2D>();
+
+			foreach (var item in colliderList)
+			{
+				RaycastHit2D hit = RaycastTest_OBB(item, origin, direction);
+
+				if (!hit)
+					continue;
+
+				if (hit.distance <= distance)
+				{
+					hit2Ds.Add(hit);
+				}
+			}
+
+			return hit2Ds.ToArray();
+		}
+		public static RaycastHit2D[] RaycastAll(Vector2 origin, Vector2 direction, int layerMask)
+		{
+			return RaycastAll(origin, direction, float.MaxValue, layerMask);
+		}
+		public static RaycastHit2D[] RaycastAll(Vector2 origin, Vector2 direction, float distance, int layerMask)
+		{
+			List<RaycastHit2D> hit2Ds = new List<RaycastHit2D>();
+
+			foreach (var item in colliderList)
+			{
+				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
+					continue;
+
+				RaycastHit2D hit = RaycastTest_OBB(item, origin, direction);
+
+				if (!hit)
+					continue;
+
+				if (hit.distance <= distance)
+				{
+					hit2Ds.Add(hit);
+				}
+			}
+
+			return hit2Ds.ToArray();
 		}
 		#endregion
 		#region OverlapBox
@@ -341,7 +474,7 @@ namespace MyPhysics
 			collider.center = point;
 			collider.size = size;
 
-			foreach (var item in Physics2DManager.colliderList)
+			foreach (var item in colliderList)
 			{
 				Collision2D collision = new Collision2D(item, collider);
 
@@ -367,7 +500,7 @@ namespace MyPhysics
 			collider.center = point;
 			collider.size = size;
 
-			foreach (var item in Physics2DManager.colliderList)
+			foreach (var item in colliderList)
 			{
 				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
 					continue;
@@ -381,7 +514,7 @@ namespace MyPhysics
 					return item;
 				}
 			}
-			
+
 			GameObject.DestroyImmediate(tempObj);
 
 			return null;
@@ -398,7 +531,7 @@ namespace MyPhysics
 			collider.center = point;
 			collider.size = size;
 
-			foreach (var item in Physics2DManager.colliderList)
+			foreach (var item in colliderList)
 			{
 				Collision2D collision = new Collision2D(item, collider);
 
@@ -424,7 +557,7 @@ namespace MyPhysics
 			collider.center = point;
 			collider.size = size;
 
-			foreach (var item in Physics2DManager.colliderList)
+			foreach (var item in colliderList)
 			{
 				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
 					continue;
@@ -445,7 +578,7 @@ namespace MyPhysics
 		#region OverlapPoint
 		public static Collider2D OverlapPoint(Vector2 point)
 		{
-			foreach (var item in Physics2DManager.colliderList)
+			foreach (var item in colliderList)
 			{
 				if (!item.OverlapPoint(point))
 					continue;
@@ -457,7 +590,7 @@ namespace MyPhysics
 		}
 		public static Collider2D OverlapPoint(Vector2 point, int layerMask)
 		{
-			foreach (var item in Physics2DManager.colliderList)
+			foreach (var item in colliderList)
 			{
 				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
 					continue;
@@ -474,7 +607,7 @@ namespace MyPhysics
 		{
 			List<Collider2D> colliders = new List<Collider2D>();
 
-			foreach (var item in Physics2DManager.colliderList)
+			foreach (var item in colliderList)
 			{
 				if (!item.OverlapPoint(point))
 					continue;
@@ -488,7 +621,7 @@ namespace MyPhysics
 		{
 			List<Collider2D> colliders = new List<Collider2D>();
 
-			foreach (var item in Physics2DManager.colliderList)
+			foreach (var item in colliderList)
 			{
 				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
 					continue;

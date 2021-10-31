@@ -44,33 +44,38 @@ public class Wall : MonoBehaviour, IClickerableObject, IEraserableTile
 		{
 			m_Collider = GetComponent<MyPhysics.BoxCollider2D>();
 			m_Collider.onTriggerEnter2D += OnTrigger2DEnter;
+			m_Collider.center = (Vector2)transform.position + m_Collider.offset;
 		}
+
+		Vector2 extends = m_Collider.bounds.extents;
 
 		int layerMask = LayerMask.GetMask("Wall");
 		MyPhysics.RaycastHit2D[] hits = new MyPhysics.RaycastHit2D[(int)E_WallDirection.Max];
-		hits[0] = MyPhysics.Physics2D.Raycast(transform.position, Vector2.left, 1f, layerMask);
-		hits[1] = MyPhysics.Physics2D.Raycast(transform.position, Vector2.right, 1f, layerMask);
-		hits[2] = MyPhysics.Physics2D.Raycast(transform.position, Vector2.up, 1f, layerMask);
-		hits[3] = MyPhysics.Physics2D.Raycast(transform.position, Vector2.down, 1f, layerMask);
+		hits[0] = MyPhysics.Physics2D.Raycast(transform.position - Vector3.right, Vector2.left, 0.1f, layerMask);
+		hits[1] = MyPhysics.Physics2D.Raycast(transform.position + Vector3.right, Vector2.right, 0.1f, layerMask);
+		hits[2] = MyPhysics.Physics2D.Raycast(transform.position + Vector3.up, Vector2.up, 0.1f, layerMask);
+		hits[3] = MyPhysics.Physics2D.Raycast(transform.position - Vector3.up, Vector2.down, 0.1f, layerMask);
 
-		for (E_WallDirection i = 0; i < E_WallDirection.Max; ++i)
+		for (E_WallDirection direction = 0; direction < E_WallDirection.Max; ++direction)
 		{
-			if (null == m_Lines[(int)i])
+			int i = (int)direction;
+
+			if (null == m_Lines[i])
 			{
-				m_Lines[(int)i] = transform.Find(i.ToString()).GetComponent<LineRenderer>();
+				m_Lines[i] = transform.Find(direction.ToString()).GetComponent<LineRenderer>();
 			}
 
-			if (null != hits[(int)i].transform)
+			if (hits[i])
 			{
-				m_Walls[(int)i] = hits[(int)i].transform.GetComponent<Wall>();
+				m_Walls[i] = hits[i].collider.GetComponent<Wall>();
 
-				if (null != m_Walls[(int)i])
+				if (null != m_Walls[i])
 				{
-					int index = (int)(i + 1 - (int)i % 2 * 2);
-					m_Walls[(int)i].m_Walls[index] = this;
+					int index = (int)(direction + 1 - (int)direction % 2 * 2);
+					m_Walls[i].m_Walls[index] = this;
 
-					m_Lines[(int)i].gameObject.SetActive(false);
-					m_Walls[(int)i].m_Lines[index].gameObject.SetActive(false);
+					m_Lines[i].gameObject.SetActive(false);
+					m_Walls[i].m_Lines[index].gameObject.SetActive(false);
 				}
 			}
 		}

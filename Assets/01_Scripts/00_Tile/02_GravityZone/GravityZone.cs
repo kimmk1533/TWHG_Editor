@@ -29,6 +29,7 @@ public class GravityZone : MonoBehaviour, IClickerableObject, IEraserableTile
 		if (null == m_Collider)
 		{
 			m_Collider = GetComponent<MyPhysics.BoxCollider2D>();
+			m_Collider.center = (Vector2)transform.position + m_Collider.offset;
 		}
 	}
 	#endregion
