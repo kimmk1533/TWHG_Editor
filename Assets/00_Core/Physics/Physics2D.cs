@@ -239,6 +239,7 @@ namespace MyPhysics
 
 			return true;
 		}
+
 		#region Raycast
 		private static RaycastHit2D RaycastTest_OBB(Collider2D collider, Vector2 origin, Vector2 direction)
 		{
@@ -281,6 +282,35 @@ namespace MyPhysics
 			RaycastHit2D hit2D = new RaycastHit2D(collider);
 			hit2D.distance = tMin;
 			hit2D.point = origin + direction.normalized * tMin;
+			hit2D.normal = new Vector2(hit2D.point.y, -hit2D.point.x).normalized;
+			return hit2D;
+		}
+		private static RaycastHit2D RaycastTest_Circle(CircleCollider2D collider, Vector2 origin, Vector2 direction)
+		{
+			// 출처: https://wizardmania.tistory.com/22?category=610631
+			Vector2 center = collider.bounds.center;
+			float radius = collider.radius;
+			Vector2 delta = center - origin;
+
+			float s = Vector2.Dot(delta, direction);
+
+			if (s > 0f && delta.sqrMagnitude >= radius*radius)
+				return new RaycastHit2D();
+
+			float b = Vector2.Dot(direction, delta);
+			float c = Vector2.Dot(delta, delta) - radius * radius;
+
+			float D = b * b - c;
+
+			if (D < 0f)
+				return new RaycastHit2D();
+
+			float t1 = -b - Mathf.Sqrt(D);
+			float t2 = -b + Mathf.Sqrt(D);
+
+			RaycastHit2D hit2D = new RaycastHit2D(collider);
+			hit2D.distance = Mathf.Min(t1, t2);
+			hit2D.point = origin + direction.normalized * hit2D.distance;
 			hit2D.normal = new Vector2(hit2D.point.y, -hit2D.point.x).normalized;
 			return hit2D;
 		}
@@ -336,6 +366,8 @@ namespace MyPhysics
 		}
 
 		#region Raycast
+		// 출처: http://www.opengl-tutorial.org/kr/miscellaneous/clicking-on-objects/picking-with-custom-ray-obb-function/
+		// 출처: https://www.youtube.com/watch?v=KEl-o2VJA_Y
 		public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction)
 		{
 			return Raycast(origin, direction, float.MaxValue);
@@ -348,7 +380,20 @@ namespace MyPhysics
 
 			foreach (var item in colliderList)
 			{
-				RaycastHit2D hit = RaycastTest_OBB(item, origin, direction);
+				RaycastHit2D hit;
+
+				switch (item.type)
+				{
+					case Collider2D.E_ColliderType.Box:
+						hit = RaycastTest_OBB(item, origin, direction);
+						break;
+					case Collider2D.E_ColliderType.Circle:
+						hit = RaycastTest_Circle(item as CircleCollider2D, origin, direction);
+						break;
+					default:
+						hit = new RaycastHit2D();
+						break;
+				}
 
 				if (!hit)
 					continue;
@@ -388,7 +433,20 @@ namespace MyPhysics
 				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
 					continue;
 
-				RaycastHit2D hit = RaycastTest_OBB(item, origin, direction);
+				RaycastHit2D hit;
+
+				switch (item.type)
+				{
+					case Collider2D.E_ColliderType.Box:
+						hit = RaycastTest_OBB(item, origin, direction);
+						break;
+					case Collider2D.E_ColliderType.Circle:
+						hit = RaycastTest_Circle(item as CircleCollider2D, origin, direction);
+						break;
+					default:
+						hit = new RaycastHit2D();
+						break;
+				}
 
 				if (!hit)
 					continue;
@@ -423,7 +481,20 @@ namespace MyPhysics
 
 			foreach (var item in colliderList)
 			{
-				RaycastHit2D hit = RaycastTest_OBB(item, origin, direction);
+				RaycastHit2D hit;
+
+				switch (item.type)
+				{
+					case Collider2D.E_ColliderType.Box:
+						hit = RaycastTest_OBB(item, origin, direction);
+						break;
+					case Collider2D.E_ColliderType.Circle:
+						hit = RaycastTest_Circle(item as CircleCollider2D, origin, direction);
+						break;
+					default:
+						hit = new RaycastHit2D();
+						break;
+				}
 
 				if (!hit)
 					continue;
@@ -449,7 +520,20 @@ namespace MyPhysics
 				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
 					continue;
 
-				RaycastHit2D hit = RaycastTest_OBB(item, origin, direction);
+				RaycastHit2D hit;
+
+				switch (item.type)
+				{
+					case Collider2D.E_ColliderType.Box:
+						hit = RaycastTest_OBB(item, origin, direction);
+						break;
+					case Collider2D.E_ColliderType.Circle:
+						hit = RaycastTest_Circle(item as CircleCollider2D, origin, direction);
+						break;
+					default:
+						hit = new RaycastHit2D();
+						break;
+				}
 
 				if (!hit)
 					continue;
