@@ -89,6 +89,7 @@ MonoBehaviour:
   m_Drag: 0
   m_UseGravity: 0
   m_Gravity: {x: 0, y: -9.81}
+  m_CollisionDetectionType: 1
   m_Velocity: {x: 0, y: 0}
 --- !u!1 &3345497635958674874
 GameObject:

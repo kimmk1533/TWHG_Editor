@@ -25,6 +25,19 @@ namespace MyPhysics
                 m_Bounds.size = Vector2.one * scaledDiameter;
             }
         }
+        public Vector2 center
+        {
+            get => m_Bounds.center;
+            set
+            {
+                m_Bounds.center = value;
+
+                if (null != this)
+                {
+                    transform.position = value - m_Offset;
+                }
+            }
+        }
         public override Vector2 this[int angle]
         {
             get
@@ -99,7 +112,7 @@ namespace MyPhysics
 
                 Gizmos.DrawLine(from, to);
             }
-            Gizmos.DrawLine(m_Bounds.center, GetRightVector().normalized * scaledRadius);
+            Gizmos.DrawLine(m_Bounds.center, (Vector2)m_Bounds.center + GetRightVector().normalized * scaledRadius);
             #endregion
 
             Gizmos.color = color;

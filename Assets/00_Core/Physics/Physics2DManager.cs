@@ -53,6 +53,9 @@ namespace MyPhysics
 			if (collision.collider.isTrigger || collision.otherCollider.isTrigger)
 				return;
 
+			if (null == collision.rigidbody && null == collision.otherRigidbody)
+				return;
+
 			#region Rigidbody
 			Rigidbody2D A = collision.rigidbody;
 			Rigidbody2D B = collision.otherRigidbody;
@@ -60,12 +63,12 @@ namespace MyPhysics
 			if (null == A)
 			{
 				A = new Rigidbody2D();
-				A.type = Rigidbody2D.E_BodyType.Static;
+				A.type = Rigidbody2D.E_RigidBodyType.Static;
 			}
 			if (null == B)
 			{
 				B = new Rigidbody2D();
-				B.type = Rigidbody2D.E_BodyType.Static;
+				B.type = Rigidbody2D.E_RigidBodyType.Static;
 			}
 			#endregion
 			#region Calculate
@@ -118,13 +121,13 @@ namespace MyPhysics
 			{
 				switch (A.type)
 				{
-					case Rigidbody2D.E_BodyType.Dynamic:
+					case Rigidbody2D.E_RigidBodyType.Dynamic:
 						// Impulse + Friction
 						A.velocity -= invMassA * (impulse + frictionImpulse);
 						// Interpolation
 						A.transform.localPosition -= (Vector3)(invMassA * correction);
 						break;
-					case Rigidbody2D.E_BodyType.Kinematic:
+					case Rigidbody2D.E_RigidBodyType.Kinematic:
 						// Interpolation
 						A.transform.localPosition -= (Vector3)(collision.penetration * correction.normalized);
 						break;
@@ -134,13 +137,13 @@ namespace MyPhysics
 			{
 				switch (B.type)
 				{
-					case Rigidbody2D.E_BodyType.Dynamic:
+					case Rigidbody2D.E_RigidBodyType.Dynamic:
 						// Impulse + Friction
 						B.velocity += invMassB * (impulse + frictionImpulse);
 						// Interpolation
 						B.transform.localPosition += (Vector3)(invMassB * correction);
 						break;
-					case Rigidbody2D.E_BodyType.Kinematic:
+					case Rigidbody2D.E_RigidBodyType.Kinematic:
 						// Interpolation
 						B.transform.localPosition += (Vector3)(collision.penetration * correction.normalized);
 						break;

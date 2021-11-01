@@ -36,6 +36,9 @@ namespace MyPhysics
 			Collider2D A = collision.collider;
 			Collider2D B = collision.otherCollider;
 
+			Rigidbody2D rigid_A = collision.rigidbody;
+			Rigidbody2D rigid_B = collision.otherRigidbody;
+
 			Bounds bounds_A = A.GetBoundingBox();
 			Bounds bounds_B = B.GetBoundingBox();
 
@@ -43,6 +46,11 @@ namespace MyPhysics
 
 			Vector2 pos_A = (Vector2)A.bounds.center + A.offset;
 			Vector2 pos_B = (Vector2)B.bounds.center + B.offset;
+
+			if (null != rigid_A && rigid_A.collisionDetectionMode == Rigidbody2D.E_CollisionDetectionMode.Continuous)
+				pos_A += rigid_A.velocity * Time.fixedDeltaTime;
+			if (null != rigid_B && rigid_B.collisionDetectionMode == Rigidbody2D.E_CollisionDetectionMode.Continuous)
+				pos_B += rigid_B.velocity * Time.fixedDeltaTime;
 
 			Vector2 distance = pos_B - pos_A;
 
@@ -63,12 +71,20 @@ namespace MyPhysics
 			Collider2D A = collision.collider;
 			Collider2D B = collision.otherCollider;
 
+			Rigidbody2D rigid_A = collision.rigidbody;
+			Rigidbody2D rigid_B = collision.otherRigidbody;
+
 			Vector2 pos_A = (Vector2)A.bounds.center + A.offset;
 			Vector2 pos_B = (Vector2)B.bounds.center + B.offset;
 
+			if (null != rigid_A && rigid_A.collisionDetectionMode == Rigidbody2D.E_CollisionDetectionMode.Continuous)
+				pos_A += rigid_A.velocity * Time.fixedDeltaTime;
+			if (null != rigid_B && rigid_B.collisionDetectionMode == Rigidbody2D.E_CollisionDetectionMode.Continuous)
+				pos_B += rigid_B.velocity * Time.fixedDeltaTime;
+
 			Vector2 distance = pos_B - pos_A;
 
-			Vector2[] axises = new Vector2[4]
+			Vector2[] axes = new Vector2[4]
 			{
 				A.GetUpVector(),
 				B.GetUpVector(),
@@ -79,11 +95,11 @@ namespace MyPhysics
 			for (int i = 0; i < 4; ++i)
 			{
 				float sum = 0f;
-				Vector2 unit = axises[i].normalized;
+				Vector2 unit = axes[i].normalized;
 
 				for (int j = 0; j < 4; ++j)
 				{
-					sum += Mathf.Abs(Vector2.Dot(axises[j], unit));
+					sum += Mathf.Abs(Vector2.Dot(axes[j], unit));
 				}
 
 				// 분리축 검사
@@ -126,8 +142,16 @@ namespace MyPhysics
 			CircleCollider2D A = collision.collider as CircleCollider2D;
 			CircleCollider2D B = collision.otherCollider as CircleCollider2D;
 
+			Rigidbody2D rigid_A = collision.rigidbody;
+			Rigidbody2D rigid_B = collision.otherRigidbody;
+
 			Vector2 pos_A = (Vector2)A.bounds.center + A.offset;
 			Vector2 pos_B = (Vector2)B.bounds.center + B.offset;
+
+			if (null != rigid_A && rigid_A.collisionDetectionMode == Rigidbody2D.E_CollisionDetectionMode.Continuous)
+				pos_A += rigid_A.velocity * Time.fixedDeltaTime;
+			if (null != rigid_B && rigid_B.collisionDetectionMode == Rigidbody2D.E_CollisionDetectionMode.Continuous)
+				pos_B += rigid_B.velocity * Time.fixedDeltaTime;
 
 			Vector2 distance = pos_B - pos_A;
 
@@ -161,6 +185,9 @@ namespace MyPhysics
 			Collider2D A = collision.collider;
 			CircleCollider2D B = collision.otherCollider as CircleCollider2D;
 
+			Rigidbody2D rigid_A = collision.rigidbody;
+			Rigidbody2D rigid_B = collision.otherRigidbody;
+
 			float theta = (null != A.attachedRigidbody) ? A.attachedRigidbody.rotation * Mathf.Deg2Rad :
 						((null != A) ? A.transform.eulerAngles.z * Mathf.Deg2Rad : 0f);
 
@@ -181,6 +208,11 @@ namespace MyPhysics
 
 			Vector2 pos_A = (Vector2)A.bounds.center + A.offset;
 			Vector2 pos_B = (Vector2)B.bounds.center + B.offset;
+
+			if (null != rigid_A && rigid_A.collisionDetectionMode == Rigidbody2D.E_CollisionDetectionMode.Continuous)
+				pos_A += rigid_A.velocity * Time.fixedDeltaTime;
+			if (null != rigid_B && rigid_B.collisionDetectionMode == Rigidbody2D.E_CollisionDetectionMode.Continuous)
+				pos_B += rigid_B.velocity * Time.fixedDeltaTime;
 
 			Vector2 distance = pos_B - pos_A;
 
@@ -239,7 +271,7 @@ namespace MyPhysics
 
 			return true;
 		}
-
+		#endregion
 		#region Raycast
 		private static RaycastHit2D RaycastTest_OBB(Collider2D collider, Vector2 origin, Vector2 direction)
 		{
@@ -294,7 +326,7 @@ namespace MyPhysics
 
 			float s = Vector2.Dot(delta, direction);
 
-			if (s > 0f && delta.sqrMagnitude >= radius*radius)
+			if (s > 0f && delta.sqrMagnitude >= radius * radius)
 				return new RaycastHit2D();
 
 			float b = Vector2.Dot(direction, delta);
@@ -316,10 +348,13 @@ namespace MyPhysics
 		}
 		#endregion
 		#endregion
-		#endregion
 		#region 외부 함수
 		#region Collision Test
-		// 사전 검사 (바운딩 박스의 AABB 사용)
+		/// <summary>
+		/// 충돌 사전 검사 (바운딩 박스 AABB 사용)
+		/// </summary>
+		/// <param name="collision">검사할 충돌</param>
+		/// <returns>충돌 여부</returns>
 		public static bool PreCollisionTest(Collision2D collision)
 		{
 			Collider2D A = collision.collider;
@@ -328,13 +363,17 @@ namespace MyPhysics
 			if (UnityEngine.Physics2D.GetIgnoreLayerCollision(A.gameObject.layer, B.gameObject.layer))
 				return false;
 
-			if (null == A.attachedRigidbody &&
-				null == B.attachedRigidbody)
-				return false;
+			//if (null == A.attachedRigidbody &&
+			//	null == B.attachedRigidbody)
+			//	return false;
 
 			return CollisionTest_AABB_AABB(collision);
 		}
-		// 타입별 충돌 검사
+		/// <summary>
+		/// 타입별 충돌 검사
+		/// </summary>
+		/// <param name="collision">검사할 충돌</param>
+		/// <returns>충돌 여부</returns>
 		public static bool CollisionTestByType(ref Collision2D collision)
 		{
 			Collider2D A = collision.collider;
@@ -364,7 +403,7 @@ namespace MyPhysics
 
 			return false;
 		}
-
+		#endregion
 		#region Raycast
 		// 출처: http://www.opengl-tutorial.org/kr/miscellaneous/clicking-on-objects/picking-with-custom-ray-obb-function/
 		// 출처: https://www.youtube.com/watch?v=KEl-o2VJA_Y
@@ -547,20 +586,22 @@ namespace MyPhysics
 			return hit2Ds.ToArray();
 		}
 		#endregion
-		#region OverlapBox
-		public static Collider2D OverlapBox(Vector2 point, Vector2 size, float angle)
+		#region OverlapCircle
+		public static Collider2D OverlapCircle(Vector2 point, float radius)
 		{
 			GameObject tempObj = new GameObject("temp");
-			BoxCollider2D collider = tempObj.AddComponent<BoxCollider2D>();
+			CircleCollider2D collider = tempObj.AddComponent<CircleCollider2D>();
 			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
 			collider.attachedRigidbody.position = point;
-			collider.attachedRigidbody.rotation = angle;
 			collider.center = point;
-			collider.size = size;
+			collider.radius = radius;
 
 			foreach (var item in colliderList)
 			{
-				Collision2D collision = new Collision2D(item, collider);
+				if (item == collider)
+					continue;
+
+				Collision2D collision = new Collision2D(collider, item);
 
 				if (CollisionTestByType(ref collision))
 				{
@@ -573,6 +614,201 @@ namespace MyPhysics
 			GameObject.DestroyImmediate(tempObj);
 
 			return null;
+		}
+		public static int OverlapCircle(Vector2 point, float radius, ContactFilter2D contactFilter, out List<Collider2D> results)
+		{
+			GameObject tempObj = new GameObject("temp");
+			CircleCollider2D collider = tempObj.AddComponent<CircleCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.center = point;
+			collider.radius = radius;
+
+			results = new List<Collider2D>();
+
+			foreach (var item in colliderList)
+			{
+				if (item == collider)
+					continue;
+
+				if (contactFilter.useLayerMask)
+					if (!contactFilter.IsFilteringLayerMask(item.gameObject))
+						continue;
+
+				Collision2D collision = new Collision2D(collider, item);
+
+				if (CollisionTestByType(ref collision))
+				{
+					GameObject.DestroyImmediate(tempObj);
+
+					results.Add(item);
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return results.Count;
+		}
+		public static Collider2D OverlapCircle(Vector2 point, float radius, int layerMask)
+		{
+			GameObject tempObj = new GameObject("temp");
+			CircleCollider2D collider = tempObj.AddComponent<CircleCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.center = point;
+			collider.radius = radius;
+
+			foreach (var item in colliderList)
+			{
+				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
+					continue;
+
+				if (item == collider)
+					continue;
+
+				Collision2D collision = new Collision2D(collider, item);
+
+				if (CollisionTestByType(ref collision))
+				{
+					GameObject.DestroyImmediate(tempObj);
+
+					return item;
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return null;
+		}
+		public static Collider2D[] OverlapCircleAll(Vector2 point, float radius)
+		{
+			List<Collider2D> colliders = new List<Collider2D>();
+
+			GameObject tempObj = new GameObject("temp");
+			CircleCollider2D collider = tempObj.AddComponent<CircleCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.center = point;
+			collider.radius = radius;
+
+			foreach (var item in colliderList)
+			{
+				if (item == collider)
+					continue;
+
+				Collision2D collision = new Collision2D(collider, item);
+
+				if (CollisionTestByType(ref collision))
+				{
+					GameObject.DestroyImmediate(tempObj);
+
+					colliders.Add(item);
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return colliders.ToArray();
+		}
+		public static Collider2D[] OverlapCircleAll(Vector2 point, float radius, int layerMask)
+		{
+			List<Collider2D> colliders = new List<Collider2D>();
+
+			GameObject tempObj = new GameObject("temp");
+			CircleCollider2D collider = tempObj.AddComponent<CircleCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.center = point;
+			collider.radius = radius;
+
+			foreach (var item in colliderList)
+			{
+				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
+					continue;
+
+				if (item == collider)
+					continue;
+
+				Collision2D collision = new Collision2D(collider, item);
+
+				if (CollisionTestByType(ref collision))
+				{
+					GameObject.DestroyImmediate(tempObj);
+
+					colliders.Add(item);
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return colliders.ToArray();
+		}
+		#endregion
+		#region OverlapBox
+		//UnityEngine.Physics2D
+		public static Collider2D OverlapBox(Vector2 point, Vector2 size, float angle)
+		{
+			GameObject tempObj = new GameObject("temp");
+			BoxCollider2D collider = tempObj.AddComponent<BoxCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.attachedRigidbody.rotation = angle;
+			collider.center = point;
+			collider.size = size;
+
+			foreach (var item in colliderList)
+			{
+				if (item == collider)
+					continue;
+
+				Collision2D collision = new Collision2D(collider, item);
+
+				if (CollisionTestByType(ref collision))
+				{
+					GameObject.DestroyImmediate(tempObj);
+
+					return item;
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return null;
+		}
+		public static int OverlapBox(Vector2 point, Vector2 size, float angle, ContactFilter2D contactFilter, out List<Collider2D> results)
+		{
+			GameObject tempObj = new GameObject("temp");
+			BoxCollider2D collider = tempObj.AddComponent<BoxCollider2D>();
+			collider.attachedRigidbody = tempObj.AddComponent<Rigidbody2D>();
+			collider.attachedRigidbody.position = point;
+			collider.attachedRigidbody.rotation = angle;
+			collider.center = point;
+			collider.size = size;
+
+			results = new List<Collider2D>();
+
+			foreach (var item in colliderList)
+			{
+				if (item == collider)
+					continue;
+
+				if (contactFilter.useLayerMask)
+					if (!contactFilter.IsFilteringLayerMask(item.gameObject))
+						continue;
+
+				Collision2D collision = new Collision2D(collider, item);
+
+				if (CollisionTestByType(ref collision))
+				{
+					GameObject.DestroyImmediate(tempObj);
+
+					results.Add(item);
+				}
+			}
+
+			GameObject.DestroyImmediate(tempObj);
+
+			return results.Count;
 		}
 		public static Collider2D OverlapBox(Vector2 point, Vector2 size, float angle, int layerMask)
 		{
@@ -589,7 +825,10 @@ namespace MyPhysics
 				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
 					continue;
 
-				Collision2D collision = new Collision2D(item, collider);
+				if (item == collider)
+					continue;
+
+				Collision2D collision = new Collision2D(collider, item);
 
 				if (CollisionTestByType(ref collision))
 				{
@@ -617,7 +856,10 @@ namespace MyPhysics
 
 			foreach (var item in colliderList)
 			{
-				Collision2D collision = new Collision2D(item, collider);
+				if (item == collider)
+					continue;
+
+				Collision2D collision = new Collision2D(collider, item);
 
 				if (CollisionTestByType(ref collision))
 				{
@@ -646,7 +888,10 @@ namespace MyPhysics
 				if (GetIgnoreLayerCollision(item.gameObject.layer, layerMask))
 					continue;
 
-				Collision2D collision = new Collision2D(item, collider);
+				if (item == collider)
+					continue;
+
+				Collision2D collision = new Collision2D(collider, item);
 
 				if (CollisionTestByType(ref collision))
 				{
@@ -718,7 +963,6 @@ namespace MyPhysics
 
 			return colliders.ToArray();
 		}
-		#endregion
 		#endregion
 		#endregion
 	}

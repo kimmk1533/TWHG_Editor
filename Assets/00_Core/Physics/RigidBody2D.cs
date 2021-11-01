@@ -9,7 +9,7 @@ namespace MyPhysics
 	{
 		// 물리 타입
 		[SerializeField]
-		protected E_BodyType m_BodyType;
+		protected E_RigidBodyType m_BodyType;
 
 		// 질량
 		[SerializeField]
@@ -23,6 +23,9 @@ namespace MyPhysics
 		// 가해지는 중력
 		[SerializeField]
 		protected Vector2 m_Gravity = Physics2D.gravity;
+		// 충돌 감지 모드
+		[SerializeField]
+		protected E_CollisionDetectionMode m_CollisionDetectionMode;
 
 		#region 내부 정보
 		[Header("Infos")]
@@ -47,7 +50,7 @@ namespace MyPhysics
 		public float drag { get => m_Drag; set => m_Drag = value; }
 		public bool useGravity { get => m_UseGravity; set => m_UseGravity = value; }
 		public Vector2 gravity { get => m_Gravity; set => m_Gravity = value; }
-		public E_BodyType type { get => m_BodyType; set => m_BodyType = value; }
+		public E_RigidBodyType type { get => m_BodyType; set => m_BodyType = value; }
 		public Vector2 velocity { get => m_Velocity; set => m_Velocity = value; }
 		public Vector2 force { get => m_Force; set => m_Force = value; }
 		public int layerMask { get => m_LayerMask; set => m_LayerMask = value; }
@@ -81,6 +84,7 @@ namespace MyPhysics
 				}
 			}
 		}
+		public E_CollisionDetectionMode collisionDetectionMode { get => m_CollisionDetectionMode; set => m_CollisionDetectionMode = value; }
 		#endregion
 		#region 내부 함수
 		protected Vector2 CalculateDrag(Vector2 force)
@@ -114,10 +118,10 @@ namespace MyPhysics
 
 			switch (m_BodyType)
 			{
-				case E_BodyType.Dynamic:
+				case E_RigidBodyType.Dynamic:
 					gravity *= m_Mass;
 					break;
-				case E_BodyType.Kinematic:
+				case E_RigidBodyType.Kinematic:
 					break;
 			}
 
@@ -127,17 +131,17 @@ namespace MyPhysics
 		{
 			switch (m_BodyType)
 			{
-				case E_BodyType.Dynamic:
+				case E_RigidBodyType.Dynamic:
 					m_Velocity += m_Force / m_Mass * Time.fixedDeltaTime;
 					break;
-				case E_BodyType.Kinematic:
+				case E_RigidBodyType.Kinematic:
 					m_Velocity += m_Force;
 					break;
 			}
 		}
 		protected void Drag()
 		{
-			if (m_BodyType == E_BodyType.Kinematic)
+			if (m_BodyType == E_RigidBodyType.Kinematic)
 				return;
 
 			if (m_Velocity.magnitude > 0)
@@ -198,10 +202,10 @@ namespace MyPhysics
 		}
 		void FixedUpdate()
 		{
-			if (m_BodyType == E_BodyType.Static)
+			if (m_BodyType == E_RigidBodyType.Static)
 				return;
 
-			if (m_BodyType == E_BodyType.Kinematic)
+			if (m_BodyType == E_RigidBodyType.Kinematic)
 			{
 				m_Velocity = Vector2.zero;
 			}
@@ -241,11 +245,16 @@ namespace MyPhysics
 		}
 		#endregion
 
-		public enum E_BodyType
+		public enum E_RigidBodyType
 		{
 			Dynamic,
 			Kinematic,
 			Static
+		}
+		public enum E_CollisionDetectionMode
+		{
+			Discrete,
+			Continuous,
 		}
 	}
 

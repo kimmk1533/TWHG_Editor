@@ -97,6 +97,20 @@ namespace MyPhysics
 		public CollisionEventHandler onTriggerExit2D { get => m_OnTriggerExit2D; set => m_OnTriggerExit2D = value; }
 		#endregion
 		#region 외부 함수
+		//UnityEngine.Collider2D
+		public int OverlapCollider(ContactFilter2D contactFilter, out List<Collider2D> results)
+		{
+			switch (m_ColliderType)
+			{
+				case E_ColliderType.Box:
+					return Physics2D.OverlapBox(m_Bounds.center, m_Bounds.size, transform.eulerAngles.z, contactFilter, out results);
+				case E_ColliderType.Circle:
+					return Physics2D.OverlapCircle(m_Bounds.center, m_Bounds.extents.x, contactFilter, out results);
+			}
+
+			results = new List<Collider2D>();
+			return 0;
+		}
 		public virtual bool OverlapPoint(Vector2 point)
 		{
 			return m_Bounds.min.x <= point.x && point.x <= m_Bounds.max.x &&
